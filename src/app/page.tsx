@@ -1,65 +1,321 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+import { generateListId } from '@/lib/utils/generateId';
+import { useAI, isCategorizedResult, ManipulatedItem } from '@/lib/hooks/useAI';
+
+type InputMode = 'single' | 'multiple' | 'ai';
+
+const PLACEHOLDERS = [
+  '...groceries for the week',
+  'movies to watch together',
+  '...things to pack for camping',
+  'books everyone should read',
+  '...ingredients for taco night',
+  'songs for the road trip playlist',
+  '...gift ideas for mom',
+  'places to visit in Tokyo',
+  '...what to bring to the potluck',
+  'games for family game night',
+];
+
+// Sparkles icon component
+const SparklesIcon = () => (
+  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 0L13.5 8.5L22 10L13.5 11.5L12 20L10.5 11.5L2 10L10.5 8.5L12 0Z" />
+    <path d="M18 14L18.75 17.25L22 18L18.75 18.75L18 22L17.25 18.75L14 18L17.25 17.25L18 14Z" opacity="0.7" />
+    <path d="M6 14L6.5 16.5L9 17L6.5 17.5L6 20L5.5 17.5L3 17L5.5 16.5L6 14Z" opacity="0.5" />
+  </svg>
+);
 
 export default function Home() {
+  const [value, setValue] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [isPlaceholderFading, setIsPlaceholderFading] = useState(false);
+  const router = useRouter();
+  const { generateItems } = useAI();
+
+  // Rotate placeholders every 2.5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsPlaceholderFading(true);
+      setTimeout(() => {
+        setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDERS.length);
+        setIsPlaceholderFading(false);
+      }, 200); // Fade out duration
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Detect input mode based on content
+  const { mode, itemCount, displayText } = useMemo(() => {
+    const trimmed = value.trim();
+
+    // AI mode: starts with ...
+    if (trimmed.startsWith('...')) {
+      const prompt = trimmed.slice(3).trim();
+      return {
+        mode: 'ai' as InputMode,
+        itemCount: 0,
+        displayText: prompt ? 'AI will generate items' : ''
+      };
+    }
+
+    // Multiple mode: contains commas
+    if (trimmed.includes(',')) {
+      const items = trimmed.split(',').map(s => s.trim()).filter(Boolean);
+      return {
+        mode: 'multiple' as InputMode,
+        itemCount: items.length,
+        displayText: `Adding ${items.length} items`
+      };
+    }
+
+    // Single mode
+    return { mode: 'single' as InputMode, itemCount: 0, displayText: '' };
+  }, [value]);
+
+  const handleCreate = async (forceAI = false) => {
+    if (isCreating) return;
+
+    const trimmed = value.trim();
+    if (!trimmed) {
+      // Create empty list
+      setIsCreating(true);
+      const listId = generateListId();
+      await supabase.from('lists').insert({ id: listId, title: null });
+      router.push(`/${listId}`);
+      return;
+    }
+
+    setIsCreating(true);
+    setError(null);
+
+    try {
+      const listId = generateListId();
+
+      // Create the list
+      const { error: listError } = await supabase
+        .from('lists')
+        .insert({ id: listId, title: null });
+
+      if (listError) throw listError;
+
+      let itemsToAdd: string[] = [];
+      let categorizedItems: ManipulatedItem[] | null = null;
+
+      // AI mode: ... prefix or Ctrl+Enter
+      if (forceAI || trimmed.startsWith('...')) {
+        const prompt = trimmed.startsWith('...') ? trimmed.slice(3).trim() : trimmed;
+        if (prompt) {
+          const result = await generateItems(prompt);
+          if (isCategorizedResult(result)) {
+            categorizedItems = result;
+          } else {
+            itemsToAdd = result;
+          }
+        }
+      }
+      // Multiple mode: comma-separated
+      else if (trimmed.includes(',')) {
+        itemsToAdd = trimmed.split(',').map(s => s.trim()).filter(Boolean);
+      }
+      // Single mode
+      else {
+        itemsToAdd = [trimmed];
+      }
+
+      // Handle categorized items (with headers and parent_ids)
+      if (categorizedItems && categorizedItems.length > 0) {
+        const idMapping: Record<string, string> = {};
+
+        // First pass: create all headers (items without parent_id)
+        const headers = categorizedItems.filter(item => !item.parent_id);
+        for (const header of headers) {
+          const { data } = await supabase
+            .from('items')
+            .insert({
+              list_id: listId,
+              content: header.content,
+              completed: false,
+              parent_id: null,
+              position: header.position,
+            })
+            .select()
+            .single();
+
+          if (data) {
+            idMapping[header.id] = data.id;
+          }
+        }
+
+        // Second pass: create child items with translated parent_ids
+        const children = categorizedItems.filter(item => item.parent_id);
+        for (const child of children) {
+          const realParentId = child.parent_id ? idMapping[child.parent_id] : null;
+
+          await supabase
+            .from('items')
+            .insert({
+              list_id: listId,
+              content: child.content,
+              completed: false,
+              parent_id: realParentId,
+              position: child.position,
+            });
+        }
+      }
+      // Handle simple string array
+      else if (itemsToAdd.length > 0) {
+        const itemInserts = itemsToAdd.map((content, index) => ({
+          list_id: listId,
+          content,
+          position: index,
+        }));
+
+        await supabase.from('items').insert(itemInserts);
+      }
+
+      // Navigate to the new list
+      router.push(`/${listId}`);
+    } catch (err) {
+      console.error('Failed to create list:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create list');
+      setIsCreating(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const forceAI = e.ctrlKey || e.metaKey;
+      handleCreate(forceAI);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4">
+      <div className="w-full max-w-md space-y-8 text-center">
+        {/* Logo/Title */}
+        <div className="space-y-2">
+          <h1 className="text-5xl font-bold text-gray-900">
+            Listo
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+          <p className="text-gray-400 text-lg">Create and share lists instantly</p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Input */}
+        <div className="relative" style={{ marginBottom: '16px' }}>
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={value}
+                onChange={(e) => {
+                  setValue(e.target.value);
+                  setError(null);
+                }}
+                onKeyDown={handleKeyDown}
+                disabled={isCreating}
+                autoFocus
+                className={`
+                  w-full text-lg
+                  border
+                  focus:border-[var(--primary)] focus:shadow-[0_0_0_3px_var(--primary-pale)]
+                  outline-none transition-all duration-200
+                  disabled:opacity-50
+                  ${mode === 'ai' && value.trim().length > 3
+                    ? 'border-[var(--primary-light)]'
+                    : 'border-gray-200'
+                  }
+                `}
+                style={{
+                  padding: '4px',
+                  borderRadius: '2px'
+                }}
+              />
+              {/* Animated placeholder */}
+              {!value && (
+                <div
+                  className={`
+                    absolute left-1 top-1/2 -translate-y-1/2
+                    text-lg text-gray-400 pointer-events-none
+                    transition-opacity duration-200
+                    ${isPlaceholderFading ? 'opacity-0' : 'opacity-100'}
+                  `}
+                >
+                  {PLACEHOLDERS[placeholderIndex]}
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => handleCreate(false)}
+              disabled={isCreating}
+              className="
+                bg-[var(--primary)] text-white font-medium
+                hover:bg-[#3091ef] active:scale-95
+                transition-all duration-150
+                disabled:opacity-50
+              "
+              style={{
+                paddingTop: '4px',
+                paddingBottom: '4px',
+                paddingLeft: '8px',
+                paddingRight: '8px',
+                borderRadius: '2px'
+              }}
+            >
+              {isCreating ? (
+                <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                'Create'
+              )}
+            </button>
+          </div>
+
+          {/* Mode indicator badge */}
+          {displayText && !isCreating && (
+            <div
+              className="absolute left-0 flex items-center gap-1 text-xs text-white bg-[var(--primary)] px-2 py-0.5 rounded-sm"
+              style={{ top: 'calc(100% + 4px)' }}
+            >
+              <SparklesIcon />
+              {displayText}
+            </div>
+          )}
+
+          {/* Processing indicator */}
+          {isCreating && mode === 'ai' && (
+            <div
+              className="absolute left-0 flex items-center gap-1.5 text-xs text-white bg-[var(--primary)] px-2 py-0.5 rounded-sm"
+              style={{ top: 'calc(100% + 4px)' }}
+            >
+              <span className="inline-block w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              AI is thinking...
+            </div>
+          )}
+
+          {/* Error indicator */}
+          {error && (
+            <div
+              className="absolute left-0 text-xs text-white bg-red-500 px-2 py-0.5 rounded-sm"
+              style={{ top: 'calc(100% + 4px)' }}
+            >
+              {error}
+            </div>
+          )}
         </div>
-      </main>
+
+        {/* Hint */}
+        <p className="text-sm text-gray-400">
+          <span className="font-medium text-gray-500">...</span> for AI magic • <span className="font-medium text-gray-500">commas</span> for many • <span className="font-medium text-gray-500">Enter</span> to create
+        </p>
+      </div>
     </div>
   );
 }

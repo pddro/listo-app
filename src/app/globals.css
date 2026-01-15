@@ -1,26 +1,148 @@
 @import "tailwindcss";
 
+/* Brand Colors */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary: #47A1FF;
+  --primary-light: rgba(71, 161, 255, 0.2);
+  --primary-pale: rgba(71, 161, 255, 0.1);
+  --primary-glow: rgba(71, 161, 255, 0.4);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #ffffff;
+  color: #171717;
+}
+
+/* Focus styles */
+input:focus,
+button:focus {
+  outline: none;
+}
+
+/* Selection color */
+::selection {
+  background: var(--primary-light);
+}
+
+/* Sparkle particle animation */
+@keyframes sparkle {
+  0% {
+    transform: scale(0) translate(0, 0);
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translate(var(--tx), var(--ty));
+    opacity: 0;
+  }
+}
+
+.sparkle-particle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: var(--primary);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: sparkle 600ms ease-out forwards;
+}
+
+/* New item flash effect */
+@keyframes item-flash {
+  0% {
+    background-color: var(--primary-light);
+    transform: scale(1.01);
+  }
+  100% {
+    background-color: transparent;
+    transform: scale(1);
+  }
+}
+
+.item-new {
+  animation: item-flash 400ms ease-out;
+}
+
+/* Slide in animation for new items */
+@keyframes slide-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.item-slide-in {
+  animation: slide-in 300ms ease-out;
+}
+
+/* Fade to bottom animation for completed items */
+@keyframes fade-complete {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.item-completing {
+  animation: fade-complete 300ms ease-out forwards;
+}
+
+/* Checkbox styles */
+.checkbox {
+  transition: all 150ms ease;
+}
+
+.checkbox:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 3px var(--primary-pale);
+}
+
+.checkbox-checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Input focus glow */
+.input-focus-glow:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-pale);
+}
+
+/* Item hover effect */
+.item-hover {
+  transition: background-color 150ms ease;
+}
+
+.item-hover:hover {
+  background-color: var(--primary-pale);
+}
+
+/* Drag styles */
+.item-dragging {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: rotate(1deg);
+}
+
+/* Completed item styles */
+.item-completed {
+  opacity: 0.5;
+}
+
+.item-completed .item-text {
+  text-decoration: line-through;
+  color: #9ca3af;
 }
