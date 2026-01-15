@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { generateListId } from '@/lib/utils/generateId';
 import { useAI, isCategorizedResult, ManipulatedItem } from '@/lib/hooks/useAI';
+import { DictateButton } from '@/components/DictateButton';
 
 type InputMode = 'single' | 'multiple' | 'ai';
 
@@ -198,84 +199,156 @@ export default function Home() {
     }
   };
 
+  // Handle dictation - create list with AI-generated items
+  const handleDictation = async (transcription: string) => {
+    if (!transcription.trim() || isCreating) return;
+
+    setIsCreating(true);
+    setError(null);
+
+    try {
+      const listId = generateListId();
+
+      // Create the list
+      const { error: listError } = await supabase
+        .from('lists')
+        .insert({ id: listId, title: null });
+
+      if (listError) throw listError;
+
+      // Generate items from transcription using AI
+      const result = await generateItems(transcription);
+
+      if (isCategorizedResult(result)) {
+        // Handle categorized items
+        const idMapping: Record<string, string> = {};
+
+        const headers = result.filter(item => !item.parent_id);
+        for (const header of headers) {
+          const { data } = await supabase
+            .from('items')
+            .insert({
+              list_id: listId,
+              content: header.content,
+              completed: false,
+              parent_id: null,
+              position: header.position,
+            })
+            .select()
+            .single();
+
+          if (data) {
+            idMapping[header.id] = data.id;
+          }
+        }
+
+        const children = result.filter(item => item.parent_id);
+        for (const child of children) {
+          const realParentId = child.parent_id ? idMapping[child.parent_id] : null;
+
+          await supabase
+            .from('items')
+            .insert({
+              list_id: listId,
+              content: child.content,
+              completed: false,
+              parent_id: realParentId,
+              position: child.position,
+            });
+        }
+      } else if (result.length > 0) {
+        // Handle simple string array
+        const itemInserts = result.map((content, index) => ({
+          list_id: listId,
+          content,
+          position: index,
+        }));
+
+        await supabase.from('items').insert(itemInserts);
+      }
+
+      // Navigate to the new list
+      router.push(`/${listId}`);
+    } catch (err) {
+      console.error('Failed to create list from dictation:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create list');
+      setIsCreating(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4">
       <div className="w-full max-w-md space-y-8 text-center">
         {/* Logo/Title */}
-        <div className="space-y-2">
-          <h1 className="text-5xl font-bold text-gray-900">
+        <div className="space-y-3" style={{ marginBottom: '16px' }}>
+          <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-[0.2em]">
             Listo
           </h1>
-          <p className="text-gray-400 text-lg">Create and share lists instantly</p>
+          <p className="text-gray-400 text-sm">Create and share lists instantly</p>
         </div>
 
         {/* Input */}
         <div className="relative" style={{ marginBottom: '16px' }}>
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1">
-              <input
-                type="text"
-                value={value}
-                onChange={(e) => {
-                  setValue(e.target.value);
-                  setError(null);
-                }}
-                onKeyDown={handleKeyDown}
-                disabled={isCreating}
-                autoFocus
-                className={`
-                  w-full text-lg
-                  border
-                  focus:border-[var(--primary)] focus:shadow-[0_0_0_3px_var(--primary-pale)]
-                  outline-none transition-all duration-200
-                  disabled:opacity-50
-                  ${mode === 'ai' && value.trim().length > 3
-                    ? 'border-[var(--primary-light)]'
-                    : 'border-gray-200'
-                  }
-                `}
-                style={{
-                  padding: '4px',
-                  borderRadius: '2px'
-                }}
-              />
-              {/* Animated placeholder */}
-              {!value && (
-                <div
-                  className={`
-                    absolute left-1 top-1/2 -translate-y-1/2
-                    text-lg text-gray-400 pointer-events-none
-                    transition-opacity duration-200
-                    ${isPlaceholderFading ? 'opacity-0' : 'opacity-100'}
-                  `}
-                >
-                  {PLACEHOLDERS[placeholderIndex]}
-                </div>
-              )}
-            </div>
-            <button
-              onClick={() => handleCreate(false)}
-              disabled={isCreating}
-              className="
-                bg-[var(--primary)] text-white font-medium
-                hover:bg-[#3091ef] active:scale-95
-                transition-all duration-150
-                disabled:opacity-50
-              "
-              style={{
-                paddingTop: '4px',
-                paddingBottom: '4px',
-                paddingLeft: '8px',
-                paddingRight: '8px',
-                borderRadius: '2px'
+          <div className="relative">
+            <input
+              type="text"
+              value={value}
+              onChange={(e) => {
+                setValue(e.target.value);
+                setError(null);
               }}
-            >
-              {isCreating ? (
-                <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                'Create'
-              )}
-            </button>
+              onKeyDown={handleKeyDown}
+              disabled={isCreating}
+              autoFocus
+              className={`
+                w-full text-lg
+                border
+                hover:border-[var(--primary)] hover:shadow-[0_0_0_3px_var(--primary-pale)]
+                focus:border-[var(--primary)] focus:shadow-[0_0_0_3px_var(--primary-pale)]
+                outline-none transition-all duration-200
+                disabled:opacity-50
+                ${mode === 'ai' && value.trim().length > 3
+                  ? 'border-[var(--primary-light)]'
+                  : 'border-gray-200'
+                }
+              `}
+              style={{
+                padding: '8px',
+                paddingRight: value.trim() ? '36px' : '8px',
+                borderRadius: '4px'
+              }}
+            />
+            {/* Animated placeholder */}
+            {!value && (
+              <div
+                className={`
+                  absolute left-2 top-1/2 -translate-y-1/2
+                  text-lg text-gray-400 pointer-events-none
+                  transition-opacity duration-200
+                  ${isPlaceholderFading ? 'opacity-0' : 'opacity-100'}
+                `}
+              >
+                {PLACEHOLDERS[placeholderIndex]}
+              </div>
+            )}
+            {/* Submit arrow */}
+            {value.trim() && !isCreating && (
+              <button
+                onClick={() => handleCreate(false)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--primary)] hover:text-[#3B8FE3] transition-colors"
+                aria-label="Create list"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </button>
+            )}
+            {/* Loading spinner */}
+            {isCreating && (
+              <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                <span className="inline-block w-5 h-5 border-2 border-[var(--primary)]/30 border-t-[var(--primary)] rounded-full animate-spin" />
+              </div>
+            )}
           </div>
 
           {/* Mode indicator badge */}
@@ -313,8 +386,17 @@ export default function Home() {
 
         {/* Hint */}
         <p className="text-sm text-gray-400">
-          <span className="font-medium text-gray-500">...</span> for AI magic • <span className="font-medium text-gray-500">commas</span> for many • <span className="font-medium text-gray-500">Enter</span> to create
+          <span className="font-medium text-[var(--primary)]">...</span> for AI magic • <span className="font-medium text-[var(--primary)]">commas</span> for many • <span className="font-medium text-[var(--primary)]">Enter</span> to create
         </p>
+
+        {/* Dictate button */}
+        <div style={{ marginTop: '16px' }}>
+          <DictateButton
+            onTranscription={handleDictation}
+            disabled={isCreating}
+            position="inline"
+          />
+        </div>
       </div>
     </div>
   );

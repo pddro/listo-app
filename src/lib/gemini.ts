@@ -135,11 +135,32 @@ Return ONLY the JSON array, no markdown, no explanation.`;
   }
 }
 
-// Keywords that indicate user wants categorized output
+// Keywords/phrases that indicate user wants categorized output
+// Expanded for natural speech patterns from dictation
 const CATEGORY_KEYWORDS = [
+  // Direct categorization requests
   'categorize', 'categorized', 'category', 'categories',
-  'by aisle', 'by section', 'by type', 'by group',
-  'grouped', 'organize', 'organized', 'sorted by',
+  'with categories', 'with headers', 'with sections',
+  // Grouping requests
+  'group', 'grouped', 'grouping', 'groups',
+  'by group', 'into groups', 'in groups',
+  // Organization requests
+  'organize', 'organized', 'organisation', 'organization',
+  'sort by', 'sorted by', 'sorting by',
+  'arrange', 'arranged', 'arranging',
+  // Specific grouping types
+  'by aisle', 'by section', 'by type', 'by kind',
+  'by store', 'by room', 'by person', 'by priority',
+  'by project', 'by day', 'by meal', 'by time',
+  'by location', 'by area', 'by department',
+  // Natural speech patterns
+  'break it down', 'break them down', 'broken down',
+  'split into', 'split by', 'divide into', 'divided by',
+  'separate into', 'separated by',
+  'put together', 'keep together',
+  // Header-specific
+  'with headings', 'add headers', 'add headings',
+  'under headers', 'under headings',
 ];
 
 function wantsCategorization(prompt: string): boolean {
@@ -161,18 +182,34 @@ export async function generateItemsFromPrompt(
     },
   };
 
-  const systemPrompt = `You are a helpful list-making assistant. Given a user's request, generate a list of specific, actionable items.
+  const systemPrompt = `You are a helpful list-making assistant. The user's request may be dictated speech. Generate a list of specific, actionable items.
 
-USER REQUEST: ${prompt}
+USER REQUEST (may be dictated speech):
+${prompt}
 
+## YOUR TASK
+1. Understand what the user wants (they may speak naturally, not in a structured way)
+2. Extract or generate the appropriate list items
+3. Return clean, concise items
+
+## HANDLING DICTATION
+Users may speak naturally:
+- "I need to get milk and eggs and also bread" → ["Milk", "Eggs", "Bread"]
+- "Um let me think groceries for dinner tonight chicken rice vegetables" → ["Chicken", "Rice", "Vegetables"]
+- "Things I need to do call mom finish the report buy groceries" → ["Call mom", "Finish the report", "Buy groceries"]
+
+Filter out filler words (um, uh, let me think, so, like) and extract the actual items.
+
+## OUTPUT FORMAT
 Return ONLY a valid JSON array of strings. Each string should be a single, concise list item.
 Do not include categories, numbers, or explanations - just the items themselves.
+Capitalize appropriately and clean up the items.
 
-Example request: "ingredients for a basic omelette"
-Example response: ["Eggs", "Butter", "Salt", "Pepper", "Cheese"]
+Example: "ingredients for a basic omelette"
+Response: ["Eggs", "Butter", "Salt", "Pepper", "Cheese"]
 
-Example request: "things to pack for a beach day"
-Example response: ["Sunscreen", "Towel", "Swimsuit", "Sunglasses", "Water bottle", "Snacks"]
+Example: "things to pack for a beach day"
+Response: ["Sunscreen", "Towel", "Swimsuit", "Sunglasses", "Water bottle", "Snacks"]
 
 Return ONLY the JSON array, no markdown, no explanation.`;
 
@@ -218,39 +255,55 @@ export async function generateCategorizedItems(
     },
   };
 
-  const systemPrompt = `You are a helpful list-making assistant. Given a user's request, generate a categorized list with headers and items.
+  const systemPrompt = `You are a helpful list-making assistant. The user has provided a request that may be dictated speech. Your job is to:
+1. Extract the list items from their request
+2. Organize them into logical categories with headers
+3. Return a structured JSON response
 
-USER REQUEST: ${prompt}
+USER REQUEST (may be dictated speech):
+${prompt}
 
-## HEADER/CATEGORY SYSTEM
-Create HEADER items to organize the list:
-- Headers start with # (e.g., "#Dairy", "#Produce", "#Proteins")
-- Headers are parent items - other items become their children via parent_id
-- Headers use placeholder IDs starting with "new_" (e.g., "new_1", "new_2")
-- Regular items also use "new_" IDs (e.g., "new_3", "new_4")
-- Position is relative to siblings at the same level
+## UNDERSTANDING THE REQUEST
+The user may have:
+- Dictated a list of items with a command like "categorize these" or "organize by aisle"
+- Asked for items to be generated AND categorized (e.g., "groceries for tacos organized by store section")
+- Mixed commands with items in natural speech (e.g., "I need milk bread eggs and chicken and put them in categories")
+
+Extract the intent and items, then organize appropriately.
+
+## HEADER/CATEGORY SYSTEM - CRITICAL
+Headers define categories. They MUST start with # character:
+- "#Dairy" not "Dairy"
+- "#Produce" not "Produce"
+- "#Urgent Tasks" not "Urgent Tasks"
+
+The # prefix is how the app recognizes headers. Without it, items won't display as categories.
+
+Structure:
+- Headers have parent_id: null (they are top-level)
+- Child items have parent_id set to their header's ID
+- Use placeholder IDs: "new_1", "new_2", etc.
+- Position is sequential within each level (0, 1, 2...)
 
 ## OUTPUT FORMAT
-Return ONLY a valid JSON array. Each item:
+Return ONLY a valid JSON array:
 {
   "id": "new_X",
-  "content": "item text (headers start with #)",
+  "content": "item text (headers MUST start with #)",
   "completed": false,
   "parent_id": null or "new_X" for parent header,
   "position": 0
 }
 
-Example for "chicken soup ingredients categorized by aisle":
+Example for "I need carrots celery chicken and broth, organize by grocery aisle":
 [
   {"id": "new_1", "content": "#Produce", "completed": false, "parent_id": null, "position": 0},
   {"id": "new_2", "content": "Carrots", "completed": false, "parent_id": "new_1", "position": 0},
   {"id": "new_3", "content": "Celery", "completed": false, "parent_id": "new_1", "position": 1},
-  {"id": "new_4", "content": "Onion", "completed": false, "parent_id": "new_1", "position": 2},
-  {"id": "new_5", "content": "#Proteins", "completed": false, "parent_id": null, "position": 1},
-  {"id": "new_6", "content": "Chicken breast", "completed": false, "parent_id": "new_5", "position": 0},
-  {"id": "new_7", "content": "#Pantry", "completed": false, "parent_id": null, "position": 2},
-  {"id": "new_8", "content": "Chicken broth", "completed": false, "parent_id": "new_7", "position": 0},
-  {"id": "new_9", "content": "Salt", "completed": false, "parent_id": "new_7", "position": 1}
+  {"id": "new_4", "content": "#Meat", "completed": false, "parent_id": null, "position": 1},
+  {"id": "new_5", "content": "Chicken", "completed": false, "parent_id": "new_4", "position": 0},
+  {"id": "new_6", "content": "#Pantry", "completed": false, "parent_id": null, "position": 2},
+  {"id": "new_7", "content": "Broth", "completed": false, "parent_id": "new_6", "position": 0}
 ]
 
 Return ONLY the JSON array, no markdown, no explanation.`;

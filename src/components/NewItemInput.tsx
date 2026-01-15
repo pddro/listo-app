@@ -219,7 +219,7 @@ export function NewItemInput({
     <div className="relative" style={{ marginBottom: '16px' }}>
       <div
         className={`
-          border rounded-sm
+          border rounded
           transition-all duration-200
           ${isProcessing
             ? 'border-[var(--primary)] bg-[var(--primary-pale)]'

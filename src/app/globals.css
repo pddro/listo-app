@@ -3,6 +3,7 @@
 /* Brand Colors */
 :root {
   --primary: #47A1FF;
+  --primary-dark: #2B8AE8;
   --primary-light: rgba(71, 161, 255, 0.2);
   --primary-pale: rgba(71, 161, 255, 0.1);
   --primary-glow: rgba(71, 161, 255, 0.4);

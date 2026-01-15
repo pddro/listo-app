@@ -7,6 +7,8 @@ import { useAI, ManipulatedItem } from '@/lib/hooks/useAI';
 import { supabase } from '@/lib/supabase';
 import { ListTitle } from '@/components/ListTitle';
 import { ListContainer } from '@/components/ListContainer';
+import { DictateButton } from '@/components/DictateButton';
+import { isCategorizedResult } from '@/lib/hooks/useAI';
 
 export default function ListPage() {
   const params = useParams();
@@ -36,7 +38,7 @@ export default function ListPage() {
     outdentItem,
   } = useList(listId);
 
-  const { manipulateList } = useAI();
+  const { manipulateList, generateItems } = useAI();
 
   // Create list if it doesn't exist (for direct URL access)
   useEffect(() => {
@@ -102,6 +104,26 @@ export default function ListPage() {
         position: manipulatedItem.position,
         parent_id: realParentId,
       });
+    }
+  };
+
+  // Handle dictation transcription - send to Gemini for list generation
+  const handleDictation = async (transcription: string) => {
+    if (!transcription.trim()) return;
+
+    try {
+      const result = await generateItems(transcription);
+
+      if (result.length > 0) {
+        if (isCategorizedResult(result)) {
+          await handleCategorizedGenerate(result);
+        } else {
+          // Simple string array - use bulk add
+          await addItems(result);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to process dictation:', err);
     }
   };
 
@@ -234,6 +256,9 @@ export default function ListPage() {
           onCategorizedGenerate={handleCategorizedGenerate}
         />
       </div>
+
+      {/* Dictate button */}
+      <DictateButton onTranscription={handleDictation} />
     </div>
   );
 }
