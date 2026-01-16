@@ -231,13 +231,30 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
             w-16 h-16 rounded-full flex items-center justify-center
             shadow-lg transition-all duration-200
             ${isRecording
-              ? 'bg-red-500 scale-110'
+              ? 'scale-110'
               : isProcessing
-                ? 'bg-gray-400'
-                : 'bg-[var(--primary)] hover:bg-[#3B8FE3] hover:scale-105'
+                ? ''
+                : 'bg-[var(--primary)] hover:scale-105'
             }
             ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
           `}
+          style={{
+            backgroundColor: isRecording
+              ? 'var(--error)'
+              : isProcessing
+                ? 'var(--text-muted)'
+                : undefined
+          }}
+          onMouseEnter={(e) => {
+            if (!isRecording && !isProcessing) {
+              e.currentTarget.style.backgroundColor = 'var(--primary-dark)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isRecording && !isProcessing) {
+              e.currentTarget.style.backgroundColor = '';
+            }
+          }}
         >
           {isProcessing ? (
             <span className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -252,7 +269,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
             </svg>
           )}
         </button>
-        <span className="mt-1.5 text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+        <span className="mt-1.5 text-[10px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
           {isProcessing ? 'Processing' : 'Dictate'}
         </span>
       </div>
@@ -323,10 +340,13 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
 
       {/* Error toast */}
       {error && (
-        <div className={`
-          bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-pulse
-          ${isFloating ? 'fixed bottom-28 right-6' : 'absolute mt-2'}
-        `}>
+        <div
+          className={`
+            text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-pulse
+            ${isFloating ? 'fixed bottom-28 right-6' : 'absolute mt-2'}
+          `}
+          style={{ backgroundColor: 'var(--error)' }}
+        >
           {error}
         </div>
       )}

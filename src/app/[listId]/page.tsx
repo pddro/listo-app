@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useList } from '@/lib/hooks/useList';
 import { useAI, ManipulatedItem } from '@/lib/hooks/useAI';
 import { supabase } from '@/lib/supabase';
@@ -9,6 +9,7 @@ import { ListTitle } from '@/components/ListTitle';
 import { ListContainer } from '@/components/ListContainer';
 import { DictateButton } from '@/components/DictateButton';
 import { isCategorizedResult } from '@/lib/hooks/useAI';
+import { ThemeColors } from '@/lib/gemini';
 
 export default function ListPage() {
   const params = useParams();
@@ -26,6 +27,7 @@ export default function ListPage() {
     completingItemIds,
     createList,
     updateTitle,
+    updateTheme,
     addItem,
     addItems,
     updateItem,
@@ -46,6 +48,84 @@ export default function ListPage() {
       createList();
     }
   }, [loading, list, error, createList]);
+
+  // Apply theme from list data
+  const applyTheme = useCallback((theme: ThemeColors | null) => {
+    const root = document.documentElement;
+    if (theme) {
+      root.style.setProperty('--primary', theme.primary);
+      root.style.setProperty('--primary-dark', theme.primaryDark);
+      root.style.setProperty('--primary-light', theme.primaryLight);
+      root.style.setProperty('--primary-pale', theme.primaryPale);
+      root.style.setProperty('--primary-glow', theme.primaryGlow);
+      root.style.setProperty('--text-primary', theme.textPrimary);
+      root.style.setProperty('--text-secondary', theme.textSecondary);
+      root.style.setProperty('--text-muted', theme.textMuted);
+      root.style.setProperty('--text-placeholder', theme.textPlaceholder);
+      root.style.setProperty('--bg-primary', theme.bgPrimary);
+      root.style.setProperty('--bg-secondary', theme.bgSecondary);
+      root.style.setProperty('--bg-hover', theme.bgHover);
+      root.style.setProperty('--border-light', theme.borderLight);
+      root.style.setProperty('--border-medium', theme.borderMedium);
+      root.style.setProperty('--error', theme.error);
+    } else {
+      // Reset to defaults
+      root.style.removeProperty('--primary');
+      root.style.removeProperty('--primary-dark');
+      root.style.removeProperty('--primary-light');
+      root.style.removeProperty('--primary-pale');
+      root.style.removeProperty('--primary-glow');
+      root.style.removeProperty('--text-primary');
+      root.style.removeProperty('--text-secondary');
+      root.style.removeProperty('--text-muted');
+      root.style.removeProperty('--text-placeholder');
+      root.style.removeProperty('--bg-primary');
+      root.style.removeProperty('--bg-secondary');
+      root.style.removeProperty('--bg-hover');
+      root.style.removeProperty('--border-light');
+      root.style.removeProperty('--border-medium');
+      root.style.removeProperty('--error');
+    }
+  }, []);
+
+  // Apply theme when list loads
+  useEffect(() => {
+    if (list) {
+      applyTheme(list.theme);
+    }
+    // Cleanup: reset theme when leaving the page
+    return () => {
+      applyTheme(null);
+    };
+  }, [list, applyTheme]);
+
+  // Handle theme generation
+  const handleThemeGenerate = async (description: string) => {
+    const response = await fetch('/api/theme', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ description }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || 'Theme generation failed');
+    }
+
+    const { theme } = await response.json();
+
+    // Apply theme immediately
+    applyTheme(theme);
+
+    // Save to database
+    await updateTheme(theme);
+  };
+
+  // Handle theme reset
+  const handleThemeReset = async () => {
+    applyTheme(null);
+    await updateTheme(null);
+  };
 
   const handleShare = async () => {
     await navigator.clipboard.writeText(window.location.href);
@@ -182,7 +262,7 @@ export default function ListPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <div className="text-[var(--primary)] animate-pulse">Loading...</div>
       </div>
     );
@@ -190,14 +270,14 @@ export default function ListPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-red-500">{error}</div>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        <div style={{ color: 'var(--error)' }}>{error}</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center">
+    <div className="min-h-screen flex flex-col items-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Centered content container */}
       <div className="w-full max-w-lg pb-8" style={{ paddingTop: '32px', paddingLeft: '8px', paddingRight: '8px' }}>
         {/* Header */}
@@ -210,10 +290,15 @@ export default function ListPage() {
               flex items-center gap-1.5
               ${copied
                 ? 'bg-[var(--primary)] text-white'
-                : 'text-gray-400 hover:text-[var(--primary)] hover:bg-[var(--primary-pale)]'
+                : 'hover:text-[var(--primary)] hover:bg-[var(--primary-pale)]'
               }
             `}
-            style={{ paddingLeft: '4px', paddingRight: '4px', borderRadius: '2px' }}
+            style={{
+              paddingLeft: '4px',
+              paddingRight: '4px',
+              borderRadius: '2px',
+              color: copied ? undefined : 'var(--text-muted)'
+            }}
           >
             {copied ? (
               <>
@@ -255,6 +340,8 @@ export default function ListPage() {
           onAddItems={addItems}
           onManipulateList={handleManipulateList}
           onCategorizedGenerate={handleCategorizedGenerate}
+          onThemeGenerate={handleThemeGenerate}
+          onThemeReset={list?.theme ? handleThemeReset : undefined}
         />
       </div>
 

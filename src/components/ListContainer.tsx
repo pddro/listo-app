@@ -39,6 +39,8 @@ interface ListContainerProps {
   onAddItems: (contents: string[], parentId?: string | null) => Promise<unknown[]>;
   onManipulateList: (instruction: string) => Promise<void>;
   onCategorizedGenerate: (items: ManipulatedItem[]) => Promise<void>;
+  onThemeGenerate?: (description: string) => Promise<void>;
+  onThemeReset?: () => Promise<void>;
 }
 
 // Flattened item with depth for rendering
@@ -133,6 +135,8 @@ export function ListContainer({
   onAddItems,
   onManipulateList,
   onCategorizedGenerate,
+  onThemeGenerate,
+  onThemeReset,
 }: ListContainerProps) {
   const { generateItems } = useAI();
   const [highlightedCategoryId, setHighlightedCategoryId] = useState<string | null>(null);
@@ -223,6 +227,8 @@ export function ListContainer({
         onAIGenerate={generateItems}
         onAICategorizedGenerate={onCategorizedGenerate}
         onAIManipulate={onManipulateList}
+        onThemeGenerate={onThemeGenerate}
+        onThemeReset={onThemeReset}
         autoFocus
       />
 

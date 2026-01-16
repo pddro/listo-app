@@ -161,7 +161,10 @@ export function ListItem({
           <div
             {...attributes}
             {...listeners}
-            className="cursor-grab opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-gray-600"
+            className="cursor-grab opacity-0 group-hover:opacity-100 transition-opacity"
+            style={{ color: 'var(--text-muted)' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path d="M7 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
@@ -182,7 +185,8 @@ export function ListItem({
               onChange={(e) => setValue(e.target.value)}
               onBlur={handleSubmit}
               onKeyDown={handleKeyDown}
-              className="flex-1 bg-transparent border-none outline-none text-gray-900 font-semibold"
+              className="flex-1 bg-transparent border-none outline-none font-semibold"
+              style={{ color: 'var(--text-primary)' }}
             />
           ) : (
             <span
@@ -224,7 +228,10 @@ export function ListItem({
         <div
           {...attributes}
           {...listeners}
-          className="cursor-grab opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-gray-600"
+          className="cursor-grab opacity-0 group-hover:opacity-100 transition-opacity"
+          style={{ color: 'var(--text-muted)' }}
+          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
             <path d="M7 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
@@ -240,9 +247,10 @@ export function ListItem({
             checkbox transition-all duration-150
             ${item.completed
               ? 'checkbox-checked border-[var(--primary)] bg-[var(--primary)]'
-              : 'border-gray-300 hover:border-[var(--primary)]'
+              : 'hover:border-[var(--primary)]'
             }
           `}
+          style={{ borderColor: item.completed ? undefined : 'var(--border-medium)' }}
         >
           {item.completed && (
             <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,15 +268,17 @@ export function ListItem({
             onChange={(e) => setValue(e.target.value)}
             onBlur={handleSubmit}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent border-none outline-none text-gray-900"
+            className="flex-1 bg-transparent border-none outline-none"
+            style={{ color: 'var(--text-primary)' }}
           />
         ) : (
           <span
             onClick={() => setIsEditing(true)}
             className={`
               flex-1 cursor-pointer item-text transition-colors duration-200
-              ${item.completed ? 'line-through text-gray-400' : 'text-gray-900'}
+              ${item.completed ? 'line-through' : ''}
             `}
+            style={{ color: item.completed ? 'var(--text-muted)' : 'var(--text-primary)' }}
           >
             {displayContent}
           </span>

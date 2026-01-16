@@ -50,7 +50,8 @@ export function ListTitle({ title, onUpdate }: ListTitleProps) {
         onBlur={handleSubmit}
         onKeyDown={handleKeyDown}
         placeholder="Untitled List"
-        className="text-2xl font-semibold bg-transparent border-none outline-none w-full text-gray-900 placeholder-gray-400"
+        className="text-2xl font-semibold bg-transparent border-none outline-none w-full"
+        style={{ color: 'var(--text-primary)' }}
       />
     );
   }
@@ -58,7 +59,10 @@ export function ListTitle({ title, onUpdate }: ListTitleProps) {
   return (
     <h1
       onClick={() => setIsEditing(true)}
-      className="text-2xl font-semibold cursor-pointer hover:text-gray-600 transition-colors text-gray-900"
+      className="text-2xl font-semibold cursor-pointer transition-colors"
+      style={{ color: 'var(--text-primary)' }}
+      onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+      onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
     >
       {title || 'Untitled List'}
     </h1>

@@ -335,6 +335,110 @@ Return ONLY the JSON array, no markdown, no explanation.`;
   }
 }
 
+export interface ThemeColors {
+  primary: string;
+  primaryDark: string;
+  primaryLight: string;
+  primaryPale: string;
+  primaryGlow: string;
+  textPrimary: string;
+  textSecondary: string;
+  textMuted: string;
+  textPlaceholder: string;
+  bgPrimary: string;
+  bgSecondary: string;
+  bgHover: string;
+  borderLight: string;
+  borderMedium: string;
+  error: string;
+}
+
+export async function generateTheme(description: string): Promise<ThemeColors> {
+  const config = {
+    thinkingConfig: {
+      thinkingLevel: ThinkingLevel.MEDIUM,
+    },
+  };
+
+  const prompt = `You are a color theme generator for a todo list app. Generate a harmonious, beautiful color palette based on the user's description.
+
+THEME DESCRIPTION: ${description}
+
+## REQUIREMENTS
+1. Colors must be visually harmonious and pleasing
+2. Ensure sufficient contrast for readability (WCAG AA minimum)
+3. Work well together across all UI elements
+4. Evoke the mood/feeling described by the user
+5. Primary colors should be vibrant and eye-catching
+6. Text colors must be readable against backgrounds
+7. Error color should still be recognizable as an error state
+
+## COLOR ROLES
+- primary: Main brand color for buttons, checkmarks, highlights
+- primaryDark: Hover states, emphasis (slightly darker than primary)
+- primaryLight: Light backgrounds, glows (primary with ~20% opacity)
+- primaryPale: Subtle highlights (primary with ~10% opacity)
+- primaryGlow: Box shadow glow effect
+- textPrimary: Main text color (high contrast against bgPrimary)
+- textSecondary: Secondary/muted text
+- textMuted: Very muted text, disabled states
+- textPlaceholder: Placeholder text in inputs
+- bgPrimary: Main background color
+- bgSecondary: Secondary/card backgrounds
+- bgHover: Hover state backgrounds
+- borderLight: Subtle borders
+- borderMedium: More visible borders
+- error: Error states (keep this readable/noticeable)
+
+## OUTPUT FORMAT
+Return ONLY a valid JSON object with these exact keys:
+{
+  "primary": "#HEXCOLOR",
+  "primaryDark": "#HEXCOLOR",
+  "primaryLight": "rgba(r,g,b,0.2)",
+  "primaryPale": "rgba(r,g,b,0.1)",
+  "primaryGlow": "rgba(r,g,b,0.4)",
+  "textPrimary": "#HEXCOLOR",
+  "textSecondary": "#HEXCOLOR",
+  "textMuted": "#HEXCOLOR",
+  "textPlaceholder": "#HEXCOLOR",
+  "bgPrimary": "#HEXCOLOR",
+  "bgSecondary": "#HEXCOLOR",
+  "bgHover": "#HEXCOLOR",
+  "borderLight": "#HEXCOLOR",
+  "borderMedium": "#HEXCOLOR",
+  "error": "#HEXCOLOR"
+}
+
+Return ONLY the JSON object, no markdown, no explanation.`;
+
+  const contents = [
+    {
+      role: 'user' as const,
+      parts: [{ text: prompt }],
+    },
+  ];
+
+  const response = await ai.models.generateContent({
+    model: MODEL,
+    config,
+    contents,
+  });
+
+  const text = response.text?.trim() || '{}';
+
+  try {
+    const parsed = JSON.parse(text);
+    return parsed as ThemeColors;
+  } catch {
+    const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[1].trim()) as ThemeColors;
+    }
+    throw new Error('Failed to parse theme response as JSON');
+  }
+}
+
 export async function generateListSuggestions(
   items: ListItem[],
   context?: string

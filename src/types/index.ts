@@ -1,6 +1,9 @@
+import { ThemeColors } from '@/lib/gemini';
+
 export interface List {
   id: string;
   title: string | null;
+  theme: ThemeColors | null;
   created_at: string;
   updated_at: string;
 }

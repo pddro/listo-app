@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { List, Item, ItemWithChildren } from '@/types';
+import { ThemeColors } from '@/lib/gemini';
 
 export function useList(listId: string) {
   const [list, setList] = useState<List | null>(null);
@@ -459,6 +460,16 @@ export function useList(listId: string) {
     await Promise.all(updates);
   };
 
+  // Update list theme
+  const updateTheme = async (theme: ThemeColors | null) => {
+    const { error } = await supabase
+      .from('lists')
+      .update({ theme, updated_at: new Date().toISOString() })
+      .eq('id', listId);
+
+    if (error) throw error;
+  };
+
   return {
     list,
     items,
@@ -470,6 +481,7 @@ export function useList(listId: string) {
     completingItemIds,
     createList,
     updateTitle,
+    updateTheme,
     addItem,
     addItems,
     updateItem,

@@ -1,12 +1,31 @@
 @import "tailwindcss";
 
-/* Brand Colors */
+/* Theme Colors - These can be overridden by AI-generated themes */
 :root {
+  /* Primary brand colors */
   --primary: #47A1FF;
   --primary-dark: #2B8AE8;
   --primary-light: rgba(71, 161, 255, 0.2);
   --primary-pale: rgba(71, 161, 255, 0.1);
   --primary-glow: rgba(71, 161, 255, 0.4);
+
+  /* Text colors */
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
+  --text-placeholder: #D1D5DB;
+
+  /* Background colors */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F9FAFB;
+  --bg-hover: #F3F4F6;
+
+  /* Border colors */
+  --border-light: #F3F4F6;
+  --border-medium: #E5E7EB;
+
+  /* Semantic colors */
+  --error: #EF4444;
 }
 
 * {
@@ -16,14 +35,19 @@
 }
 
 body {
-  background: #ffffff;
-  color: #171717;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 /* Focus styles */
 input:focus,
 button:focus {
   outline: none;
+}
+
+/* Input placeholder color */
+input::placeholder {
+  color: var(--text-placeholder);
 }
 
 /* Selection color */
@@ -145,5 +169,5 @@ button:focus {
 
 .item-completed .item-text {
   text-decoration: line-through;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
