@@ -199,20 +199,21 @@ export default function ListPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center">
       {/* Centered content container */}
-      <div className="w-full max-w-lg px-6 pt-16 pb-8">
+      <div className="w-full max-w-lg pb-8" style={{ paddingTop: '32px', paddingLeft: '8px', paddingRight: '8px' }}>
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <ListTitle title={list?.title || null} onUpdate={updateTitle} />
           <button
             onClick={handleShare}
             className={`
-              text-sm px-3 py-1.5 rounded-lg transition-all duration-200
+              text-sm py-1.5 transition-all duration-200
               flex items-center gap-1.5
               ${copied
                 ? 'bg-[var(--primary)] text-white'
                 : 'text-gray-400 hover:text-[var(--primary)] hover:bg-[var(--primary-pale)]'
               }
             `}
+            style={{ paddingLeft: '4px', paddingRight: '4px', borderRadius: '2px' }}
           >
             {copied ? (
               <>

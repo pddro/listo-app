@@ -28,14 +28,37 @@ export function NewItemInput({
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingMessage, setProcessingMessage] = useState('AI is thinking...');
   const [aiError, setAiError] = useState<string | null>(null);
+  const [showPowerFeatures, setShowPowerFeatures] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const isSubmittingRef = useRef(false);
+  const powerFeaturesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (autoFocus && inputRef.current) {
       inputRef.current.focus();
     }
   }, [autoFocus]);
+
+  // Close power features when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (powerFeaturesRef.current && !powerFeaturesRef.current.contains(e.target as Node)) {
+        setShowPowerFeatures(false);
+      }
+    };
+
+    if (showPowerFeatures) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showPowerFeatures]);
+
+  // Insert prefix into input
+  const insertPrefix = (prefix: string) => {
+    setValue(prefix);
+    setShowPowerFeatures(false);
+    inputRef.current?.focus();
+  };
 
   // Detect input mode based on content
   const { mode, displayText } = useMemo(() => {
@@ -215,11 +238,18 @@ export function NewItemInput({
 
   const isAIMode = mode === 'ai' || mode === 'manipulate';
 
+  // Lightning bolt icon
+  const LightningIcon = () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+    </svg>
+  );
+
   return (
     <div className="relative" style={{ marginBottom: '16px' }}>
       <div
         className={`
-          border rounded
+          border rounded relative
           transition-all duration-200
           ${isProcessing
             ? 'border-[var(--primary)] bg-[var(--primary-pale)]'
@@ -231,7 +261,7 @@ export function NewItemInput({
           paddingTop: '4px',
           paddingBottom: '4px',
           paddingLeft: '4px',
-          paddingRight: '4px'
+          paddingRight: '28px'
         }}
       >
         <input
@@ -252,6 +282,80 @@ export function NewItemInput({
             ${isProcessing ? 'opacity-50' : ''}
           `}
         />
+
+        {/* Lightning bolt - Power Features trigger */}
+        <div
+          ref={powerFeaturesRef}
+          className="absolute right-1 top-1/2 -translate-y-1/2"
+          onMouseEnter={() => setShowPowerFeatures(true)}
+          onMouseLeave={() => setShowPowerFeatures(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setShowPowerFeatures(!showPowerFeatures)}
+            className="p-1 text-gray-300 hover:text-[var(--primary)] transition-colors"
+            aria-label="Power features"
+          >
+            <LightningIcon />
+          </button>
+
+          {/* Power Features Callout */}
+          {showPowerFeatures && (
+            <div
+              className="absolute right-0 top-full mt-1 bg-white border border-gray-200 shadow-lg z-50"
+              style={{ minWidth: '260px', borderRadius: '8px', padding: '8px' }}
+            >
+              <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 px-2">
+                Power Features
+              </div>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => insertPrefix('...')}
+                  className="w-full text-left px-2 py-2 rounded hover:bg-[var(--primary-pale)] transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-[var(--primary)] font-mono font-bold text-base">...</span>
+                    <span className="text-sm font-medium text-gray-800">Generate with AI</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-0.5 ml-8">
+                    Start with three dots, then describe what you need. AI will create the items for you.
+                  </p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => insertPrefix('!')}
+                  className="w-full text-left px-2 py-2 rounded hover:bg-[var(--primary-pale)] transition-colors"
+                  style={{ marginTop: '16px' }}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-[var(--primary)] font-mono font-bold text-base w-5 text-center">!</span>
+                    <span className="text-sm font-medium text-gray-800">Reorganize list</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-0.5 ml-8">
+                    Start with an exclamation mark, then tell AI how to reorganize your existing items.
+                  </p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => insertPrefix('#')}
+                  className="w-full text-left px-2 py-2 rounded hover:bg-[var(--primary-pale)] transition-colors"
+                  style={{ marginTop: '16px' }}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-[var(--primary)] font-mono font-bold text-base w-5 text-center">#</span>
+                    <span className="text-sm font-medium text-gray-800">Add category header</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-0.5 ml-8">
+                    Start with a hashtag to create a category. Items can be grouped under categories.
+                  </p>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Mode indicator badge */}
