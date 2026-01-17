@@ -2,6 +2,66 @@
 
 All notable changes to Listo will be documented in this file.
 
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+---
+
+## [Unreleased]
+
+---
+
+## [0.2.0] - 2025-01-17
+
+### Added
+- **Text Commands** - Quick list manipulation via `--` prefix
+  - `--complete` / `--reset` - Complete or reset all items
+  - `--clean` / `--clear` - Delete completed items
+  - `--large` / `--normal` - Toggle 2x display size
+  - `--emojify` - Toggle auto-emoji prefix for new items
+  - `--sort` / `--sort all` - Alphabetical sorting
+  - `--ungroup` - Remove all categories
+  - `--title` - AI-generate list title
+  - `--nuke` - Delete all items
+- **Emojify Mode** - Automatically adds relevant emoji to new items using Gemini
+- **Title Generation** - AI generates list title from item contents
+- **Commands Reference** - Always-visible command list at bottom of list view
+- **Active Modes Indicator** - Shows which modes are enabled (large, emojify)
+- `/api/emojify` endpoint (Gemini Flash Lite, 4 max tokens)
+- `/api/title` endpoint (Gemini Flash Lite, 20 max tokens)
+
+### Changed
+- Increased bottom padding for mobile-friendly spacing
+- Commands shown in lowercase in reference for clarity
+
+### Database Migrations Required
+```sql
+ALTER TABLE lists ADD COLUMN large_mode BOOLEAN DEFAULT NULL;
+ALTER TABLE lists ADD COLUMN emojify_mode BOOLEAN DEFAULT NULL;
+```
+
+---
+
+## [0.1.1] - 2025-01-17
+
+### Added
+- **AI-Generated Themes** - Type `theme:` or `style:` followed by description
+  - Generates complete color palette via Gemini
+  - Persists per-list in database
+  - Reset theme option in Power Features menu
+- Theme colors applied via CSS variables
+- `/api/theme` endpoint
+
+### Changed
+- Updated all components to use CSS variables for theming
+- ListTitle now respects theme colors
+
+### Database Migrations Required
+```sql
+ALTER TABLE lists ADD COLUMN theme JSONB DEFAULT NULL;
+```
+
+---
+
 ## [0.1.0] - 2025-01-15 (Beta)
 
 ### Added
@@ -26,6 +86,11 @@ All notable changes to Listo will be documented in this file.
   - Smart categorization detection (e.g., `...groceries categorized by aisle`)
   - Reorganize existing lists with `!` prefix (e.g., `!sort by priority`)
 
+- **Audio Dictation**
+  - Voice input via microphone button
+  - AssemblyAI for speech-to-text transcription
+  - Transcriptions processed by Gemini for item extraction
+
 - **UI/UX**
   - Clean, minimalist design with primary blue (#47A1FF)
   - New items appear at top of list
@@ -34,10 +99,14 @@ All notable changes to Listo will be documented in this file.
   - Flash animation for newly added items
   - Optimistic UI updates for instant feedback
   - Mobile-friendly responsive layout
+  - Power Features menu (lightning bolt icon)
 
 ### Technical
-- Next.js 14 with App Router
+- Next.js 16 with App Router
+- React 19
+- Tailwind CSS 4
 - Supabase for database and real-time sync
 - Google Gemini AI for item generation and list manipulation
+- AssemblyAI for audio transcription
 - @dnd-kit for drag and drop
 - TypeScript throughout
