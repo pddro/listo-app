@@ -60,6 +60,12 @@ interface FlattenedItem {
   parentHeaderId: string | null; // ID of the header this item belongs to (if any)
 }
 
+// Group structure for rendering categories with their children
+interface ItemGroup {
+  headerId: string | null; // null for root-level items without a header
+  items: FlattenedItem[];
+}
+
 // Flatten items for rendering (items + depth + parent header tracking)
 function flattenItemsForRender(
   items: ItemWithChildren[],
@@ -80,6 +86,39 @@ function flattenItemsForRender(
     }
   });
   return result;
+}
+
+// Group flattened items by their parent header for visual grouping
+function groupItemsByCategory(flattenedItems: FlattenedItem[]): ItemGroup[] {
+  const groups: ItemGroup[] = [];
+  let currentGroup: ItemGroup | null = null;
+
+  flattenedItems.forEach(flatItem => {
+    const isHeader = flatItem.item.content.startsWith('#');
+
+    if (isHeader) {
+      // Start a new group for this header
+      currentGroup = { headerId: flatItem.item.id, items: [flatItem] };
+      groups.push(currentGroup);
+    } else if (flatItem.parentHeaderId) {
+      // This item belongs to a header
+      // Find or create the group for this header
+      const existingGroup = groups.find(g => g.headerId === flatItem.parentHeaderId);
+      if (existingGroup) {
+        existingGroup.items.push(flatItem);
+      } else {
+        // Header group should exist, but just in case
+        currentGroup = { headerId: flatItem.parentHeaderId, items: [flatItem] };
+        groups.push(currentGroup);
+      }
+    } else {
+      // Root-level item without a header
+      // Each root item is its own "group" (no container outline needed)
+      groups.push({ headerId: null, items: [flatItem] });
+    }
+  });
+
+  return groups;
 }
 
 // Find an item by ID in the tree
@@ -238,6 +277,9 @@ export function ListContainer({
   const flattenedItems = flattenItemsForRender(items);
   const itemIds = flattenedItems.map(f => f.item.id);
 
+  // Group items by category for visual grouping with outline
+  const itemGroups = groupItemsByCategory(flattenedItems);
+
   return (
     <div className="space-y-1" style={{ paddingBottom: '80px' }}>
       {/* New item input at TOP */}
@@ -270,23 +312,59 @@ export function ListContainer({
         onDragCancel={handleDragCancel}
       >
         <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
-          {flattenedItems.map(({ item, depth, parentHeaderId }) => (
-            <ListItem
-              key={item.id}
-              item={item}
-              depth={depth}
-              isNew={item.id === newItemId || newItemIds.includes(item.id)}
-              isCompleting={completingItemIds.has(item.id)}
-              isDropTarget={parentHeaderId === highlightedCategoryId && highlightedCategoryId !== null}
-              largeMode={largeMode}
-              onToggle={onToggle}
-              onUpdate={onUpdate}
-              onDelete={onDelete}
-              onIndent={onIndent}
-              onOutdent={onOutdent}
-              onAddItem={onAddItem}
-            />
-          ))}
+          {itemGroups.map((group) => {
+            const isGroupHighlighted = group.headerId === highlightedCategoryId && highlightedCategoryId !== null;
+
+            // If this is a category group (has a header), wrap in a container with outline
+            if (group.headerId) {
+              return (
+                <div
+                  key={`group-${group.headerId}`}
+                  className={`
+                    rounded-lg transition-all duration-200
+                    ${isGroupHighlighted ? 'ring-2 ring-[var(--primary)] ring-opacity-50 bg-[var(--primary-pale)]' : ''}
+                  `}
+                >
+                  {group.items.map(({ item, depth }) => (
+                    <ListItem
+                      key={item.id}
+                      item={item}
+                      depth={depth}
+                      isNew={item.id === newItemId || newItemIds.includes(item.id)}
+                      isCompleting={completingItemIds.has(item.id)}
+                      isDropTarget={false}
+                      largeMode={largeMode}
+                      onToggle={onToggle}
+                      onUpdate={onUpdate}
+                      onDelete={onDelete}
+                      onIndent={onIndent}
+                      onOutdent={onOutdent}
+                      onAddItem={onAddItem}
+                    />
+                  ))}
+                </div>
+              );
+            }
+
+            // Root-level items without a header - render directly
+            return group.items.map(({ item, depth }) => (
+              <ListItem
+                key={item.id}
+                item={item}
+                depth={depth}
+                isNew={item.id === newItemId || newItemIds.includes(item.id)}
+                isCompleting={completingItemIds.has(item.id)}
+                isDropTarget={false}
+                largeMode={largeMode}
+                onToggle={onToggle}
+                onUpdate={onUpdate}
+                onDelete={onDelete}
+                onIndent={onIndent}
+                onOutdent={onOutdent}
+                onAddItem={onAddItem}
+              />
+            ));
+          })}
         </SortableContext>
       </DndContext>
     </div>

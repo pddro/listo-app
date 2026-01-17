@@ -147,7 +147,6 @@ export function ListItem({
           transition-all duration-200
           ${isDragging ? 'item-dragging opacity-50 z-50' : ''}
           ${isNew ? 'item-new item-slide-in' : ''}
-          ${isDropTarget ? 'bg-[var(--primary-pale)] ring-2 ring-[var(--primary)] ring-opacity-50' : ''}
         `}
       >
         <div
@@ -215,7 +214,6 @@ export function ListItem({
         ${isCompleting ? 'item-completing' : ''}
         ${item.completed && !isCompleting ? 'item-completed' : ''}
         ${!item.completed ? 'item-hover' : ''}
-        ${isDropTarget ? 'bg-[var(--primary-pale)]' : ''}
       `}
     >
       <div
