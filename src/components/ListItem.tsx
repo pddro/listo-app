@@ -12,6 +12,7 @@ interface ListItemProps {
   isCompleting?: boolean;
   isDropTarget?: boolean;
   largeMode?: boolean;
+  sortingDisabled?: boolean;
   onToggle: (id: string) => Promise<void>;
   onUpdate: (id: string, content: string) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
@@ -56,6 +57,7 @@ export function ListItem({
   isCompleting = false,
   isDropTarget = false,
   largeMode = false,
+  sortingDisabled = false,
   onToggle,
   onUpdate,
   onDelete,
@@ -75,7 +77,7 @@ export function ListItem({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: item.id });
+  } = useSortable({ id: item.id, disabled: sortingDisabled });
 
   const style = {
     transform: CSS.Transform.toString(transform),

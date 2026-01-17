@@ -33,15 +33,28 @@ export async function manipulateList(
     },
   };
 
+  // Include parent_id to preserve group structure
   const itemsJson = JSON.stringify(
     items.map((item) => ({
       id: item.id,
       content: item.content,
       completed: item.completed,
+      parent_id: item.parent_id,
     })),
     null,
     2
   );
+
+  // Check if there are existing groups
+  const hasGroups = items.some(item => item.content.startsWith('#'));
+  const groupInfo = hasGroups
+    ? `\n\n## EXISTING GROUP STRUCTURE
+The list already has categories/groups. Items with parent_id belong to a header item.
+- Headers are items whose content starts with # (e.g., "#Groceries")
+- Items under a header have parent_id set to that header's id
+- PRESERVE this group structure unless the instruction specifically asks to reorganize, ungroup, or recategorize.
+- When modifying items (adding emojis, reformatting, etc.), keep them in their current groups.`
+    : '';
 
   const prompt = `You are an intelligent list manipulation assistant. Your job is to transform, reorganize, or modify a list based on the user's instruction.
 
@@ -49,7 +62,7 @@ export async function manipulateList(
 ${instruction}
 
 ## CURRENT LIST ITEMS
-${itemsJson}
+${itemsJson}${groupInfo}
 
 ## CAPABILITIES
 You can perform any list manipulation, including but not limited to:
@@ -62,46 +75,47 @@ You can perform any list manipulation, including but not limited to:
 - **Enriching**: add details, quantities, or clarifications to items
 
 ## HEADER/CATEGORY SYSTEM
-When categorizing or grouping items, create HEADER items:
+Headers define categories:
 - Headers start with # (e.g., "#Dairy", "#Urgent", "#Produce")
 - Headers are parent items - other items become their children via parent_id
-- Headers use placeholder IDs starting with "new_" (e.g., "new_1", "new_2")
+- Headers use placeholder IDs starting with "new_" (e.g., "new_1", "new_2") for NEW headers only
+- EXISTING headers keep their original IDs
 - Regular items keep their original IDs but get parent_id set to a header's ID
 - Position is relative to siblings at the same level
 
-## RULES
-1. PRESERVE original item IDs exactly for existing items
+## CRITICAL RULES
+1. PRESERVE original item IDs exactly for ALL existing items (including headers)
 2. PRESERVE completed status unless instruction explicitly changes it
-3. For new headers, use IDs like "new_1", "new_2", etc.
-4. Set parent_id to group items under a header
+3. PRESERVE parent_id (group membership) unless instruction asks to reorganize/ungroup
+4. For NEW headers only, use IDs like "new_1", "new_2", etc.
 5. Position numbers are sequential within each level (0, 1, 2...)
 6. Be smart about context - groceries have aisles, todos have priorities
+7. When adding emojis, prefixes, or reformatting - keep items in their groups!
 
 ## OUTPUT FORMAT
 Return ONLY a valid JSON array. Each item:
 {
-  "id": "original_id or new_X for headers",
+  "id": "original_id or new_X for NEW headers only",
   "content": "item text (headers start with #)",
   "completed": false,
   "parent_id": null or "id_of_parent_header",
   "position": 0
 }
 
-Example for "!categorize by grocery aisle" with items Milk, Bread, Apples:
+Example for "!add emoji prefix" with EXISTING grouped items:
+Input: [{"id":"h1","content":"#Produce","parent_id":null}, {"id":"a1","content":"Apples","parent_id":"h1"}]
+Output:
 [
-  {"id": "new_1", "content": "#Dairy", "completed": false, "parent_id": null, "position": 0},
-  {"id": "abc123", "content": "Milk", "completed": false, "parent_id": "new_1", "position": 0},
-  {"id": "new_2", "content": "#Bakery", "completed": false, "parent_id": null, "position": 1},
-  {"id": "def456", "content": "Bread", "completed": false, "parent_id": "new_2", "position": 0},
-  {"id": "new_3", "content": "#Produce", "completed": false, "parent_id": null, "position": 2},
-  {"id": "ghi789", "content": "Apples", "completed": false, "parent_id": "new_3", "position": 0}
+  {"id": "h1", "content": "#Produce", "completed": false, "parent_id": null, "position": 0},
+  {"id": "a1", "content": "🍎 Apples", "completed": false, "parent_id": "h1", "position": 0}
 ]
+Notice: header ID "h1" is preserved, item "a1" stays under "h1" (parent_id preserved).
 
-Example for "!sort alphabetically" (no categories needed):
+Example for "!sort alphabetically" with grouped items (sort WITHIN groups):
 [
-  {"id": "ghi789", "content": "Apples", "completed": false, "parent_id": null, "position": 0},
-  {"id": "def456", "content": "Bread", "completed": false, "parent_id": null, "position": 1},
-  {"id": "abc123", "content": "Milk", "completed": false, "parent_id": null, "position": 2}
+  {"id": "h1", "content": "#Produce", "completed": false, "parent_id": null, "position": 0},
+  {"id": "a1", "content": "Apples", "completed": false, "parent_id": "h1", "position": 0},
+  {"id": "b1", "content": "Bananas", "completed": false, "parent_id": "h1", "position": 1}
 ]
 
 Return ONLY the JSON array, no markdown, no explanation.`;
