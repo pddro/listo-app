@@ -28,6 +28,7 @@ export default function ListPage() {
     createList,
     updateTitle,
     updateTheme,
+    updateLargeMode,
     addItem,
     addItems,
     updateItem,
@@ -38,6 +39,13 @@ export default function ListPage() {
     moveToRoot,
     indentItem,
     outdentItem,
+    completeAll,
+    uncompleteAll,
+    clearCompleted,
+    sortItems,
+    ungroupAll,
+    nukeItems,
+    toggleEmojifyMode,
   } = useList(listId);
 
   const { manipulateList, generateItems } = useAI();
@@ -127,10 +135,79 @@ export default function ListPage() {
     await updateTheme(null);
   };
 
+  // Helper to emojify text
+  const emojifyText = async (text: string): Promise<string> => {
+    try {
+      const response = await fetch('/api/emojify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      if (response.ok) {
+        const { emoji } = await response.json();
+        return `${emoji} ${text}`;
+      }
+    } catch (err) {
+      console.error('Emojify failed:', err);
+    }
+    return text; // Return original if emojify fails
+  };
+
+  // Wrapper for addItem that handles emojify
+  const handleAddItem = async (content: string, parentId?: string | null) => {
+    let finalContent = content;
+    // Only emojify regular items (not headers starting with #)
+    if (list?.emojify_mode && !content.startsWith('#') && !content.startsWith('--')) {
+      finalContent = await emojifyText(content);
+    }
+    await addItem(finalContent, parentId);
+  };
+
+  // Wrapper for addItems that handles emojify
+  const handleAddItems = async (contents: string[], parentId?: string | null) => {
+    let finalContents = contents;
+    if (list?.emojify_mode) {
+      // Emojify all items in parallel
+      finalContents = await Promise.all(
+        contents.map(async (content) => {
+          if (!content.startsWith('#') && !content.startsWith('--')) {
+            return await emojifyText(content);
+          }
+          return content;
+        })
+      );
+    }
+    return await addItems(finalContents, parentId);
+  };
+
   const handleShare = async () => {
     await navigator.clipboard.writeText(window.location.href);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  // Generate title from items
+  const handleGenerateTitle = async () => {
+    const itemContents = items
+      .filter(item => !item.completed && !item.content.startsWith('#'))
+      .map(item => item.content);
+
+    if (itemContents.length === 0) return;
+
+    try {
+      const response = await fetch('/api/title', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: itemContents }),
+      });
+
+      if (response.ok) {
+        const { title } = await response.json();
+        await updateTitle(title);
+      }
+    } catch (err) {
+      console.error('Title generation failed:', err);
+    }
   };
 
   const handleManipulateList = async (instruction: string) => {
@@ -279,7 +356,7 @@ export default function ListPage() {
   return (
     <div className="min-h-screen flex flex-col items-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Centered content container */}
-      <div className="w-full max-w-lg pb-8" style={{ paddingTop: '32px', paddingLeft: '8px', paddingRight: '8px' }}>
+      <div className="w-full max-w-lg pb-16" style={{ paddingTop: '32px', paddingLeft: '8px', paddingRight: '8px' }}>
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <ListTitle title={list?.title || null} onUpdate={updateTitle} />
@@ -324,6 +401,7 @@ export default function ListPage() {
           newItemId={newItemId}
           newItemIds={newItemIds}
           completingItemIds={completingItemIds}
+          largeMode={list?.large_mode || false}
           onToggle={toggleItem}
           onUpdate={async (id, content) => {
             await updateItem(id, { content });
@@ -336,13 +414,76 @@ export default function ListPage() {
           }}
           onMoveToGroup={moveToGroup}
           onMoveToRoot={moveToRoot}
-          onAddItem={addItem}
-          onAddItems={addItems}
+          onAddItem={handleAddItem}
+          onAddItems={handleAddItems}
           onManipulateList={handleManipulateList}
           onCategorizedGenerate={handleCategorizedGenerate}
           onThemeGenerate={handleThemeGenerate}
           onThemeReset={list?.theme ? handleThemeReset : undefined}
+          onCompleteAll={completeAll}
+          onUncompleteAll={uncompleteAll}
+          onSetLargeMode={updateLargeMode}
+          onClearCompleted={clearCompleted}
+          onSort={sortItems}
+          onUngroupAll={ungroupAll}
+          onToggleEmojify={toggleEmojifyMode}
+          onNuke={nukeItems}
+          onGenerateTitle={handleGenerateTitle}
         />
+
+        {/* Commands reference section */}
+        <div className="mt-8 mb-8">
+          {/* Subtle divider */}
+          <div
+            className="mb-4"
+            style={{
+              height: '1px',
+              backgroundColor: 'var(--border-light)',
+              opacity: 0.5,
+            }}
+          />
+
+          <div
+            className="text-xs space-y-4"
+            style={{ color: 'var(--text-placeholder)', opacity: 0.6 }}
+          >
+            {/* Header */}
+            <div style={{ marginTop: '8px' }}>
+              <div style={{ fontWeight: 600, opacity: 0.8 }}>COMMANDS</div>
+              <div>Quickly manipulate your list, all commands start with --</div>
+            </div>
+
+            {/* Active options */}
+            {(list?.large_mode || list?.emojify_mode) && (
+              <div className="space-y-1" style={{ marginTop: '16px' }}>
+                <div style={{ fontWeight: 600, opacity: 0.8 }}>ACTIVE:</div>
+                {list?.large_mode && (
+                  <div>large mode · --normal to turn off</div>
+                )}
+                {list?.emojify_mode && (
+                  <div>emojify · --emojify to toggle off</div>
+                )}
+              </div>
+            )}
+
+            {/* Commands reference */}
+            <div className="space-y-1" style={{ marginTop: '16px', paddingBottom: '60px' }}>
+              <div style={{ fontWeight: 600, opacity: 0.8 }}>
+                {(list?.large_mode || list?.emojify_mode) ? 'OTHER COMMANDS:' : 'ALL COMMANDS:'}
+              </div>
+              <div>--complete · Complete all items</div>
+              <div>--reset · Reset all items to incomplete</div>
+              <div>--clean · Clean up all completed</div>
+              <div>--large · Make everything 2x larger</div>
+              <div>--emojify · Add a relevant emoji to new items</div>
+              <div>--sort · Sort items inside groups alphabetically</div>
+              <div>--sort all · Sort all items and groups</div>
+              <div>--ungroup · Remove all groups, keeps items</div>
+              <div>--title · Generate list title</div>
+              <div style={{ marginTop: '8px' }}>--nuke · Deletes everything</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Dictate button */}

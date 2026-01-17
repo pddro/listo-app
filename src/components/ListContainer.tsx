@@ -27,6 +27,7 @@ interface ListContainerProps {
   newItemId: string | null;
   newItemIds: string[];
   completingItemIds: Set<string>;
+  largeMode?: boolean;
   onToggle: (id: string) => Promise<void>;
   onUpdate: (id: string, content: string) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
@@ -41,6 +42,15 @@ interface ListContainerProps {
   onCategorizedGenerate: (items: ManipulatedItem[]) => Promise<void>;
   onThemeGenerate?: (description: string) => Promise<void>;
   onThemeReset?: () => Promise<void>;
+  onCompleteAll?: () => Promise<void>;
+  onUncompleteAll?: () => Promise<void>;
+  onSetLargeMode?: (enabled: boolean) => Promise<void>;
+  onClearCompleted?: () => Promise<void>;
+  onSort?: (sortAll: boolean) => Promise<void>;
+  onUngroupAll?: () => Promise<void>;
+  onToggleEmojify?: () => Promise<void>;
+  onNuke?: () => Promise<void>;
+  onGenerateTitle?: () => Promise<void>;
 }
 
 // Flattened item with depth for rendering
@@ -123,6 +133,7 @@ export function ListContainer({
   newItemId,
   newItemIds,
   completingItemIds,
+  largeMode,
   onToggle,
   onUpdate,
   onDelete,
@@ -137,6 +148,15 @@ export function ListContainer({
   onCategorizedGenerate,
   onThemeGenerate,
   onThemeReset,
+  onCompleteAll,
+  onUncompleteAll,
+  onSetLargeMode,
+  onClearCompleted,
+  onSort,
+  onUngroupAll,
+  onToggleEmojify,
+  onNuke,
+  onGenerateTitle,
 }: ListContainerProps) {
   const { generateItems } = useAI();
   const [highlightedCategoryId, setHighlightedCategoryId] = useState<string | null>(null);
@@ -229,6 +249,15 @@ export function ListContainer({
         onAIManipulate={onManipulateList}
         onThemeGenerate={onThemeGenerate}
         onThemeReset={onThemeReset}
+        onCompleteAll={onCompleteAll}
+        onUncompleteAll={onUncompleteAll}
+        onSetLargeMode={onSetLargeMode}
+        onClearCompleted={onClearCompleted}
+        onSort={onSort}
+        onUngroupAll={onUngroupAll}
+        onToggleEmojify={onToggleEmojify}
+        onNuke={onNuke}
+        onGenerateTitle={onGenerateTitle}
         autoFocus
       />
 
@@ -249,6 +278,7 @@ export function ListContainer({
               isNew={item.id === newItemId || newItemIds.includes(item.id)}
               isCompleting={completingItemIds.has(item.id)}
               isDropTarget={parentHeaderId === highlightedCategoryId && highlightedCategoryId !== null}
+              largeMode={largeMode}
               onToggle={onToggle}
               onUpdate={onUpdate}
               onDelete={onDelete}

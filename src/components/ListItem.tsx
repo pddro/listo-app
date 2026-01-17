@@ -11,6 +11,7 @@ interface ListItemProps {
   isNew?: boolean;
   isCompleting?: boolean;
   isDropTarget?: boolean;
+  largeMode?: boolean;
   onToggle: (id: string) => Promise<void>;
   onUpdate: (id: string, content: string) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
@@ -54,6 +55,7 @@ export function ListItem({
   isNew = false,
   isCompleting = false,
   isDropTarget = false,
+  largeMode = false,
   onToggle,
   onUpdate,
   onDelete,
@@ -172,7 +174,7 @@ export function ListItem({
           </div>
 
           {/* Header icon - hashtag */}
-          <div className="w-5 h-5 flex items-center justify-center text-[var(--primary)] font-bold text-sm">
+          <div className={`${largeMode ? 'w-10 h-10 text-xl' : 'w-5 h-5 text-sm'} flex items-center justify-center text-[var(--primary)] font-bold`}>
             #
           </div>
 
@@ -185,13 +187,13 @@ export function ListItem({
               onChange={(e) => setValue(e.target.value)}
               onBlur={handleSubmit}
               onKeyDown={handleKeyDown}
-              className="flex-1 bg-transparent border-none outline-none font-semibold"
+              className={`flex-1 bg-transparent border-none outline-none font-semibold ${largeMode ? 'text-xl' : ''}`}
               style={{ color: 'var(--text-primary)' }}
             />
           ) : (
             <span
               onClick={() => setIsEditing(true)}
-              className="flex-1 cursor-pointer font-semibold text-[var(--primary)] uppercase text-sm tracking-wide"
+              className={`flex-1 cursor-pointer font-semibold text-[var(--primary)] uppercase tracking-wide ${largeMode ? 'text-xl' : 'text-sm'}`}
             >
               {displayContent}
             </span>
@@ -243,8 +245,9 @@ export function ListItem({
           ref={checkboxRef}
           onClick={handleCheckboxClick}
           className={`
-            relative w-5 h-5 rounded-md border-2 flex items-center justify-center
+            relative rounded-md border-2 flex items-center justify-center
             checkbox transition-all duration-150
+            ${largeMode ? 'w-10 h-10' : 'w-5 h-5'}
             ${item.completed
               ? 'checkbox-checked border-[var(--primary)] bg-[var(--primary)]'
               : 'hover:border-[var(--primary)]'
@@ -253,7 +256,7 @@ export function ListItem({
           style={{ borderColor: item.completed ? undefined : 'var(--border-medium)' }}
         >
           {item.completed && (
-            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`${largeMode ? 'w-6 h-6' : 'w-3 h-3'} text-white`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
             </svg>
           )}
@@ -268,7 +271,7 @@ export function ListItem({
             onChange={(e) => setValue(e.target.value)}
             onBlur={handleSubmit}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent border-none outline-none"
+            className={`flex-1 bg-transparent border-none outline-none ${largeMode ? 'text-2xl' : ''}`}
             style={{ color: 'var(--text-primary)' }}
           />
         ) : (
@@ -277,6 +280,7 @@ export function ListItem({
             className={`
               flex-1 cursor-pointer item-text transition-colors duration-200
               ${item.completed ? 'line-through' : ''}
+              ${largeMode ? 'text-2xl' : ''}
             `}
             style={{ color: item.completed ? 'var(--text-muted)' : 'var(--text-primary)' }}
           >

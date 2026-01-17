@@ -470,6 +470,222 @@ export function useList(listId: string) {
     if (error) throw error;
   };
 
+  // Complete all items
+  const completeAll = async () => {
+    const incompleteItems = items.filter(item => !item.completed);
+    if (incompleteItems.length === 0) return;
+
+    // Optimistic update
+    setItems(prev => prev.map(item => ({ ...item, completed: true })));
+
+    // Update in database
+    const { error } = await supabase
+      .from('items')
+      .update({ completed: true, updated_at: new Date().toISOString() })
+      .eq('list_id', listId)
+      .eq('completed', false);
+
+    if (error) throw error;
+  };
+
+  // Uncomplete all items (reset)
+  const uncompleteAll = async () => {
+    const completedItems = items.filter(item => item.completed);
+    if (completedItems.length === 0) return;
+
+    // Optimistic update
+    setItems(prev => prev.map(item => ({ ...item, completed: false })));
+
+    // Update in database
+    const { error } = await supabase
+      .from('items')
+      .update({ completed: false, updated_at: new Date().toISOString() })
+      .eq('list_id', listId)
+      .eq('completed', true);
+
+    if (error) throw error;
+  };
+
+  // Clear (delete) all completed items
+  const clearCompleted = async () => {
+    const completedItems = items.filter(item => item.completed);
+    if (completedItems.length === 0) return;
+
+    // Optimistic update - remove completed items
+    setItems(prev => prev.filter(item => !item.completed));
+
+    // Delete from database
+    const { error } = await supabase
+      .from('items')
+      .delete()
+      .eq('list_id', listId)
+      .eq('completed', true);
+
+    if (error) throw error;
+  };
+
+  // Sort items alphabetically
+  // sortAll=false: Sort items within each category (and root items among themselves)
+  // sortAll=true: Also sort categories/root items, then sort within each category
+  const sortItems = async (sortAll: boolean) => {
+    const incompleteItems = items.filter(item => !item.completed);
+    if (incompleteItems.length === 0) return;
+
+    // Group items by parent_id
+    const groups = new Map<string | null, Item[]>();
+    incompleteItems.forEach(item => {
+      const key = item.parent_id;
+      if (!groups.has(key)) {
+        groups.set(key, []);
+      }
+      groups.get(key)!.push(item);
+    });
+
+    // Build the new positions
+    const updates: { id: string; position: number }[] = [];
+
+    // Get root-level items (parent_id is null)
+    const rootItems = groups.get(null) || [];
+
+    if (sortAll) {
+      // Sort root items alphabetically
+      rootItems.sort((a, b) => a.content.toLowerCase().localeCompare(b.content.toLowerCase()));
+    }
+
+    // Assign positions to root items
+    rootItems.forEach((item, index) => {
+      updates.push({ id: item.id, position: index });
+    });
+
+    // Sort items within each category
+    groups.forEach((groupItems, parentId) => {
+      if (parentId === null) return; // Already handled root items
+
+      // Sort alphabetically within category
+      groupItems.sort((a, b) => a.content.toLowerCase().localeCompare(b.content.toLowerCase()));
+
+      // Assign positions
+      groupItems.forEach((item, index) => {
+        updates.push({ id: item.id, position: index });
+      });
+    });
+
+    // Optimistic update
+    setItems(prev => {
+      const updatesMap = new Map(updates.map(u => [u.id, u.position]));
+      return prev.map(item => {
+        const newPosition = updatesMap.get(item.id);
+        if (newPosition !== undefined) {
+          return { ...item, position: newPosition };
+        }
+        return item;
+      });
+    });
+
+    // Update database
+    const dbUpdates = updates.map(({ id, position }) =>
+      supabase
+        .from('items')
+        .update({ position, updated_at: new Date().toISOString() })
+        .eq('id', id)
+    );
+
+    await Promise.all(dbUpdates);
+  };
+
+  // Ungroup all - remove categories and flatten all items to root level
+  const ungroupAll = async () => {
+    const categories = items.filter(item => item.content.startsWith('#'));
+    const nonCategories = items.filter(item => !item.content.startsWith('#'));
+
+    if (categories.length === 0 && !items.some(item => item.parent_id)) {
+      // No categories and no nested items - nothing to do
+      return;
+    }
+
+    // Sort non-category items: incomplete first by position, then completed
+    const incompleteItems = nonCategories.filter(item => !item.completed);
+    const completedItems = nonCategories.filter(item => item.completed);
+
+    // Assign new positions - all items become root level
+    const updates: { id: string; position: number; parent_id: null }[] = [];
+    incompleteItems.forEach((item, index) => {
+      updates.push({ id: item.id, position: index, parent_id: null });
+    });
+    completedItems.forEach((item, index) => {
+      updates.push({ id: item.id, position: incompleteItems.length + index, parent_id: null });
+    });
+
+    // Optimistic update - remove categories and flatten
+    setItems(nonCategories.map(item => {
+      const update = updates.find(u => u.id === item.id);
+      return update ? { ...item, position: update.position, parent_id: null } : item;
+    }));
+
+    // Delete categories from database
+    if (categories.length > 0) {
+      const categoryIds = categories.map(c => c.id);
+      await supabase
+        .from('items')
+        .delete()
+        .in('id', categoryIds);
+    }
+
+    // Update remaining items - set parent_id to null and new positions
+    const dbUpdates = updates.map(({ id, position }) =>
+      supabase
+        .from('items')
+        .update({ parent_id: null, position, updated_at: new Date().toISOString() })
+        .eq('id', id)
+    );
+
+    await Promise.all(dbUpdates);
+  };
+
+  // Update large mode
+  const updateLargeMode = async (enabled: boolean) => {
+    // Optimistic update
+    setList(prev => prev ? { ...prev, large_mode: enabled } : prev);
+
+    const { error } = await supabase
+      .from('lists')
+      .update({ large_mode: enabled, updated_at: new Date().toISOString() })
+      .eq('id', listId);
+
+    if (error) throw error;
+  };
+
+  // Nuke - delete ALL items
+  const nukeItems = async () => {
+    if (items.length === 0) return;
+
+    // Optimistic update - remove all items
+    setItems([]);
+
+    // Delete from database
+    const { error } = await supabase
+      .from('items')
+      .delete()
+      .eq('list_id', listId);
+
+    if (error) throw error;
+  };
+
+  // Toggle emojify mode
+  const toggleEmojifyMode = async () => {
+    const newValue = !list?.emojify_mode;
+
+    // Optimistic update
+    setList(prev => prev ? { ...prev, emojify_mode: newValue } : prev);
+
+    const { error } = await supabase
+      .from('lists')
+      .update({ emojify_mode: newValue, updated_at: new Date().toISOString() })
+      .eq('id', listId);
+
+    if (error) throw error;
+  };
+
   return {
     list,
     items,
@@ -482,6 +698,7 @@ export function useList(listId: string) {
     createList,
     updateTitle,
     updateTheme,
+    updateLargeMode,
     addItem,
     addItems,
     updateItem,
@@ -492,5 +709,12 @@ export function useList(listId: string) {
     moveToRoot,
     indentItem,
     outdentItem,
+    completeAll,
+    uncompleteAll,
+    clearCompleted,
+    sortItems,
+    ungroupAll,
+    nukeItems,
+    toggleEmojifyMode,
   };
 }

@@ -439,6 +439,43 @@ Return ONLY the JSON object, no markdown, no explanation.`;
   }
 }
 
+// Generate a title for a list based on its items - cheap API call
+export async function generateTitle(items: string[]): Promise<string> {
+  if (items.length === 0) return 'My List';
+
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.0-flash-lite',
+    config: {
+      maxOutputTokens: 20,
+    },
+    contents: [{
+      role: 'user' as const,
+      parts: [{ text: `Create a short title (2-4 words) for a list containing: ${items.slice(0, 10).join(', ')}. Reply with just the title, no quotes.` }],
+    }],
+  });
+
+  return response.text?.trim() || 'My List';
+}
+
+// Generate a single emoji for a text item - ultra cheap API call
+export async function generateEmoji(text: string): Promise<string> {
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.0-flash-lite',  // Cheapest model
+    config: {
+      maxOutputTokens: 4,  // Emoji is 1-2 tokens
+    },
+    contents: [{
+      role: 'user' as const,
+      parts: [{ text: `Reply with ONE emoji for: ${text}` }],
+    }],
+  });
+
+  const emoji = response.text?.trim() || '📝';
+  // Ensure we only return the first emoji (in case model returns more)
+  const emojiMatch = emoji.match(/\p{Emoji}/u);
+  return emojiMatch ? emojiMatch[0] : '📝';
+}
+
 export async function generateListSuggestions(
   items: ListItem[],
   context?: string

@@ -11,11 +11,20 @@ interface NewItemInputProps {
   onAIManipulate?: (instruction: string) => Promise<void>;
   onThemeGenerate?: (description: string) => Promise<void>;
   onThemeReset?: () => Promise<void>;
+  onCompleteAll?: () => Promise<void>;
+  onUncompleteAll?: () => Promise<void>;
+  onSetLargeMode?: (enabled: boolean) => Promise<void>;
+  onClearCompleted?: () => Promise<void>;
+  onSort?: (sortAll: boolean) => Promise<void>;
+  onUngroupAll?: () => Promise<void>;
+  onToggleEmojify?: () => Promise<void>;
+  onNuke?: () => Promise<void>;
+  onGenerateTitle?: () => Promise<void>;
   placeholder?: string;
   autoFocus?: boolean;
 }
 
-type InputMode = 'single' | 'multiple' | 'ai' | 'manipulate' | 'theme';
+type InputMode = 'single' | 'multiple' | 'ai' | 'manipulate' | 'theme' | 'command';
 
 export function NewItemInput({
   onAdd,
@@ -25,6 +34,15 @@ export function NewItemInput({
   onAIManipulate,
   onThemeGenerate,
   onThemeReset,
+  onCompleteAll,
+  onUncompleteAll,
+  onSetLargeMode,
+  onClearCompleted,
+  onSort,
+  onUngroupAll,
+  onToggleEmojify,
+  onNuke,
+  onGenerateTitle,
   placeholder = 'Add items...',
   autoFocus = false
 }: NewItemInputProps) {
@@ -68,8 +86,42 @@ export function NewItemInput({
   const { mode, displayText } = useMemo(() => {
     const trimmed = value.trim();
 
-    // Theme mode: starts with theme: or style:
     const lowerTrimmed = trimmed.toLowerCase();
+
+    // Command mode: starts with --
+    if (lowerTrimmed.startsWith('--')) {
+      const command = lowerTrimmed.slice(2).trim();
+      let displayText = '';
+      if (command === 'complete all' || command === 'complete') {
+        displayText = 'Complete all items';
+      } else if (command === 'uncomplete all' || command === 'uncomplete' || command === 'reset') {
+        displayText = 'Reset all items';
+      } else if (command === 'large' || command === 'big') {
+        displayText = 'Enable large mode';
+      } else if (command === 'normal' || command === 'small' || command === 'default') {
+        displayText = 'Disable large mode';
+      } else if (command === 'clean' || command === 'clear' || command === 'clear completed') {
+        displayText = 'Delete all completed items';
+      } else if (command === 'sort') {
+        displayText = 'Sort items alphabetically';
+      } else if (command === 'sort all') {
+        displayText = 'Sort everything alphabetically';
+      } else if (command === 'ungroup' || command === 'ungroup all' || command === 'flatten') {
+        displayText = 'Remove all categories';
+      } else if (command === 'emojify') {
+        displayText = 'Toggle emoji mode';
+      } else if (command === 'nuke') {
+        displayText = 'Delete ALL items';
+      } else if (command === 'title') {
+        displayText = 'Generate list title';
+      }
+      return {
+        mode: 'command' as InputMode,
+        displayText
+      };
+    }
+
+    // Theme mode: starts with theme: or style:
     if (lowerTrimmed.startsWith('theme:') || lowerTrimmed.startsWith('style:')) {
       const prefix = lowerTrimmed.startsWith('theme:') ? 'theme:' : 'style:';
       const description = trimmed.slice(prefix.length).trim();
@@ -135,8 +187,96 @@ export function NewItemInput({
     inputRef.current?.focus();
 
     try {
-      // Theme mode: theme: or style: prefix
       const lowerTrimmed = trimmed.toLowerCase();
+
+      // Command mode: -- prefix
+      if (lowerTrimmed.startsWith('--')) {
+        const command = lowerTrimmed.slice(2).trim();
+
+        if (command === 'complete all' || command === 'complete') {
+          if (onCompleteAll) {
+            await onCompleteAll();
+          }
+          return;
+        }
+
+        if (command === 'uncomplete all' || command === 'uncomplete' || command === 'reset') {
+          if (onUncompleteAll) {
+            await onUncompleteAll();
+          }
+          return;
+        }
+
+        if (command === 'large' || command === 'big') {
+          if (onSetLargeMode) {
+            await onSetLargeMode(true);
+          }
+          return;
+        }
+
+        if (command === 'normal' || command === 'small' || command === 'default') {
+          if (onSetLargeMode) {
+            await onSetLargeMode(false);
+          }
+          return;
+        }
+
+        if (command === 'clean' || command === 'clear' || command === 'clear completed') {
+          if (onClearCompleted) {
+            await onClearCompleted();
+          }
+          return;
+        }
+
+        if (command === 'sort') {
+          if (onSort) {
+            await onSort(false);
+          }
+          return;
+        }
+
+        if (command === 'sort all') {
+          if (onSort) {
+            await onSort(true);
+          }
+          return;
+        }
+
+        if (command === 'ungroup' || command === 'ungroup all' || command === 'flatten') {
+          if (onUngroupAll) {
+            await onUngroupAll();
+          }
+          return;
+        }
+
+        if (command === 'emojify') {
+          if (onToggleEmojify) {
+            await onToggleEmojify();
+          }
+          return;
+        }
+
+        if (command === 'nuke') {
+          if (onNuke) {
+            await onNuke();
+          }
+          return;
+        }
+
+        if (command === 'title') {
+          if (onGenerateTitle) {
+            await onGenerateTitle();
+          }
+          return;
+        }
+
+        // Unknown command - restore input
+        setValue(currentValue);
+        setAiError('Unknown command');
+        return;
+      }
+
+      // Theme mode: theme: or style: prefix
       if (lowerTrimmed.startsWith('theme:') || lowerTrimmed.startsWith('style:')) {
         const prefix = lowerTrimmed.startsWith('theme:') ? 'theme:' : 'style:';
         const description = trimmed.slice(prefix.length).trim();
@@ -281,6 +421,14 @@ export function NewItemInput({
   );
 
   const isAIMode = mode === 'ai' || mode === 'manipulate' || mode === 'theme';
+  const isCommandMode = mode === 'command';
+
+  // Terminal icon for command mode
+  const TerminalIcon = () => (
+    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v10zm-2-1h-6v-2h6v2zM7.5 17l-1.41-1.41L8.67 13l-2.59-2.59L7.5 9l4 4-4 4z" />
+    </svg>
+  );
 
   // Palette icon for theme mode
   const PaletteIcon = () => (
@@ -465,7 +613,7 @@ export function NewItemInput({
           className="absolute left-0 flex items-center gap-1 text-xs text-white bg-[var(--primary)] px-2 py-0.5 rounded-sm"
           style={{ top: 'calc(100% + 4px)' }}
         >
-          {mode === 'theme' ? <PaletteIcon /> : mode === 'manipulate' ? <WandIcon /> : <SparklesIcon />}
+          {mode === 'command' ? <TerminalIcon /> : mode === 'theme' ? <PaletteIcon /> : mode === 'manipulate' ? <WandIcon /> : <SparklesIcon />}
           {displayText}
         </div>
       )}

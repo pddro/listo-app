@@ -4,6 +4,8 @@ export interface List {
   id: string;
   title: string | null;
   theme: ThemeColors | null;
+  large_mode: boolean | null;
+  emojify_mode: boolean | null;
   created_at: string;
   updated_at: string;
 }
