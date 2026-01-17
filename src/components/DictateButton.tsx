@@ -270,7 +270,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
           )}
         </button>
         <span className="mt-1.5 text-[10px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
-          {isProcessing ? 'Processing' : 'Dictate'}
+          {isProcessing ? 'Processing' : 'Dictate items'}
         </span>
       </div>
 

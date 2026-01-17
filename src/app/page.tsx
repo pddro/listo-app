@@ -11,15 +11,15 @@ type InputMode = 'single' | 'multiple' | 'ai';
 
 const PLACEHOLDERS = [
   '...groceries for the week',
-  'movies to watch together',
+  'passport, tickets, charger, headphones',
   '...things to pack for camping',
-  'books everyone should read',
+  'lettuce, tomato, bacon, mayo, bread',
   '...ingredients for taco night',
-  'songs for the road trip playlist',
+  'sunscreen, towel, sunglasses, book',
   '...gift ideas for mom',
-  'places to visit in Tokyo',
+  'eggs, milk, butter, flour, sugar',
   '...what to bring to the potluck',
-  'games for family game night',
+  '...packing list for hiking day trip',
 ];
 
 // Sparkles icon component
@@ -81,6 +81,27 @@ export default function Home() {
     return { mode: 'single' as InputMode, itemCount: 0, displayText: '' };
   }, [value]);
 
+  // Parse theme from input (supports ~theme, theme:theme, style:theme)
+  const parseThemeFromInput = (input: string): { content: string; themeDescription: string | null } => {
+    // Match patterns: ~description, theme:description, style:description
+    const themePatterns = [
+      /\s*~\s*(.+)$/i,           // ~beach sunset
+      /\s*theme:\s*(.+)$/i,      // theme: beach sunset
+      /\s*style:\s*(.+)$/i,      // style: beach sunset
+    ];
+
+    for (const pattern of themePatterns) {
+      const match = input.match(pattern);
+      if (match) {
+        const themeDescription = match[1].trim();
+        const content = input.replace(pattern, '').trim();
+        return { content, themeDescription };
+      }
+    }
+
+    return { content: input, themeDescription: null };
+  };
+
   const handleCreate = async (forceAI = false) => {
     if (isCreating) return;
 
@@ -98,6 +119,9 @@ export default function Home() {
     setError(null);
 
     try {
+      // Parse out theme instruction if present
+      const { content: inputWithoutTheme, themeDescription } = parseThemeFromInput(trimmed);
+
       const listId = generateListId();
 
       // Create the list
@@ -111,8 +135,8 @@ export default function Home() {
       let categorizedItems: ManipulatedItem[] | null = null;
 
       // AI mode: ... prefix or Ctrl+Enter
-      if (forceAI || trimmed.startsWith('...')) {
-        const prompt = trimmed.startsWith('...') ? trimmed.slice(3).trim() : trimmed;
+      if (forceAI || inputWithoutTheme.startsWith('...')) {
+        const prompt = inputWithoutTheme.startsWith('...') ? inputWithoutTheme.slice(3).trim() : inputWithoutTheme;
         if (prompt) {
           const result = await generateItems(prompt);
           if (isCategorizedResult(result)) {
@@ -123,12 +147,12 @@ export default function Home() {
         }
       }
       // Multiple mode: comma-separated
-      else if (trimmed.includes(',')) {
-        itemsToAdd = trimmed.split(',').map(s => s.trim()).filter(Boolean);
+      else if (inputWithoutTheme.includes(',')) {
+        itemsToAdd = inputWithoutTheme.split(',').map(s => s.trim()).filter(Boolean);
       }
       // Single mode
-      else {
-        itemsToAdd = [trimmed];
+      else if (inputWithoutTheme) {
+        itemsToAdd = [inputWithoutTheme];
       }
 
       // Handle categorized items (with headers and parent_ids)
@@ -180,6 +204,28 @@ export default function Home() {
         }));
 
         await supabase.from('items').insert(itemInserts);
+      }
+
+      // Apply theme if specified (do this after items are created)
+      if (themeDescription) {
+        try {
+          const themeResponse = await fetch('/api/theme', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ description: themeDescription }),
+          });
+
+          if (themeResponse.ok) {
+            const { theme } = await themeResponse.json();
+            await supabase
+              .from('lists')
+              .update({ theme })
+              .eq('id', listId);
+          }
+        } catch (themeErr) {
+          // Theme generation failed, but continue - list is still created
+          console.error('Theme generation failed:', themeErr);
+        }
       }
 
       // Navigate to the new list
@@ -284,7 +330,7 @@ export default function Home() {
           <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-[0.2em]">
             Listo
           </h1>
-          <p className="text-gray-400 text-sm">Create and share lists instantly</p>
+          <p className="text-gray-400 text-sm">Create and share checklists instantly.</p>
         </div>
 
         {/* Input */}
@@ -384,11 +430,6 @@ export default function Home() {
           )}
         </div>
 
-        {/* Hint */}
-        <p className="text-sm text-gray-400">
-          <span className="font-medium text-[var(--primary)]">...</span> for AI magic • <span className="font-medium text-[var(--primary)]">commas</span> for many • <span className="font-medium text-[var(--primary)]">Enter</span> to create
-        </p>
-
         {/* Dictate button */}
         <div style={{ marginTop: '16px' }}>
           <DictateButton
@@ -396,6 +437,204 @@ export default function Home() {
             disabled={isCreating}
             position="inline"
           />
+        </div>
+
+        {/* Shortcuts */}
+        <div
+          className="rounded-lg text-sm text-left"
+          style={{
+            marginTop: '32px',
+            padding: '16px 20px',
+            backgroundColor: 'var(--primary-pale)',
+            color: 'var(--text-secondary)',
+          }}
+        >
+          <div className="font-bold uppercase tracking-wide text-xs mb-3" style={{ color: 'var(--primary)' }}>
+            Shortcuts
+          </div>
+          <div className="space-y-3">
+            <div>
+              <div>Start with <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary)' }}>...</code> and a prompt to auto generate items</div>
+              <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Example: ...packing list for hiking day trip</div>
+            </div>
+            <div style={{ marginTop: '16px' }}>
+              <div>Create many items at once by separating them with a comma</div>
+              <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Example: cheese, bread, tomatoes, bacon, mayonnaise</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Infinite Custom Styles */}
+        <div
+          className="rounded-lg"
+          style={{
+            marginTop: '32px',
+            padding: '16px 20px',
+            border: '1px solid #E5E7EB',
+          }}
+        >
+          <div className="font-bold uppercase tracking-wide text-xs" style={{ color: 'var(--text-muted)' }}>
+            Infinite custom styles
+          </div>
+          <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '4px', marginBottom: '16px' }}>
+            Describe any style and it will be designed for you automatically
+          </div>
+          <div className="grid grid-cols-4 gap-3">
+            {/* Sunset */}
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
+                style={{ backgroundColor: '#FFF7ED', border: '1px solid #FDBA74' }}
+              >
+                <div
+                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
+                  style={{ borderColor: '#F97316', backgroundColor: '#F97316' }}
+                >
+                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#EA580C' }} />
+              </div>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>sunset</span>
+            </div>
+
+            {/* Ocean */}
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
+                style={{ backgroundColor: '#F0FDFA', border: '1px solid #5EEAD4' }}
+              >
+                <div
+                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
+                  style={{ borderColor: '#14B8A6', backgroundColor: '#14B8A6' }}
+                >
+                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#0D9488' }} />
+              </div>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>ocean</span>
+            </div>
+
+            {/* Forest */}
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
+                style={{ backgroundColor: '#F0FDF4', border: '1px solid #86EFAC' }}
+              >
+                <div
+                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
+                  style={{ borderColor: '#22C55E', backgroundColor: '#22C55E' }}
+                >
+                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#16A34A' }} />
+              </div>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>forest</span>
+            </div>
+
+            {/* Neon */}
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
+                style={{ backgroundColor: '#1A1A2E', border: '1px solid #FF006E' }}
+              >
+                <div
+                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
+                  style={{ borderColor: '#FF006E', backgroundColor: '#FF006E' }}
+                >
+                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#00F5FF' }} />
+              </div>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>neon</span>
+            </div>
+
+            {/* Midnight */}
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
+                style={{ backgroundColor: '#1E1B4B', border: '1px solid #6366F1' }}
+              >
+                <div
+                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
+                  style={{ borderColor: '#818CF8', backgroundColor: '#818CF8' }}
+                >
+                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#A5B4FC' }} />
+              </div>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>midnight</span>
+            </div>
+
+            {/* Rose */}
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
+                style={{ backgroundColor: '#FFF1F2', border: '1px solid #FDA4AF' }}
+              >
+                <div
+                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
+                  style={{ borderColor: '#F43F5E', backgroundColor: '#F43F5E' }}
+                >
+                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#E11D48' }} />
+              </div>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>rose</span>
+            </div>
+
+            {/* Matrix */}
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
+                style={{ backgroundColor: '#022C22', border: '1px solid #10B981' }}
+              >
+                <div
+                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
+                  style={{ borderColor: '#10B981', backgroundColor: '#10B981' }}
+                >
+                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#34D399' }} />
+              </div>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>matrix</span>
+            </div>
+
+            {/* Birthday */}
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
+                style={{ backgroundColor: '#FDF4FF', border: '1px solid #E879F9' }}
+              >
+                <div
+                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
+                  style={{ borderColor: '#D946EF', backgroundColor: '#D946EF' }}
+                >
+                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#C026D3' }} />
+              </div>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>birthday</span>
+            </div>
+          </div>
+          <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '8px' }}>
+            Type <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-hover)', color: 'var(--text-secondary)' }}>style: ocean sunset</code> in your list to style it
+          </div>
         </div>
       </div>
     </div>
