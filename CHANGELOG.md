@@ -10,6 +10,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.2.1] - 2025-01-17
+
+### Added
+- **Enhanced Category Drag UX**
+  - Group highlight now encompasses entire category (header + all children)
+  - Deck of cards effect when dragging categories - children stack visually behind header
+  - Item count badge shown on category drag preview
+- **Smart Drag Behavior**
+  - Root items no longer disturb group children when dragging over categories
+  - Invisible drop zones at top/bottom for moving items out of groups
+  - Pointer-based detection for intuitive drop targeting
+
+### Fixed
+- **AI Manipulation** (`!` command) now preserves group structure
+  - Items stay in their categories when using commands like `!add emoji prefix`
+  - AI receives and respects `parent_id` for grouped items
+  - Only reorganizes groups when explicitly requested
+
+---
+
 ## [0.2.0] - 2025-01-17
 
 ### Added
