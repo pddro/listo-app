@@ -37,6 +37,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [isPlaceholderFading, setIsPlaceholderFading] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const router = useRouter();
   const { generateItems } = useAI();
 
@@ -661,7 +662,94 @@ export default function Home() {
             Type <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-hover)', color: 'var(--text-secondary)' }}>style: ocean sunset</code> in your list to style it
           </div>
         </div>
+
+        {/* Privacy note */}
+        <div className="text-xs text-center" style={{ marginTop: '48px', color: 'var(--text-muted)' }}>
+          Note: All listos are public URLs. Never share personal information in a list.{' '}
+          <button
+            onClick={() => setShowPrivacyModal(true)}
+            className="underline hover:no-underline"
+            style={{ color: 'var(--primary)' }}
+          >
+            Read our privacy policy
+          </button>
+        </div>
       </div>
+
+      {/* Privacy Policy Modal */}
+      {showPrivacyModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          onClick={() => setShowPrivacyModal(false)}
+        >
+          <div
+            className="bg-white rounded-lg max-w-lg w-full max-h-[80vh] overflow-y-auto"
+            style={{ padding: '24px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Privacy Policy</h2>
+              <button
+                onClick={() => setShowPrivacyModal(false)}
+                className="p-1 hover:bg-gray-100 rounded"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
+              <section>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Public Use and Sharing</h3>
+                <p>
+                  LISTO checklists (hereafter referred to as &quot;listos&quot;) are inherently public. Once you create a listo and share its link, anyone with access to that link can view and edit the listo. Since listos are designed to be shared freely, we strongly advise against using LISTO to store or transmit sensitive, confidential, or any personal information that you do not wish to make public.
+                </p>
+              </section>
+
+              <section>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Data Collection and Use</h3>
+                <p>
+                  As of now, LISTO does not require user registration, which means we do not collect personal data such as names, email addresses, or any other contact information. All listos are created anonymously.
+                </p>
+              </section>
+
+              <section>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Analytics</h3>
+                <p>
+                  We utilize Google Analytics to analyze the performance of LISTO, which helps us understand traffic patterns and user engagement in an anonymous form. Google Analytics may collect non-personally identifiable information such as your device type, browser type, and the way you interact with LISTO. This data is used strictly for the purpose of enhancing user experience and improving our service.
+                </p>
+              </section>
+
+              <section>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Contact Information</h3>
+                <p>
+                  Should you have any questions about this privacy policy or LISTO&apos;s practices, please feel free to reach out to us at{' '}
+                  <a href="mailto:hello@listo.to" className="underline" style={{ color: 'var(--primary)' }}>hello@listo.to</a>.
+                </p>
+              </section>
+
+              <section>
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                  Please be aware that our Privacy Policy may change from time to time. We will not reduce your rights under this Privacy Policy without providing notice, and we expect most such changes will be minor.
+                </p>
+              </section>
+            </div>
+
+            <div className="text-center" style={{ marginTop: '16px', marginBottom: '16px' }}>
+              <button
+                onClick={() => setShowPrivacyModal(false)}
+                className="text-white rounded font-medium"
+                style={{ backgroundColor: 'var(--primary)', padding: '8px 16px' }}
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
