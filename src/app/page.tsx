@@ -324,77 +324,102 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4">
-      <div className="w-full max-w-md space-y-8 text-center">
+      <div className="w-full max-w-md md:max-w-[540px] text-center">
         {/* Logo/Title */}
-        <div className="space-y-3" style={{ marginBottom: '16px' }}>
+        <div className="space-y-3" style={{ marginBottom: '24px' }}>
           <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-[0.2em]">
             Listo
           </h1>
-          <p className="text-gray-400 text-sm">Create and share checklists instantly.</p>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+            Create a list. Share the link. Collaborate in real-time.
+          </p>
+          {/* Hero benefit strip */}
+          <div className="flex items-center justify-center gap-4 text-xs" style={{ color: 'var(--text-muted)', marginTop: '12px' }}>
+            <span className="flex items-center gap-1">
+              <svg className="w-3 h-3" style={{ color: 'var(--primary)' }} fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              No signup
+            </span>
+            <span className="flex items-center gap-1">
+              <svg className="w-3 h-3" style={{ color: 'var(--primary)' }} fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              Real-time sharing
+            </span>
+            <span className="flex items-center gap-1">
+              <svg className="w-3 h-3" style={{ color: 'var(--primary)' }} fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              AI-powered
+            </span>
+          </div>
         </div>
 
         {/* Input */}
-        <div className="relative" style={{ marginBottom: '16px' }}>
-          <div className="relative">
-            <input
-              type="text"
-              value={value}
-              onChange={(e) => {
-                setValue(e.target.value);
-                setError(null);
-              }}
-              onKeyDown={handleKeyDown}
-              disabled={isCreating}
-              autoFocus
-              className={`
-                w-full text-lg
-                border
-                hover:border-[var(--primary)] hover:shadow-[0_0_0_3px_var(--primary-pale)]
-                focus:border-[var(--primary)] focus:shadow-[0_0_0_3px_var(--primary-pale)]
-                outline-none transition-all duration-200
-                disabled:opacity-50
-                ${mode === 'ai' && value.trim().length > 3
-                  ? 'border-[var(--primary-light)]'
-                  : 'border-gray-200'
-                }
-              `}
-              style={{
-                padding: '8px',
-                paddingRight: value.trim() ? '36px' : '8px',
-                borderRadius: '4px'
-              }}
-            />
-            {/* Animated placeholder */}
-            {!value && (
-              <div
+        <div className="relative">
+          <div className="flex">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={value}
+                onChange={(e) => {
+                  setValue(e.target.value);
+                  setError(null);
+                }}
+                onKeyDown={handleKeyDown}
+                disabled={isCreating}
+                autoFocus
                 className={`
-                  absolute left-2 top-1/2 -translate-y-1/2
-                  text-lg text-gray-400 pointer-events-none
-                  transition-opacity duration-200
-                  ${isPlaceholderFading ? 'opacity-0' : 'opacity-100'}
+                  w-full text-base
+                  border border-r-0
+                  hover:border-[var(--primary)] hover:shadow-[0_0_0_3px_var(--primary-pale)]
+                  focus:border-[var(--primary)] focus:shadow-[0_0_0_3px_var(--primary-pale)]
+                  outline-none transition-all duration-200
+                  disabled:opacity-50
+                  ${mode === 'ai' && value.trim().length > 3
+                    ? 'border-[var(--primary-light)]'
+                    : 'border-gray-200'
+                  }
                 `}
-              >
-                {PLACEHOLDERS[placeholderIndex]}
-              </div>
-            )}
-            {/* Submit arrow */}
-            {value.trim() && !isCreating && (
-              <button
-                onClick={() => handleCreate(false)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--primary)] hover:text-[#3B8FE3] transition-colors"
-                aria-label="Create list"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </button>
-            )}
-            {/* Loading spinner */}
-            {isCreating && (
-              <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                <span className="inline-block w-5 h-5 border-2 border-[var(--primary)]/30 border-t-[var(--primary)] rounded-full animate-spin" />
-              </div>
-            )}
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: '4px 0 0 4px'
+                }}
+              />
+              {/* Animated placeholder */}
+              {!value && (
+                <div
+                  className={`
+                    absolute left-3 top-1/2 -translate-y-1/2
+                    text-base text-gray-400 pointer-events-none
+                    transition-opacity duration-200
+                    ${isPlaceholderFading ? 'opacity-0' : 'opacity-100'}
+                  `}
+                >
+                  {PLACEHOLDERS[placeholderIndex]}
+                </div>
+              )}
+            </div>
+            {/* Create button */}
+            <button
+              onClick={() => handleCreate(false)}
+              disabled={isCreating}
+              className="text-white font-medium transition-all duration-200 disabled:opacity-70"
+              style={{
+                backgroundColor: 'var(--primary)',
+                borderRadius: '0 4px 4px 0',
+                padding: '8px 16px',
+              }}
+              onMouseEnter={(e) => !isCreating && (e.currentTarget.style.backgroundColor = 'var(--primary-dark)')}
+              onMouseLeave={(e) => !isCreating && (e.currentTarget.style.backgroundColor = 'var(--primary)')}
+            >
+              {isCreating ? (
+                <span className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                'Create'
+              )}
+            </button>
           </div>
 
           {/* Mode indicator badge */}
@@ -441,7 +466,7 @@ export default function Home() {
 
         {/* Shortcuts */}
         <div
-          className="rounded-lg text-sm text-left"
+          className="rounded-lg text-xs text-left"
           style={{
             marginTop: '32px',
             padding: '16px 20px',
@@ -496,7 +521,7 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#EA580C' }} />
               </div>
-              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>sunset</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>sunset</span>
             </div>
 
             {/* Ocean */}
@@ -515,7 +540,7 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#0D9488' }} />
               </div>
-              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>ocean</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>ocean</span>
             </div>
 
             {/* Forest */}
@@ -534,7 +559,7 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#16A34A' }} />
               </div>
-              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>forest</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>forest</span>
             </div>
 
             {/* Neon */}
@@ -553,7 +578,7 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#00F5FF' }} />
               </div>
-              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>neon</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>neon</span>
             </div>
 
             {/* Midnight */}
@@ -572,7 +597,7 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#A5B4FC' }} />
               </div>
-              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>midnight</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>midnight</span>
             </div>
 
             {/* Rose */}
@@ -591,7 +616,7 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#E11D48' }} />
               </div>
-              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>rose</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>rose</span>
             </div>
 
             {/* Matrix */}
@@ -610,7 +635,7 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#34D399' }} />
               </div>
-              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>matrix</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>matrix</span>
             </div>
 
             {/* Birthday */}
@@ -629,7 +654,7 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#C026D3' }} />
               </div>
-              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>birthday</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>birthday</span>
             </div>
           </div>
           <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '8px' }}>

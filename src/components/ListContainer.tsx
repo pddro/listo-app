@@ -79,6 +79,9 @@ interface ListContainerProps {
   onToggleEmojify?: () => Promise<void>;
   onNuke?: () => Promise<void>;
   onGenerateTitle?: () => Promise<void>;
+  hideBottomPadding?: boolean;
+  prefillValue?: string;
+  onPrefillConsumed?: () => void;
 }
 
 // Flattened item with depth for rendering
@@ -224,6 +227,9 @@ export function ListContainer({
   onToggleEmojify,
   onNuke,
   onGenerateTitle,
+  hideBottomPadding,
+  prefillValue,
+  onPrefillConsumed,
 }: ListContainerProps) {
   const { generateItems } = useAI();
   const [highlightedCategoryId, setHighlightedCategoryId] = useState<string | null>(null);
@@ -512,7 +518,7 @@ export function ListContainer({
   const itemGroups = groupItemsByCategory(flattenedItems);
 
   return (
-    <div className="space-y-1" style={{ paddingBottom: '80px' }}>
+    <div className="space-y-1" style={{ paddingBottom: hideBottomPadding ? '0' : '80px' }}>
       {/* New item input at TOP */}
       <NewItemInput
         onAdd={(content) => onAddItem(content)}
@@ -531,6 +537,8 @@ export function ListContainer({
         onToggleEmojify={onToggleEmojify}
         onNuke={onNuke}
         onGenerateTitle={onGenerateTitle}
+        prefillValue={prefillValue}
+        onPrefillConsumed={onPrefillConsumed}
         autoFocus
       />
 

@@ -22,6 +22,8 @@ interface NewItemInputProps {
   onGenerateTitle?: () => Promise<void>;
   placeholder?: string;
   autoFocus?: boolean;
+  prefillValue?: string;
+  onPrefillConsumed?: () => void;
 }
 
 type InputMode = 'single' | 'multiple' | 'ai' | 'manipulate' | 'theme' | 'command';
@@ -44,16 +46,16 @@ export function NewItemInput({
   onNuke,
   onGenerateTitle,
   placeholder = 'Add items...',
-  autoFocus = false
+  autoFocus = false,
+  prefillValue,
+  onPrefillConsumed,
 }: NewItemInputProps) {
   const [value, setValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingMessage, setProcessingMessage] = useState('AI is thinking...');
   const [aiError, setAiError] = useState<string | null>(null);
-  const [showPowerFeatures, setShowPowerFeatures] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const isSubmittingRef = useRef(false);
-  const powerFeaturesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (autoFocus && inputRef.current) {
@@ -61,26 +63,16 @@ export function NewItemInput({
     }
   }, [autoFocus]);
 
-  // Close power features when clicking outside
+  // Handle prefill value
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (powerFeaturesRef.current && !powerFeaturesRef.current.contains(e.target as Node)) {
-        setShowPowerFeatures(false);
+    if (prefillValue) {
+      setValue(prefillValue);
+      if (inputRef.current) {
+        inputRef.current.focus();
       }
-    };
-
-    if (showPowerFeatures) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      onPrefillConsumed?.();
     }
-  }, [showPowerFeatures]);
-
-  // Insert prefix into input
-  const insertPrefix = (prefix: string) => {
-    setValue(prefix);
-    setShowPowerFeatures(false);
-    inputRef.current?.focus();
-  };
+  }, [prefillValue, onPrefillConsumed]);
 
   // Detect input mode based on content
   const { mode, displayText } = useMemo(() => {
@@ -437,13 +429,6 @@ export function NewItemInput({
     </svg>
   );
 
-  // Lightning bolt icon
-  const LightningIcon = () => (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-    </svg>
-  );
-
   return (
     <div className="relative" style={{ marginBottom: '16px' }}>
       <div
@@ -460,7 +445,7 @@ export function NewItemInput({
           paddingTop: '4px',
           paddingBottom: '4px',
           paddingLeft: '4px',
-          paddingRight: '28px',
+          paddingRight: '4px',
           border: isProcessing ? undefined : `1px solid var(--border-light)`,
           ...(isAIMode && value.trim().length > 1 ? { borderColor: 'var(--primary-light)' } : {})
         }}
@@ -485,126 +470,6 @@ export function NewItemInput({
             color: 'var(--text-primary)',
           }}
         />
-
-        {/* Lightning bolt - Power Features trigger */}
-        <div
-          ref={powerFeaturesRef}
-          className="absolute right-1 top-1/2 -translate-y-1/2"
-          onMouseEnter={() => setShowPowerFeatures(true)}
-          onMouseLeave={() => setShowPowerFeatures(false)}
-        >
-          <button
-            type="button"
-            onClick={() => setShowPowerFeatures(!showPowerFeatures)}
-            className="p-1 text-gray-300 hover:text-[var(--primary)] transition-colors"
-            aria-label="Power features"
-          >
-            <LightningIcon />
-          </button>
-
-          {/* Power Features Callout */}
-          {showPowerFeatures && (
-            <div
-              className="absolute right-0 top-full mt-1 shadow-lg z-50"
-              style={{
-                minWidth: '260px',
-                borderRadius: '8px',
-                padding: '8px',
-                backgroundColor: 'var(--bg-primary)',
-                border: '1px solid var(--border-medium)'
-              }}
-            >
-              <div className="text-xs font-medium uppercase tracking-wide mb-2 px-2" style={{ color: 'var(--text-secondary)' }}>
-                Power Features
-              </div>
-              <div>
-                <button
-                  type="button"
-                  onClick={() => insertPrefix('...')}
-                  className="w-full text-left px-2 py-2 rounded hover:bg-[var(--primary-pale)] transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-[var(--primary)] font-mono font-bold text-base">...</span>
-                    <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Generate with AI</span>
-                  </div>
-                  <p className="text-xs mt-0.5 ml-8" style={{ color: 'var(--text-secondary)' }}>
-                    Start with three dots, then describe what you need. AI will create the items for you.
-                  </p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => insertPrefix('!')}
-                  className="w-full text-left px-2 py-2 rounded hover:bg-[var(--primary-pale)] transition-colors"
-                  style={{ marginTop: '16px' }}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-[var(--primary)] font-mono font-bold text-base w-5 text-center">!</span>
-                    <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Reorganize list</span>
-                  </div>
-                  <p className="text-xs mt-0.5 ml-8" style={{ color: 'var(--text-secondary)' }}>
-                    Start with an exclamation mark, then tell AI how to reorganize your existing items.
-                  </p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => insertPrefix('#')}
-                  className="w-full text-left px-2 py-2 rounded hover:bg-[var(--primary-pale)] transition-colors"
-                  style={{ marginTop: '16px' }}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-[var(--primary)] font-mono font-bold text-base w-5 text-center">#</span>
-                    <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Add category header</span>
-                  </div>
-                  <p className="text-xs mt-0.5 ml-8" style={{ color: 'var(--text-secondary)' }}>
-                    Start with a hashtag to create a category. Items can be grouped under categories.
-                  </p>
-                </button>
-
-                {onThemeGenerate && (
-                  <button
-                    type="button"
-                    onClick={() => insertPrefix('theme:')}
-                    className="w-full text-left px-2 py-2 rounded hover:bg-[var(--primary-pale)] transition-colors"
-                    style={{ marginTop: '16px' }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-[var(--primary)] font-mono font-bold text-sm">theme:</span>
-                      <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Generate theme</span>
-                    </div>
-                    <p className="text-xs mt-0.5 ml-12" style={{ color: 'var(--text-secondary)' }}>
-                      Type theme: followed by a description. AI will generate matching colors.
-                    </p>
-                  </button>
-                )}
-
-                {onThemeReset && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowPowerFeatures(false);
-                      onThemeReset();
-                    }}
-                    className="w-full text-left px-2 py-2 rounded hover:bg-[var(--primary-pale)] transition-colors"
-                    style={{ marginTop: '16px' }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5 text-[var(--primary)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                        <path d="M3 3v5h5" />
-                      </svg>
-                      <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Reset theme</span>
-                    </div>
-                    <p className="text-xs mt-0.5 ml-8" style={{ color: 'var(--text-secondary)' }}>
-                      Return to the default blue theme.
-                    </p>
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Mode indicator badge */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { List, Item, ItemWithChildren } from '@/types';
 import { ThemeColors } from '@/lib/gemini';
@@ -10,6 +10,10 @@ export function useList(listId: string) {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Track pending inserts to correlate temp IDs with real IDs from realtime
+  // Key: composite of content|parent_id|position, Value: tempId
+  const pendingInsertsRef = useRef<Map<string, string>>(new Map());
 
   // Track items that are animating (completing) - they stay in place during animation
   const [completingItemIds, setCompletingItemIds] = useState<Set<string>>(new Set());
@@ -120,7 +124,26 @@ export function useList(listId: string) {
         { event: '*', schema: 'public', table: 'items', filter: `list_id=eq.${listId}` },
         (payload) => {
           if (payload.eventType === 'INSERT') {
-            setItems(prev => [...prev, payload.new as Item]);
+            const newItem = payload.new as Item;
+
+            // Check if this matches a pending optimistic insert
+            const pendingKey = `${newItem.content}|${newItem.parent_id}|${newItem.position}`;
+            const tempId = pendingInsertsRef.current.get(pendingKey);
+
+            if (tempId) {
+              // This is our optimistic item coming back - replace temp with real
+              pendingInsertsRef.current.delete(pendingKey);
+              setItems(prev => prev.map(item =>
+                item.id === tempId ? newItem : item
+              ));
+            } else {
+              // This is from another client or source - add if not already exists
+              setItems(prev => {
+                const exists = prev.some(item => item.id === newItem.id);
+                if (exists) return prev;
+                return [...prev, newItem];
+              });
+            }
           } else if (payload.eventType === 'UPDATE') {
             setItems(prev => prev.map(item =>
               item.id === (payload.new as Item).id ? payload.new as Item : item
@@ -222,16 +245,41 @@ export function useList(listId: string) {
     // Get siblings and shift their positions up by 1
     const siblings = items.filter(i => i.parent_id === targetParentId && !i.completed);
 
-    // Optimistically shift existing items
-    setItems(prev => prev.map(item => {
-      if (item.parent_id === targetParentId && !item.completed) {
-        return { ...item, position: item.position + 1 };
-      }
-      return item;
-    }));
+    // Create temporary ID for optimistic update
+    const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    // Insert new item at position 0
-    const { data, error } = await supabase
+    // Optimistically add new item AND shift existing items - all in one state update
+    const optimisticItem: Item = {
+      id: tempId,
+      list_id: listId,
+      content,
+      completed: false,
+      parent_id: targetParentId,
+      position: 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    setItems(prev => [
+      optimisticItem,
+      ...prev.map(item => {
+        if (item.parent_id === targetParentId && !item.completed) {
+          return { ...item, position: item.position + 1 };
+        }
+        return item;
+      })
+    ]);
+
+    // Track this as new item for flash animation (using temp ID)
+    setNewItemId(tempId);
+    setTimeout(() => setNewItemId(null), 500);
+
+    // Register pending insert so realtime can correlate temp ID with real ID
+    const pendingKey = `${content}|${targetParentId}|0`;
+    pendingInsertsRef.current.set(pendingKey, tempId);
+
+    // Insert new item in database (don't await - fire and forget for speed)
+    supabase
       .from('items')
       .insert({
         list_id: listId,
@@ -240,24 +288,47 @@ export function useList(listId: string) {
         position: 0,
       })
       .select()
-      .single();
+      .single()
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('Failed to add item:', error);
+          // Clean up pending tracking
+          pendingInsertsRef.current.delete(pendingKey);
+          // Rollback optimistic update on error
+          setItems(prev => prev.filter(item => item.id !== tempId));
+          return;
+        }
 
-    if (error) throw error;
+        // Clean up pending tracking (realtime may have already handled this)
+        pendingInsertsRef.current.delete(pendingKey);
 
-    // Track this as new item for flash animation
-    setNewItemId(data.id);
-    setTimeout(() => setNewItemId(null), 500);
+        // Ensure temp item is replaced with real item
+        // (realtime usually handles this, but this is a safety net)
+        setItems(prev => {
+          const hasTempItem = prev.some(item => item.id === tempId);
+          const hasRealItem = prev.some(item => item.id === data.id);
 
-    // Update positions of existing siblings in database
-    const updates = siblings.map(sibling =>
+          if (hasTempItem && !hasRealItem) {
+            // Realtime hasn't fired yet - replace temp with real
+            return prev.map(item => item.id === tempId ? data : item);
+          } else if (hasTempItem && hasRealItem) {
+            // Both exist (race condition) - remove temp
+            return prev.filter(item => item.id !== tempId);
+          }
+          // Realtime already handled it, no change needed
+          return prev;
+        });
+      });
+
+    // Update positions of existing siblings in database (fire and forget)
+    siblings.forEach(sibling => {
       supabase
         .from('items')
         .update({ position: sibling.position + 1 })
-        .eq('id', sibling.id)
-    );
-    await Promise.all(updates);
+        .eq('id', sibling.id);
+    });
 
-    return data;
+    return optimisticItem;
   };
 
   // Update item
