@@ -328,6 +328,55 @@ export default function ListPage() {
     setTimeout(() => setCopiedMarkdown(false), 2000);
   };
 
+  const handleDownloadTodoistCSV = () => {
+    const title = list?.title || 'Listo List';
+
+    // Todoist CSV format headers
+    const headers = ['TYPE', 'CONTENT', 'DESCRIPTION', 'PRIORITY', 'INDENT', 'AUTHOR', 'RESPONSIBLE', 'DATE', 'DATE_LANG', 'TIMEZONE'];
+
+    // Build CSV rows in Todoist format
+    const rows: string[] = [];
+
+    // List title as the parent task (indent 1), bold
+    const escapedTitle = title.replace(/"/g, '""');
+    rows.push(`task,"**${escapedTitle}**",,4,1,,,,,`);
+
+    // Get root items
+    const rootItems = items.filter(item => !item.parent_id);
+
+    rootItems.forEach(item => {
+      if (item.content.startsWith('#')) {
+        // Category becomes a subtask (indent 2), bold for visibility
+        const categoryName = item.content.slice(1).trim().replace(/"/g, '""');
+        rows.push(`task,"**${categoryName}**",,4,2,,,,,`);
+
+        // Items under category become indent 3
+        const children = items.filter(child => child.parent_id === item.id && !child.completed);
+        children.forEach(child => {
+          const taskContent = child.content.replace(/"/g, '""');
+          rows.push(`task,"${taskContent}",,4,3,,,,,`);
+        });
+      } else if (!item.completed) {
+        // Regular task at indent 2 (under list title)
+        const taskContent = item.content.replace(/"/g, '""');
+        rows.push(`task,"${taskContent}",,4,2,,,,,`);
+      }
+    });
+
+    const csv = [headers.join(','), ...rows].join('\n');
+
+    // Create and trigger download
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${title.replace(/[^a-z0-9]/gi, '_')}_todoist.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const handleBackToList = () => {
     setShowShareView(false);
     setCopied(false);
@@ -635,12 +684,26 @@ export default function ListPage() {
                   Send via email
                 </span>
               </a>
-            </div>
 
-            {/* Future integrations placeholder */}
-            <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-light)' }}>
-              <div className="text-sm px-4" style={{ color: 'var(--text-muted)' }}>
-                More sharing options coming soon
+              {/* Export for Todoist */}
+              <div>
+                <button
+                  onClick={handleDownloadTodoistCSV}
+                  className="w-full flex items-center gap-3 py-3 px-4 rounded transition-all duration-150"
+                  style={{ backgroundColor: 'transparent' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary-pale)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                >
+                  <svg className="w-5 h-5 flex-shrink-0" style={{ color: '#E44332' }} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M21 0H3C1.35 0 0 1.35 0 3v18c0 1.65 1.35 3 3 3h18c1.65 0 3-1.35 3-3V3c0-1.65-1.35-3-3-3zM5.5 6.75h13c.414 0 .75.336.75.75s-.336.75-.75.75h-13c-.414 0-.75-.336-.75-.75s.336-.75.75-.75zm0 4.5h13c.414 0 .75.336.75.75s-.336.75-.75.75h-13c-.414 0-.75-.336-.75-.75s.336-.75.75-.75zm0 4.5h13c.414 0 .75.336.75.75s-.336.75-.75.75h-13c-.414 0-.75-.336-.75-.75s.336-.75.75-.75z"/>
+                  </svg>
+                  <span style={{ color: 'var(--text-primary)' }}>
+                    Export for Todoist
+                  </span>
+                </button>
+                <div className="text-xs px-4" style={{ color: 'var(--text-muted)', marginTop: '4px', marginLeft: '32px' }}>
+                  CSV file you can import into any Todoist project
+                </div>
               </div>
             </div>
           </div>
