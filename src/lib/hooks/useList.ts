@@ -19,6 +19,9 @@ export function useList(listId: string) {
   // Track items that are animating (completing) - they stay in place during animation
   const [completingItemIds, setCompletingItemIds] = useState<Set<string>>(new Set());
 
+  // Debounce timer for batch-moving completed items to bottom
+  const completionDebounceRef = useRef<NodeJS.Timeout | null>(null);
+
   // Organize items into tree structure
   // Sort: incomplete items first (by position), then completed items (by position)
   // Items in "completing" state stay in their original position during animation
@@ -369,14 +372,16 @@ export function useList(listId: string) {
       // Track task completion
       analytics.taskCompleted(listId);
 
-      // After animation delay, remove from completing set so it moves to bottom
-      setTimeout(() => {
-        setCompletingItemIds(prev => {
-          const next = new Set(prev);
-          next.delete(itemId);
-          return next;
-        });
-      }, 800); // 800ms delay for sparkle + fade animation
+      // Clear any existing debounce timer
+      if (completionDebounceRef.current) {
+        clearTimeout(completionDebounceRef.current);
+      }
+
+      // Debounce: wait 2 seconds of inactivity before moving ALL completed items to bottom
+      completionDebounceRef.current = setTimeout(() => {
+        setCompletingItemIds(new Set()); // Clear all at once
+        completionDebounceRef.current = null;
+      }, 2000);
     }
 
     // Sync to database
