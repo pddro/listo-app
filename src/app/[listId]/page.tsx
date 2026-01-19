@@ -10,6 +10,7 @@ import { ListContainer } from '@/components/ListContainer';
 import { DictateButton } from '@/components/DictateButton';
 import { isCategorizedResult } from '@/lib/hooks/useAI';
 import { ThemeColors } from '@/lib/gemini';
+import { analytics } from '@/lib/analytics';
 
 export default function ListPage() {
   const params = useParams();
@@ -59,6 +60,11 @@ export default function ListPage() {
   } = useList(listId);
 
   const { manipulateList, generateItems } = useAI();
+
+  // Track page visit
+  useEffect(() => {
+    analytics.pageVisit(`/${listId}`);
+  }, [listId]);
 
   // Create list if it doesn't exist (for direct URL access)
   useEffect(() => {

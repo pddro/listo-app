@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { List, Item, ItemWithChildren } from '@/types';
 import { ThemeColors } from '@/lib/gemini';
+import { analytics } from '@/lib/analytics';
 
 export function useList(listId: string) {
   const [list, setList] = useState<List | null>(null);
@@ -113,7 +114,8 @@ export function useList(listId: string) {
         { event: '*', schema: 'public', table: 'lists', filter: `id=eq.${listId}` },
         (payload) => {
           if (payload.eventType === 'UPDATE') {
-            setList(payload.new as List);
+            // Merge with existing state to preserve fields not in payload
+            setList(prev => prev ? { ...prev, ...(payload.new as List) } : payload.new as List);
           } else if (payload.eventType === 'DELETE') {
             setList(null);
           }
@@ -170,6 +172,7 @@ export function useList(listId: string) {
 
     if (error) throw error;
     setList(data);
+    analytics.listCreated(listId);
     return data;
   };
 
@@ -226,6 +229,9 @@ export function useList(listId: string) {
     setNewItemIds(ids);
     setTimeout(() => setNewItemIds([]), 500);
 
+    // Track item creations
+    contents.forEach(() => analytics.itemCreated(listId));
+
     // Update positions of existing siblings in database
     const updates = siblings.map(sibling =>
       supabase
@@ -273,6 +279,9 @@ export function useList(listId: string) {
     // Track this as new item for flash animation (using temp ID)
     setNewItemId(tempId);
     setTimeout(() => setNewItemId(null), 500);
+
+    // Track item creation
+    analytics.itemCreated(listId);
 
     // Register pending insert so realtime can correlate temp ID with real ID
     const pendingKey = `${content}|${targetParentId}|0`;
@@ -356,6 +365,9 @@ export function useList(listId: string) {
     // If completing (not uncompleting), add to completing set to delay the move
     if (newCompleted) {
       setCompletingItemIds(prev => new Set(prev).add(itemId));
+
+      // Track task completion
+      analytics.taskCompleted(listId);
 
       // After animation delay, remove from completing set so it moves to bottom
       setTimeout(() => {

@@ -248,8 +248,10 @@ export function ListItem({
       <div
         ref={setNodeRef}
         style={style}
+        {...attributes}
+        {...listeners}
         className={`
-          flex items-center gap-3 rounded-lg group
+          flex items-center gap-3 rounded-lg group cursor-grab
           transition-all duration-200
           ${isDragging ? 'item-dragging opacity-50 z-50' : ''}
           ${isNew ? 'item-new item-slide-in' : ''}
@@ -264,20 +266,6 @@ export function ListItem({
             marginTop: depth === 0 ? '12px' : '0'
           }}
         >
-          {/* Drag handle */}
-          <div
-            {...attributes}
-            {...listeners}
-            className="cursor-grab opacity-0 group-hover:opacity-100 transition-opacity"
-            style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
-            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
-          >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M7 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
-            </svg>
-          </div>
-
           {/* Header icon - hashtag */}
           <div className={`${largeMode ? 'w-10 h-10 text-xl' : 'w-5 h-5 text-sm'} flex items-center justify-center text-[var(--primary)] font-bold`}>
             #
@@ -314,8 +302,10 @@ export function ListItem({
       <div
         ref={setNodeRef}
         style={style}
+        {...attributes}
+        {...listeners}
         className={`
-          flex items-center gap-3 rounded-lg group
+          flex items-center gap-3 rounded-lg group cursor-grab
           transition-all duration-200
           ${isDragging ? 'item-dragging opacity-50 z-50' : ''}
           ${isNew ? 'item-new item-slide-in' : ''}
@@ -330,20 +320,6 @@ export function ListItem({
             paddingBottom: '4px'
           }}
         >
-          {/* Drag handle */}
-          <div
-            {...attributes}
-            {...listeners}
-            className="cursor-grab opacity-0 group-hover:opacity-100 transition-opacity mt-0.5"
-            style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
-            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
-          >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M7 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
-            </svg>
-          </div>
-
           {/* Note icon */}
           <div
             className={`flex items-center justify-center ${largeMode ? 'w-10 h-10 text-lg' : 'w-5 h-5 text-xs'}`}
@@ -384,8 +360,10 @@ export function ListItem({
     <div
       ref={setNodeRef}
       style={style}
+      {...attributes}
+      {...listeners}
       className={`
-        flex items-center gap-3 rounded-lg group
+        flex items-center gap-3 rounded-lg group cursor-grab
         transition-all duration-200
         ${isDragging ? 'item-dragging opacity-50 z-50' : ''}
         ${isNew ? 'item-new item-slide-in' : ''}
@@ -402,20 +380,6 @@ export function ListItem({
           paddingBottom: '2px'
         }}
       >
-        {/* Drag handle */}
-        <div
-          {...attributes}
-          {...listeners}
-          className="cursor-grab opacity-0 group-hover:opacity-100 transition-opacity"
-          style={{ color: 'var(--text-muted)' }}
-          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
-        >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M7 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
-          </svg>
-        </div>
-
         {/* Checkbox with sparkles */}
         <button
           ref={checkboxRef}

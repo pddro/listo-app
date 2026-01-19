@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { generateListId } from '@/lib/utils/generateId';
 import { useAI, isCategorizedResult, ManipulatedItem } from '@/lib/hooks/useAI';
 import { DictateButton } from '@/components/DictateButton';
+import { analytics } from '@/lib/analytics';
 
 type InputMode = 'single' | 'multiple' | 'ai';
 
@@ -40,6 +41,11 @@ export default function Home() {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const router = useRouter();
   const { generateItems } = useAI();
+
+  // Track page visit
+  useEffect(() => {
+    analytics.pageVisit('/');
+  }, []);
 
   // Rotate placeholders every 2.5 seconds
   useEffect(() => {
