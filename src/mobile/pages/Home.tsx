@@ -306,8 +306,16 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4">
-      <div className="w-full max-w-md md:max-w-[540px] text-center">
+    <div
+      className="min-h-screen flex flex-col items-center justify-center bg-white"
+      style={{
+        paddingLeft: '20px',
+        paddingRight: '20px',
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+      }}
+    >
+      <div className="w-full max-w-md text-center">
         {/* Logo/Title */}
         <div className="space-y-3" style={{ marginBottom: '24px' }}>
           <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-[0.2em]">

@@ -1,9 +1,15 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { ItemWithChildren } from '@/types';
+
+// Detect if device is touch-enabled (mobile)
+const isTouchDevice = () => {
+  if (typeof window === 'undefined') return false;
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+};
 
 interface ListItemProps {
   item: ItemWithChildren;
@@ -68,9 +74,15 @@ export function ListItem({
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(item.content);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const checkboxRef = useRef<HTMLButtonElement>(null);
+
+  // Detect mobile on mount
+  useEffect(() => {
+    setIsMobile(isTouchDevice());
+  }, []);
 
   const {
     attributes,
@@ -247,7 +259,12 @@ export function ListItem({
     return (
       <div
         ref={setNodeRef}
-        style={style}
+        style={{
+          ...style,
+          WebkitUserSelect: 'none',
+          userSelect: 'none',
+          WebkitTouchCallout: 'none',
+        }}
         {...attributes}
         {...listeners}
         className={`
@@ -261,13 +278,13 @@ export function ListItem({
           className="flex items-center gap-3 flex-1"
           style={{
             paddingLeft: `${depth * 24}px`,
-            paddingTop: '8px',
-            paddingBottom: '4px',
+            paddingTop: isMobile ? '12px' : '8px',
+            paddingBottom: isMobile ? '8px' : '4px',
             marginTop: depth === 0 ? '12px' : '0'
           }}
         >
           {/* Header icon - hashtag */}
-          <div className={`${largeMode ? 'w-10 h-10 text-xl' : 'w-5 h-5 text-sm'} flex items-center justify-center text-[var(--primary)] font-bold`}>
+          <div className={`${largeMode ? 'w-10 h-10 text-xl' : isMobile ? 'w-7 h-7 text-base' : 'w-5 h-5 text-sm'} flex items-center justify-center text-[var(--primary)] font-bold`}>
             #
           </div>
 
@@ -301,7 +318,12 @@ export function ListItem({
     return (
       <div
         ref={setNodeRef}
-        style={style}
+        style={{
+          ...style,
+          WebkitUserSelect: 'none',
+          userSelect: 'none',
+          WebkitTouchCallout: 'none',
+        }}
         {...attributes}
         {...listeners}
         className={`
@@ -316,16 +338,16 @@ export function ListItem({
           className="flex items-start gap-3 flex-1"
           style={{
             paddingLeft: `${depth * 24}px`,
-            paddingTop: '4px',
-            paddingBottom: '4px'
+            paddingTop: isMobile ? '10px' : '4px',
+            paddingBottom: isMobile ? '10px' : '4px'
           }}
         >
           {/* Note icon */}
           <div
-            className={`flex items-center justify-center ${largeMode ? 'w-10 h-10 text-lg' : 'w-5 h-5 text-xs'}`}
+            className={`flex items-center justify-center ${largeMode ? 'w-10 h-10 text-lg' : isMobile ? 'w-7 h-7' : 'w-5 h-5 text-xs'}`}
             style={{ color: 'var(--text-muted)' }}
           >
-            <svg className={`${largeMode ? 'w-5 h-5' : 'w-4 h-4'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`${largeMode ? 'w-5 h-5' : isMobile ? 'w-5 h-5' : 'w-4 h-4'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
@@ -359,7 +381,12 @@ export function ListItem({
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{
+        ...style,
+        WebkitUserSelect: 'none',
+        userSelect: 'none',
+        WebkitTouchCallout: 'none',
+      }}
       {...attributes}
       {...listeners}
       className={`
@@ -376,8 +403,8 @@ export function ListItem({
         className="flex items-center gap-3 flex-1"
         style={{
           paddingLeft: `${depth * 24}px`,
-          paddingTop: '2px',
-          paddingBottom: '2px'
+          paddingTop: isMobile ? '8px' : '2px',
+          paddingBottom: isMobile ? '8px' : '2px'
         }}
       >
         {/* Checkbox with sparkles */}
@@ -387,7 +414,7 @@ export function ListItem({
           className={`
             relative rounded-md border-2 flex items-center justify-center
             checkbox transition-all duration-150
-            ${largeMode ? 'w-10 h-10' : 'w-5 h-5'}
+            ${largeMode ? 'w-10 h-10' : isMobile ? 'w-7 h-7' : 'w-5 h-5'}
             ${item.completed
               ? 'checkbox-checked border-[var(--primary)] bg-[var(--primary)]'
               : 'hover:border-[var(--primary)]'
@@ -396,7 +423,7 @@ export function ListItem({
           style={{ borderColor: item.completed ? undefined : 'var(--border-medium)' }}
         >
           {item.completed && (
-            <svg className={`${largeMode ? 'w-6 h-6' : 'w-3 h-3'} text-white`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`${largeMode ? 'w-6 h-6' : isMobile ? 'w-4 h-4' : 'w-3 h-3'} text-white`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
             </svg>
           )}

@@ -514,7 +514,7 @@ export function NewItemInput({
   };
 
   return (
-    <div className="relative" style={{ marginBottom: '16px' }}>
+    <div className="relative" style={{ marginBottom: '28px' }}>
       <div
         className={`
           rounded relative
