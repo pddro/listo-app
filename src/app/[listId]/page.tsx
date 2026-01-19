@@ -353,9 +353,20 @@ export default function ListPage() {
         // Items under category become indent 3
         const children = items.filter(child => child.parent_id === item.id && !child.completed);
         children.forEach(child => {
-          const taskContent = child.content.replace(/"/g, '""');
-          rows.push(`task,"${taskContent}",,4,3,,,,,`);
+          const isNote = child.content.toLowerCase().startsWith('note:');
+          if (isNote) {
+            // Export as Todoist note type
+            const noteContent = child.content.slice(5).trim().replace(/"/g, '""');
+            rows.push(`note,"${noteContent}",,4,3,,,,,`);
+          } else {
+            const taskContent = child.content.replace(/"/g, '""');
+            rows.push(`task,"${taskContent}",,4,3,,,,,`);
+          }
         });
+      } else if (item.content.toLowerCase().startsWith('note:')) {
+        // Note at root level
+        const noteContent = item.content.slice(5).trim().replace(/"/g, '""');
+        rows.push(`note,"${noteContent}",,4,2,,,,,`);
       } else if (!item.completed) {
         // Regular task at indent 2 (under list title)
         const taskContent = item.content.replace(/"/g, '""');
@@ -926,6 +937,7 @@ export default function ListPage() {
                 </div>
                 <div className="pl-5 space-y-2">
                   <div># Create categories · # Urgent</div>
+                  <div>note: Add a note · note: check expiration dates</div>
                   <div>, (comma) Add multiple items · eggs, milk, bread</div>
                   <div style={{ marginTop: '8px' }}>--complete · Complete all items</div>
                   <div>--reset · Reset all items to incomplete</div>

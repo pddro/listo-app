@@ -26,7 +26,7 @@ interface NewItemInputProps {
   onPrefillConsumed?: () => void;
 }
 
-type InputMode = 'single' | 'multiple' | 'ai' | 'manipulate' | 'theme' | 'command';
+type InputMode = 'single' | 'multiple' | 'ai' | 'manipulate' | 'theme' | 'command' | 'note';
 
 export function NewItemInput({
   onAdd,
@@ -55,6 +55,7 @@ export function NewItemInput({
   const [processingMessage, setProcessingMessage] = useState('AI is thinking...');
   const [aiError, setAiError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isSubmittingRef = useRef(false);
 
   useEffect(() => {
@@ -67,9 +68,14 @@ export function NewItemInput({
   useEffect(() => {
     if (prefillValue) {
       setValue(prefillValue);
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
+      // Focus the appropriate input element
+      setTimeout(() => {
+        if (prefillValue.toLowerCase().startsWith('note:')) {
+          textareaRef.current?.focus();
+        } else {
+          inputRef.current?.focus();
+        }
+      }, 0);
       onPrefillConsumed?.();
     }
   }, [prefillValue, onPrefillConsumed]);
@@ -141,6 +147,15 @@ export function NewItemInput({
       };
     }
 
+    // Note mode: starts with note:
+    if (lowerTrimmed.startsWith('note:')) {
+      const noteContent = trimmed.slice(5).trim();
+      return {
+        mode: 'note' as InputMode,
+        displayText: noteContent ? 'Adding note' : 'Type your note...'
+      };
+    }
+
     // Multiple mode: contains commas
     if (trimmed.includes(',')) {
       const items = trimmed.split(',').map(s => s.trim()).filter(Boolean);
@@ -153,6 +168,20 @@ export function NewItemInput({
     // Single mode
     return { mode: 'single' as InputMode, displayText: '' };
   }, [value]);
+
+  // Track previous mode to detect switch to note mode
+  const prevModeRef = useRef<InputMode>('single');
+
+  // Focus textarea when switching to note mode and set cursor to end
+  useEffect(() => {
+    if (mode === 'note' && prevModeRef.current !== 'note' && textareaRef.current) {
+      textareaRef.current.focus();
+      // Set cursor to end of text
+      const len = textareaRef.current.value.length;
+      textareaRef.current.setSelectionRange(len, len);
+    }
+    prevModeRef.current = mode;
+  }, [mode]);
 
   // Add items with staggered animation
   const addItemsWithCascade = async (items: string[]) => {
@@ -367,6 +396,12 @@ export function NewItemInput({
         return;
       }
 
+      // Note mode: add with note: prefix intact (skip comma splitting)
+      if (lowerTrimmed.startsWith('note:')) {
+        await onAdd(trimmed);
+        return;
+      }
+
       // Multiple mode: comma-separated
       if (trimmed.includes(',')) {
         const items = trimmed.split(',').map(s => s.trim()).filter(Boolean);
@@ -388,9 +423,20 @@ export function NewItemInput({
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
+      // In note mode, Shift+Enter adds newline (let it through)
+      if (mode === 'note' && e.shiftKey) {
+        return;
+      }
       e.preventDefault();
       const forceAI = e.ctrlKey || e.metaKey;
       handleSubmit(forceAI);
+    }
+  };
+
+  const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
     }
   };
 
@@ -414,6 +460,7 @@ export function NewItemInput({
 
   const isAIMode = mode === 'ai' || mode === 'manipulate' || mode === 'theme';
   const isCommandMode = mode === 'command';
+  const isNoteMode = mode === 'note';
 
   // Terminal icon for command mode
   const TerminalIcon = () => (
@@ -428,6 +475,22 @@ export function NewItemInput({
       <path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.2-.64-1.67-.08-.1-.13-.21-.13-.33 0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 8 6.5 8 8 8.67 8 9.5 7.33 11 6.5 11zm3-4C8.67 7 8 6.33 8 5.5S8.67 4 9.5 4s1.5.67 1.5 1.5S10.33 7 9.5 7zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 4 14.5 4s1.5.67 1.5 1.5S15.33 7 14.5 7zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 8 17.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
     </svg>
   );
+
+  // Note icon for note mode
+  const NoteIcon = () => (
+    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+  );
+
+  // Auto-resize textarea
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setValue(e.target.value);
+    setAiError(null);
+    // Auto-resize
+    e.target.style.height = 'auto';
+    e.target.style.height = e.target.scrollHeight + 'px';
+  };
 
   return (
     <div className="relative" style={{ marginBottom: '16px' }}>
@@ -450,26 +513,47 @@ export function NewItemInput({
           ...(isAIMode && value.trim().length > 1 ? { borderColor: 'var(--primary-light)' } : {})
         }}
       >
-        <input
-          ref={inputRef}
-          type="text"
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-            setAiError(null);
-          }}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          disabled={isProcessing}
-          className={`
-            w-full bg-transparent border-none outline-none
-            transition-colors
-            ${isProcessing ? 'opacity-50' : ''}
-          `}
-          style={{
-            color: 'var(--text-primary)',
-          }}
-        />
+        {isNoteMode ? (
+          <textarea
+            ref={textareaRef}
+            value={value}
+            onChange={handleTextareaChange}
+            onKeyDown={handleTextareaKeyDown}
+            placeholder="note: Write your note here... (Shift+Enter for new line)"
+            disabled={isProcessing}
+            rows={1}
+            className={`
+              w-full bg-transparent border-none outline-none resize-none
+              transition-colors
+              ${isProcessing ? 'opacity-50' : ''}
+            `}
+            style={{
+              color: 'var(--text-primary)',
+              minHeight: '24px',
+            }}
+          />
+        ) : (
+          <input
+            ref={inputRef}
+            type="text"
+            value={value}
+            onChange={(e) => {
+              setValue(e.target.value);
+              setAiError(null);
+            }}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            disabled={isProcessing}
+            className={`
+              w-full bg-transparent border-none outline-none
+              transition-colors
+              ${isProcessing ? 'opacity-50' : ''}
+            `}
+            style={{
+              color: 'var(--text-primary)',
+            }}
+          />
+        )}
       </div>
 
       {/* Mode indicator badge */}
@@ -478,7 +562,7 @@ export function NewItemInput({
           className="absolute left-0 flex items-center gap-1 text-xs text-white bg-[var(--primary)] px-2 py-0.5 rounded-sm"
           style={{ top: 'calc(100% + 4px)' }}
         >
-          {mode === 'command' ? <TerminalIcon /> : mode === 'theme' ? <PaletteIcon /> : mode === 'manipulate' ? <WandIcon /> : <SparklesIcon />}
+          {mode === 'command' ? <TerminalIcon /> : mode === 'theme' ? <PaletteIcon /> : mode === 'manipulate' ? <WandIcon /> : mode === 'note' ? <NoteIcon /> : <SparklesIcon />}
           {displayText}
         </div>
       )}
