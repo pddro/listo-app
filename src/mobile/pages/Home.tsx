@@ -1,10 +1,164 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { generateListId } from '@/lib/utils/generateId';
 import { useAI, isCategorizedResult, ManipulatedItem } from '@/lib/hooks/useAI';
 import { DictateButton } from '@/components/DictateButton';
 import { API } from '@/lib/api';
+import { useRecentLists, SavedList } from '@/lib/hooks/useRecentLists';
+
+// Swipeable List Row Component
+interface SwipeableListRowProps {
+  list: SavedList;
+  isLast: boolean;
+  onNavigate: () => void;
+  onDelete: () => void;
+  onShare: () => void;
+}
+
+function SwipeableListRow({ list, isLast, onNavigate, onDelete, onShare }: SwipeableListRowProps) {
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isSwipeActive, setIsSwipeActive] = useState(false);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const swipeDirection = useRef<'horizontal' | 'vertical' | null>(null);
+  const rowRef = useRef<HTMLDivElement>(null);
+
+  const ACTION_WIDTH = 75; // Width of each action button
+  const TOTAL_ACTIONS_WIDTH = ACTION_WIDTH * 2; // Delete + Share
+  const SNAP_THRESHOLD = ACTION_WIDTH / 2;
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartX.current = touch.clientX;
+    touchStartY.current = touch.clientY;
+    swipeDirection.current = null;
+    setIsSwipeActive(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isSwipeActive) return;
+
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - touchStartX.current;
+    const deltaY = touch.clientY - touchStartY.current;
+
+    // Determine direction on first significant movement
+    if (swipeDirection.current === null && (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10)) {
+      swipeDirection.current = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+    }
+
+    if (swipeDirection.current !== 'horizontal') return;
+
+    e.preventDefault();
+
+    // Calculate new offset (negative = swipe left to reveal)
+    let newOffset = swipeOffset + deltaX;
+
+    // Limit swipe: can't swipe right past 0, can't swipe left past actions width + some resistance
+    newOffset = Math.min(0, Math.max(-TOTAL_ACTIONS_WIDTH - 20, newOffset));
+
+    // Add resistance when over-swiping
+    if (newOffset < -TOTAL_ACTIONS_WIDTH) {
+      const overSwipe = -TOTAL_ACTIONS_WIDTH - newOffset;
+      newOffset = -TOTAL_ACTIONS_WIDTH - (overSwipe * 0.3);
+    }
+
+    setSwipeOffset(newOffset);
+    touchStartX.current = touch.clientX;
+  };
+
+  const handleTouchEnd = () => {
+    setIsSwipeActive(false);
+    swipeDirection.current = null;
+
+    // Snap to open or closed
+    if (swipeOffset < -SNAP_THRESHOLD) {
+      setSwipeOffset(-TOTAL_ACTIONS_WIDTH);
+    } else {
+      setSwipeOffset(0);
+    }
+  };
+
+  const handleClick = () => {
+    if (swipeOffset < -10) {
+      // If swiped open, close it
+      setSwipeOffset(0);
+    } else {
+      onNavigate();
+    }
+  };
+
+  const closeSwipe = () => setSwipeOffset(0);
+
+  return (
+    <div className="relative overflow-hidden" style={{ borderBottom: isLast ? 'none' : '1px solid #e5e5e7' }}>
+      {/* Action buttons (behind the row) */}
+      <div className="absolute right-0 top-0 bottom-0 flex">
+        <button
+          onClick={() => { onShare(); closeSwipe(); }}
+          className="flex items-center justify-center text-white font-medium"
+          style={{ width: `${ACTION_WIDTH}px`, backgroundColor: '#007AFF' }}
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+          </svg>
+        </button>
+        <button
+          onClick={() => { onDelete(); closeSwipe(); }}
+          className="flex items-center justify-center text-white font-medium"
+          style={{ width: `${ACTION_WIDTH}px`, backgroundColor: '#FF3B30' }}
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Main row content */}
+      <div
+        ref={rowRef}
+        className="flex items-center bg-[#f5f5f7] active:bg-gray-200 transition-colors relative"
+        style={{
+          padding: '16px',
+          transform: `translateX(${swipeOffset}px)`,
+          transition: isSwipeActive ? 'none' : 'transform 0.25s ease-out',
+        }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onClick={handleClick}
+      >
+        <div
+          className="rounded-lg flex-shrink-0"
+          style={{
+            width: '44px',
+            height: '44px',
+            backgroundColor: list.themeColor || 'var(--primary)',
+            opacity: 0.9,
+          }}
+        />
+        <div className="flex-1 min-w-0" style={{ marginLeft: '14px' }}>
+          <div
+            className="font-medium truncate"
+            style={{ color: 'var(--text-primary)', fontSize: '17px' }}
+          >
+            {list.title || 'Untitled List'}
+          </div>
+        </div>
+        <svg
+          className="flex-shrink-0"
+          style={{ width: '20px', height: '20px', color: '#c7c7cc', marginLeft: '8px' }}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+    </div>
+  );
+}
 
 type InputMode = 'single' | 'multiple' | 'ai';
 
@@ -18,15 +172,15 @@ function normalizeInput(text: string): string {
 
 const PLACEHOLDERS = [
   '...groceries for the week',
-  'passport, tickets, charger, headphones',
+  'passport, tickets, charger',
   '...things to pack for camping',
-  'lettuce, tomato, bacon, mayo, bread',
+  'lettuce, tomato, bacon',
   '...ingredients for taco night',
-  'sunscreen, towel, sunglasses, book',
+  'sunscreen, towel, book',
   '...gift ideas for mom',
-  'eggs, milk, butter, flour, sugar',
+  'eggs, milk, butter',
   '...what to bring to the potluck',
-  '...packing list for hiking day trip',
+  '...packing list for a hike',
 ];
 
 // Sparkles icon component
@@ -47,6 +201,32 @@ export default function HomePage() {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const navigate = useNavigate();
   const { generateItems } = useAI();
+  const { lists: recentLists, archivedLists, addList, archiveList, restoreList, deleteList } = useRecentLists();
+  const [showArchived, setShowArchived] = useState(false);
+
+  // Share a list using native share sheet
+  const handleShare = async (listId: string, title: string | null) => {
+    const url = `https://listo.to/${listId}`;
+    const shareTitle = title || 'My List';
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: `Check out my list: ${shareTitle}`,
+          url: url,
+        });
+      } catch (err) {
+        // User cancelled or share failed, ignore
+        if ((err as Error).name !== 'AbortError') {
+          console.error('Share failed:', err);
+        }
+      }
+    } else {
+      // Fallback: copy to clipboard
+      await navigator.clipboard.writeText(url);
+    }
+  };
 
   // Rotate placeholders every 2.5 seconds
   useEffect(() => {
@@ -62,7 +242,7 @@ export default function HomePage() {
   }, []);
 
   // Detect input mode based on content
-  const { mode, itemCount, displayText } = useMemo(() => {
+  const { mode, displayText } = useMemo(() => {
     const normalized = normalizeInput(value);
     const trimmed = normalized.trim();
 
@@ -70,7 +250,6 @@ export default function HomePage() {
       const prompt = trimmed.slice(3).trim();
       return {
         mode: 'ai' as InputMode,
-        itemCount: 0,
         displayText: prompt ? 'AI will generate items' : ''
       };
     }
@@ -79,12 +258,11 @@ export default function HomePage() {
       const items = trimmed.split(',').map(s => s.trim()).filter(Boolean);
       return {
         mode: 'multiple' as InputMode,
-        itemCount: items.length,
         displayText: `Adding ${items.length} items`
       };
     }
 
-    return { mode: 'single' as InputMode, itemCount: 0, displayText: '' };
+    return { mode: 'single' as InputMode, displayText: '' };
   }, [value]);
 
   const parseThemeFromInput = (input: string): { content: string; themeDescription: string | null } => {
@@ -115,6 +293,7 @@ export default function HomePage() {
       setIsCreating(true);
       const listId = generateListId();
       await supabase.from('lists').insert({ id: listId, title: null });
+      addList(listId);
       navigate(`/${listId}`);
       return;
     }
@@ -218,6 +397,7 @@ export default function HomePage() {
         }
       }
 
+      addList(listId);
       navigate(`/${listId}`);
     } catch (err) {
       console.error('Failed to create list:', err);
@@ -297,6 +477,7 @@ export default function HomePage() {
         await supabase.from('items').insert(itemInserts);
       }
 
+      addList(listId);
       navigate(`/${listId}`);
     } catch (err) {
       console.error('Failed to create list from dictation:', err);
@@ -307,46 +488,25 @@ export default function HomePage() {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center bg-white"
+      className="min-h-screen flex flex-col bg-white"
       style={{
-        paddingLeft: '20px',
-        paddingRight: '20px',
         paddingTop: 'env(safe-area-inset-top, 0px)',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
     >
-      <div className="w-full max-w-md text-center">
-        {/* Logo/Title */}
-        <div className="space-y-3" style={{ marginBottom: '24px' }}>
-          <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-[0.2em]">
-            Listo
-          </h1>
-          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            Create a list. Share the link. Collaborate in real-time.
-          </p>
-          <div className="flex items-center justify-center gap-4 text-xs" style={{ color: 'var(--text-muted)', marginTop: '12px' }}>
-            <span className="flex items-center gap-1">
-              <svg className="w-3 h-3" style={{ color: 'var(--primary)' }} fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              No signup
-            </span>
-            <span className="flex items-center gap-1">
-              <svg className="w-3 h-3" style={{ color: 'var(--primary)' }} fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              Real-time sharing
-            </span>
-            <span className="flex items-center gap-1">
-              <svg className="w-3 h-3" style={{ color: 'var(--primary)' }} fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              AI-powered
-            </span>
-          </div>
-        </div>
+      {/* Header */}
+      <div style={{ padding: '16px 20px 0 20px' }}>
+        <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-[0.2em] text-center">
+          Listo
+        </h1>
+        <p className="text-sm text-center" style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>
+          Create a list. Share the link.
+        </p>
+      </div>
 
-        {/* Input */}
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto" style={{ padding: '20px' }}>
+        {/* Create List Input */}
         <div className="relative">
           <div className="flex">
             <div className="relative flex-1">
@@ -359,11 +519,9 @@ export default function HomePage() {
                 }}
                 onKeyDown={handleKeyDown}
                 disabled={isCreating}
-                autoFocus
                 className={`
                   w-full text-base
                   border border-r-0
-                  hover:border-[var(--primary)] hover:shadow-[0_0_0_3px_var(--primary-pale)]
                   focus:border-[var(--primary)] focus:shadow-[0_0_0_3px_var(--primary-pale)]
                   outline-none transition-all duration-200
                   disabled:opacity-50
@@ -373,18 +531,20 @@ export default function HomePage() {
                   }
                 `}
                 style={{
-                  padding: '8px 12px',
-                  borderRadius: '4px 0 0 4px'
+                  padding: '14px 16px',
+                  borderRadius: '12px 0 0 12px',
+                  fontSize: '17px',
                 }}
               />
               {!value && (
                 <div
                   className={`
-                    absolute left-3 top-1/2 -translate-y-1/2
-                    text-base text-gray-400 pointer-events-none
+                    absolute left-4 top-1/2 -translate-y-1/2
+                    text-gray-400 pointer-events-none
                     transition-opacity duration-200
                     ${isPlaceholderFading ? 'opacity-0' : 'opacity-100'}
                   `}
+                  style={{ fontSize: '17px' }}
                 >
                   {PLACEHOLDERS[placeholderIndex]}
                 </div>
@@ -393,14 +553,13 @@ export default function HomePage() {
             <button
               onClick={() => handleCreate(false)}
               disabled={isCreating}
-              className="text-white font-medium transition-all duration-200 disabled:opacity-70"
+              className="text-white font-semibold transition-all duration-200 disabled:opacity-70"
               style={{
                 backgroundColor: 'var(--primary)',
-                borderRadius: '0 4px 4px 0',
-                padding: '8px 16px',
+                borderRadius: '0 12px 12px 0',
+                padding: '14px 20px',
+                fontSize: '17px',
               }}
-              onMouseEnter={(e) => !isCreating && (e.currentTarget.style.backgroundColor = 'var(--primary-dark)')}
-              onMouseLeave={(e) => !isCreating && (e.currentTarget.style.backgroundColor = 'var(--primary)')}
             >
               {isCreating ? (
                 <span className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -441,7 +600,7 @@ export default function HomePage() {
         </div>
 
         {/* Dictate button */}
-        <div style={{ marginTop: '16px' }}>
+        <div style={{ marginTop: '20px' }}>
           <DictateButton
             onTranscription={handleDictation}
             disabled={isCreating}
@@ -449,81 +608,171 @@ export default function HomePage() {
           />
         </div>
 
+        {/* Your Lists */}
+        {recentLists.length > 0 && (
+          <div style={{ marginTop: '32px' }}>
+            <div
+              className="font-semibold uppercase tracking-wide text-left"
+              style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '12px', paddingLeft: '4px' }}
+            >
+              Your Lists
+            </div>
+            <div className="rounded-xl overflow-hidden">
+              {recentLists.map((list, index) => (
+                <SwipeableListRow
+                  key={list.id}
+                  list={list}
+                  isLast={index === recentLists.length - 1}
+                  onNavigate={() => navigate(`/${list.id}`)}
+                  onDelete={() => deleteList(list.id)}
+                  onShare={() => handleShare(list.id, list.title)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Archived Lists */}
+        {archivedLists.length > 0 && (
+          <div style={{ marginTop: '24px' }}>
+            <button
+              onClick={() => setShowArchived(!showArchived)}
+              className="flex items-center gap-2 uppercase tracking-wide"
+              style={{ color: 'var(--text-muted)', fontSize: '13px', paddingLeft: '4px' }}
+            >
+              <svg
+                className={`transition-transform ${showArchived ? 'rotate-90' : ''}`}
+                style={{ width: '12px', height: '12px' }}
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
+              Archived ({archivedLists.length})
+            </button>
+            {showArchived && (
+              <div
+                className="rounded-xl overflow-hidden"
+                style={{ backgroundColor: '#f5f5f7', marginTop: '12px' }}
+              >
+                {archivedLists.map((list, index) => (
+                  <div
+                    key={list.id}
+                    className="flex items-center active:bg-gray-200 transition-colors"
+                    style={{
+                      padding: '16px',
+                      borderBottom: index < archivedLists.length - 1 ? '1px solid #e5e5e7' : 'none',
+                    }}
+                    onClick={() => navigate(`/${list.id}`)}
+                  >
+                    <div
+                      className="rounded-lg flex-shrink-0"
+                      style={{
+                        width: '44px',
+                        height: '44px',
+                        backgroundColor: list.themeColor || 'var(--primary)',
+                        opacity: 0.4,
+                      }}
+                    />
+                    <div className="flex-1 min-w-0" style={{ marginLeft: '14px' }}>
+                      <div
+                        className="font-medium truncate"
+                        style={{ color: 'var(--text-primary)', fontSize: '17px', opacity: 0.5 }}
+                      >
+                        {list.title || 'Untitled List'}
+                      </div>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        restoreList(list.id);
+                      }}
+                      className="text-sm font-medium"
+                      style={{ color: 'var(--primary)', marginLeft: '8px' }}
+                    >
+                      Restore
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Shortcuts */}
         <div
-          className="rounded-lg text-xs text-left"
+          className="rounded-xl text-left"
           style={{
             marginTop: '32px',
-            padding: '16px 20px',
+            padding: '16px',
             backgroundColor: 'var(--primary-pale)',
-            color: 'var(--text-secondary)',
           }}
         >
-          <div className="font-bold uppercase tracking-wide text-xs mb-3" style={{ color: 'var(--primary)' }}>
-            Shortcuts
+          <div className="font-semibold uppercase tracking-wide" style={{ color: 'var(--primary)', fontSize: '13px', marginBottom: '12px' }}>
+            Tips
           </div>
-          <div className="space-y-3">
+          <div className="space-y-3" style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>
             <div>
-              <div>Start with <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary)' }}>...</code> and a prompt to auto generate items</div>
-              <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Example: ...packing list for hiking day trip</div>
+              <div>Start with <code className="font-semibold px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary)' }}>...</code> to AI-generate items</div>
             </div>
-            <div style={{ marginTop: '16px' }}>
-              <div>Create many items at once by separating them with a comma</div>
-              <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Example: cheese, bread, tomatoes, bacon, mayonnaise</div>
+            <div>
+              <div>Use commas to add multiple items at once</div>
             </div>
           </div>
         </div>
 
-        {/* Privacy note */}
-        <div className="text-xs text-center" style={{ marginTop: '48px', color: 'var(--text-muted)' }}>
-          Note: All listos are public URLs. Never share personal information in a list.{' '}
-          <button
-            onClick={() => setShowPrivacyModal(true)}
-            className="underline hover:no-underline"
-            style={{ color: 'var(--primary)' }}
-          >
-            Read our privacy policy
-          </button>
+        {/* Privacy note - at the bottom, pushed by content */}
+        <div className="text-center" style={{ marginTop: '48px', paddingBottom: '20px' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: '1.4' }}>
+            All lists are public URLs.{' '}
+            <button
+              onClick={() => setShowPrivacyModal(true)}
+              className="underline"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              Privacy Policy
+            </button>
+          </p>
         </div>
       </div>
 
       {/* Privacy Policy Modal */}
       {showPrivacyModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          className="fixed inset-0 z-50 flex items-end justify-center"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}
           onClick={() => setShowPrivacyModal(false)}
         >
           <div
-            className="bg-white rounded-lg max-w-lg w-full max-h-[80vh] overflow-y-auto"
-            style={{ padding: '24px' }}
+            className="bg-white w-full max-h-[85vh] overflow-y-auto"
+            style={{
+              padding: '24px',
+              paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
+              borderRadius: '20px 20px 0 0',
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Privacy Policy</h2>
-              <button
-                onClick={() => setShowPrivacyModal(false)}
-                className="p-1 hover:bg-gray-100 rounded"
-                style={{ color: 'var(--text-muted)' }}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+            {/* Handle bar */}
+            <div className="flex justify-center" style={{ marginBottom: '16px' }}>
+              <div style={{ width: '36px', height: '5px', backgroundColor: '#e0e0e0', borderRadius: '3px' }} />
             </div>
+
+            <h2 className="text-lg font-bold text-center" style={{ color: 'var(--text-primary)', marginBottom: '20px' }}>
+              Privacy Policy
+            </h2>
 
             <div className="space-y-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
               <section>
                 <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Public Use and Sharing</h3>
                 <p>
-                  LISTO checklists are inherently public. Once you create a listo and share its link, anyone with access to that link can view and edit the listo.
+                  LISTO checklists are inherently public. Once you create a list and share its link, anyone with access to that link can view and edit the list.
                 </p>
               </section>
 
               <section>
                 <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Data Collection and Use</h3>
                 <p>
-                  LISTO does not require user registration. All listos are created anonymously.
+                  LISTO does not require user registration. All lists are created anonymously.
                 </p>
               </section>
 
@@ -536,15 +785,13 @@ export default function HomePage() {
               </section>
             </div>
 
-            <div className="text-center" style={{ marginTop: '16px', marginBottom: '16px' }}>
-              <button
-                onClick={() => setShowPrivacyModal(false)}
-                className="text-white rounded font-medium"
-                style={{ backgroundColor: 'var(--primary)', padding: '8px 16px' }}
-              >
-                Got it
-              </button>
-            </div>
+            <button
+              onClick={() => setShowPrivacyModal(false)}
+              className="w-full text-white rounded-xl font-semibold"
+              style={{ backgroundColor: 'var(--primary)', padding: '16px', marginTop: '24px', fontSize: '17px' }}
+            >
+              Done
+            </button>
           </div>
         </div>
       )}
