@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { ManipulatedItem, GenerateResult, isCategorizedResult } from '@/lib/hooks/useAI';
+import { generateListId } from '@/lib/utils/generateId';
 
 interface NewItemInputProps {
   onAdd: (content: string) => Promise<void>;
@@ -122,6 +123,8 @@ export function NewItemInput({
         displayText = 'Delete ALL items';
       } else if (command === 'title') {
         displayText = 'Generate list title';
+      } else if (command === 'new') {
+        displayText = 'Create new list in new tab';
       }
       return {
         mode: 'command' as InputMode,
@@ -300,6 +303,12 @@ export function NewItemInput({
           if (onGenerateTitle) {
             await onGenerateTitle();
           }
+          return;
+        }
+
+        if (command === 'new') {
+          const newListId = generateListId();
+          window.open(`/${newListId}`, '_blank');
           return;
         }
 

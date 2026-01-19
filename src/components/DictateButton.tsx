@@ -11,19 +11,12 @@ interface DictateButtonProps {
 
 const MAX_RECORDING_TIME = 90000; // 90 seconds
 
-// Detect if device is touch-enabled (mobile)
-const isTouchDevice = () => {
-  if (typeof window === 'undefined') return false;
-  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-};
-
 export function DictateButton({ onTranscription, disabled = false, position = 'floating' }: DictateButtonProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioLevel, setAudioLevel] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -31,11 +24,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
   const animationFrameRef = useRef<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
-
-  // Detect mobile on mount
-  useEffect(() => {
-    setIsMobile(isTouchDevice());
-  }, []);
+  const cancelledRef = useRef<boolean>(false);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -67,6 +56,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
     try {
       setError(null);
       audioChunksRef.current = [];
+      cancelledRef.current = false;
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
@@ -101,8 +91,8 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
           cancelAnimationFrame(animationFrameRef.current);
         }
 
-        // Process the recorded audio
-        if (audioChunksRef.current.length > 0) {
+        // Process the recorded audio (skip if cancelled)
+        if (!cancelledRef.current && audioChunksRef.current.length > 0) {
           await processAudio();
         }
       };
@@ -142,6 +132,26 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
     }
   };
 
+  const cancelRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      // Mark as cancelled so onstop handler skips processing
+      cancelledRef.current = true;
+      audioChunksRef.current = [];
+
+      // Stop the recorder (onstop will fire but with empty chunks)
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      setAudioLevel(0);
+
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+
+      setRecordingTime(0);
+    }
+  };
+
   const processAudio = async () => {
     setIsProcessing(true);
     setError(null);
@@ -176,29 +186,14 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
     }
   };
 
-  // Desktop: click to toggle
+  // Click/tap to toggle recording (same behavior for mobile and desktop)
   const handleClick = () => {
     if (disabled || isProcessing) return;
-
-    if (isMobile) return; // Mobile uses touch events
 
     if (isRecording) {
       stopRecording();
     } else {
       startRecording();
-    }
-  };
-
-  // Mobile: press and hold
-  const handleTouchStart = () => {
-    if (!disabled && !isProcessing && isMobile) {
-      startRecording();
-    }
-  };
-
-  const handleTouchEnd = () => {
-    if (isRecording && isMobile) {
-      stopRecording();
     }
   };
 
@@ -228,8 +223,6 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
       >
         <button
           onClick={handleClick}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
           disabled={disabled || isProcessing}
           className={`
             w-16 h-16 rounded-full flex items-center justify-center
@@ -282,7 +275,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
       {isRecording && (
         <div
           className="fixed inset-0 bg-black/80 z-50 flex flex-col items-center justify-center cursor-pointer"
-          onClick={!isMobile ? stopRecording : undefined}
+          onClick={stopRecording}
         >
           {/* Pulsing circle visualization */}
           <div className="relative w-48 h-48 flex items-center justify-center">
@@ -336,9 +329,21 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
           <div className="mt-8 text-white/80 text-center">
             <p className="text-lg">Listening...</p>
             <p className="text-sm text-white/50 mt-2">
-              {isMobile ? 'Release to finish recording' : 'Click anywhere to stop'}
+              Tap anywhere to stop
             </p>
           </div>
+
+          {/* Cancel button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              cancelRecording();
+            }}
+            className="text-white/60 hover:text-white text-sm font-medium transition-colors"
+            style={{ marginTop: '32px' }}
+          >
+            Cancel
+          </button>
         </div>
       )}
 

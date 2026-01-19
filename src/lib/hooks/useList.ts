@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { List, Item, ItemWithChildren } from '@/types';
 import { ThemeColors } from '@/lib/gemini';
+import { analytics } from '@/lib/analytics';
 
 export function useList(listId: string) {
   const [list, setList] = useState<List | null>(null);
@@ -17,6 +18,9 @@ export function useList(listId: string) {
 
   // Track items that are animating (completing) - they stay in place during animation
   const [completingItemIds, setCompletingItemIds] = useState<Set<string>>(new Set());
+
+  // Debounce timer for batch-moving completed items to bottom
+  const completionDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Organize items into tree structure
   // Sort: incomplete items first (by position), then completed items (by position)
@@ -113,7 +117,8 @@ export function useList(listId: string) {
         { event: '*', schema: 'public', table: 'lists', filter: `id=eq.${listId}` },
         (payload) => {
           if (payload.eventType === 'UPDATE') {
-            setList(payload.new as List);
+            // Merge with existing state to preserve fields not in payload
+            setList(prev => prev ? { ...prev, ...(payload.new as List) } : payload.new as List);
           } else if (payload.eventType === 'DELETE') {
             setList(null);
           }
@@ -170,6 +175,7 @@ export function useList(listId: string) {
 
     if (error) throw error;
     setList(data);
+    analytics.listCreated(listId);
     return data;
   };
 
@@ -246,6 +252,9 @@ export function useList(listId: string) {
     setNewItemIds(ids);
     setTimeout(() => setNewItemIds([]), 500);
 
+    // Track item creations
+    contents.forEach(() => analytics.itemCreated(listId));
+
     // Update positions of existing siblings in database
     const updates = siblings.map(sibling =>
       supabase
@@ -293,6 +302,9 @@ export function useList(listId: string) {
     // Track this as new item for flash animation (using temp ID)
     setNewItemId(tempId);
     setTimeout(() => setNewItemId(null), 500);
+
+    // Track item creation
+    analytics.itemCreated(listId);
 
     // Register pending insert so realtime can correlate temp ID with real ID
     const pendingKey = `${content}|${targetParentId}|0`;
@@ -410,14 +422,19 @@ export function useList(listId: string) {
     if (newCompleted) {
       setCompletingItemIds(prev => new Set(prev).add(itemId));
 
-      // After animation delay, remove from completing set so it moves to bottom
-      setTimeout(() => {
-        setCompletingItemIds(prev => {
-          const next = new Set(prev);
-          next.delete(itemId);
-          return next;
-        });
-      }, 800); // 800ms delay for sparkle + fade animation
+      // Track task completion
+      analytics.taskCompleted(listId);
+
+      // Clear any existing debounce timer
+      if (completionDebounceRef.current) {
+        clearTimeout(completionDebounceRef.current);
+      }
+
+      // Debounce: wait 2 seconds of inactivity before moving ALL completed items to bottom
+      completionDebounceRef.current = setTimeout(() => {
+        setCompletingItemIds(new Set()); // Clear all at once
+        completionDebounceRef.current = null;
+      }, 2000);
     }
 
     // Sync to database

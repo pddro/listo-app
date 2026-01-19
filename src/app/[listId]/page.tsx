@@ -10,7 +10,8 @@ import { ListContainer } from '@/components/ListContainer';
 import { DictateButton } from '@/components/DictateButton';
 import { isCategorizedResult } from '@/lib/hooks/useAI';
 import { ThemeColors } from '@/lib/gemini';
-import { API } from '@/lib/api';
+import { analytics } from '@/lib/analytics';
+import { generateListId } from '@/lib/utils/generateId';
 
 export default function ListPage() {
   const params = useParams();
@@ -60,6 +61,11 @@ export default function ListPage() {
   } = useList(listId);
 
   const { manipulateList, generateItems } = useAI();
+
+  // Track page visit
+  useEffect(() => {
+    analytics.pageVisit(`/${listId}`);
+  }, [listId]);
 
   // Create list if it doesn't exist (for direct URL access)
   useEffect(() => {
@@ -949,8 +955,23 @@ export default function ListPage() {
                   <div>--sort all · Sort all items and groups</div>
                   <div>--ungroup · Remove all groups</div>
                   <div>--title · Generate list title</div>
+                  <div>--new · Create new list in new tab</div>
                   <div style={{ marginTop: '8px', opacity: 0.6 }}>--nuke · Deletes everything</div>
                 </div>
+
+                {/* New List button */}
+                <button
+                  onClick={() => {
+                    const newListId = generateListId();
+                    window.open(`/${newListId}`, '_blank');
+                  }}
+                  className="font-medium transition-colors"
+                  style={{ color: 'var(--primary)', marginTop: '16px' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary-dark)'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--primary)'}
+                >
+                  New List
+                </button>
               </div>
             </div>
           </div>
