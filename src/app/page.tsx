@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { generateListId } from '@/lib/utils/generateId';
 import { useAI, isCategorizedResult, ManipulatedItem } from '@/lib/hooks/useAI';
 import { DictateButton } from '@/components/DictateButton';
+import { API } from '@/lib/api';
 
 type InputMode = 'single' | 'multiple' | 'ai';
 
@@ -210,7 +211,7 @@ export default function Home() {
       // Apply theme if specified (do this after items are created)
       if (themeDescription) {
         try {
-          const themeResponse = await fetch('/api/theme', {
+          const themeResponse = await fetch(API.theme, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ description: themeDescription }),

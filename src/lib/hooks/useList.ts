@@ -175,6 +175,9 @@ export function useList(listId: string) {
 
   // Update list title
   const updateTitle = async (title: string) => {
+    // Optimistic update
+    setList(prev => prev ? { ...prev, title } : prev);
+
     const { error } = await supabase
       .from('lists')
       .update({ title, updated_at: new Date().toISOString() })
@@ -189,6 +192,7 @@ export function useList(listId: string) {
 
   // Add multiple items at once (bulk add) - avoids race conditions
   const addItems = async (contents: string[], parentId?: string | null) => {
+    console.log('[addItems] Called with:', { contents, parentId, listId });
     if (contents.length === 0) return [];
 
     const targetParentId = parentId || null;
@@ -214,12 +218,28 @@ export function useList(listId: string) {
     }));
 
     // Insert all new items in one batch
+    console.log('[addItems] Inserting items:', newItems);
     const { data, error } = await supabase
       .from('items')
       .insert(newItems)
       .select();
 
-    if (error) throw error;
+    console.log('[addItems] Insert result:', { data, error });
+    if (error) {
+      console.error('[addItems] Insert error:', error);
+      throw error;
+    }
+
+    // Optimistically add the new items to state immediately
+    // (don't rely solely on real-time subscription which may not work in all environments)
+    if (data && data.length > 0) {
+      setItems(prev => {
+        // Add new items, avoiding duplicates (in case real-time already added them)
+        const existingIds = new Set(prev.map(item => item.id));
+        const newItemsToAdd = data.filter(item => !existingIds.has(item.id));
+        return [...newItemsToAdd, ...prev];
+      });
+    }
 
     // Track these as new items for flash animation
     const ids = data?.map(d => d.id) || [];
@@ -331,8 +351,41 @@ export function useList(listId: string) {
     return optimisticItem;
   };
 
+  // Insert item with specific data (for manipulation scenarios)
+  const insertItem = async (itemData: { content: string; parent_id: string | null; position: number; completed?: boolean }) => {
+    const { data, error } = await supabase
+      .from('items')
+      .insert({
+        list_id: listId,
+        content: itemData.content,
+        parent_id: itemData.parent_id,
+        position: itemData.position,
+        completed: itemData.completed ?? false,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Optimistically add to state
+    if (data) {
+      setItems(prev => {
+        const exists = prev.some(item => item.id === data.id);
+        if (exists) return prev;
+        return [...prev, data];
+      });
+    }
+
+    return data;
+  };
+
   // Update item
   const updateItem = async (itemId: string, updates: Partial<Item>) => {
+    // Optimistic update
+    setItems(prev => prev.map(item =>
+      item.id === itemId ? { ...item, ...updates } : item
+    ));
+
     const { error } = await supabase
       .from('items')
       .update({ ...updates, updated_at: new Date().toISOString() })
@@ -772,6 +825,7 @@ export function useList(listId: string) {
     updateLargeMode,
     addItem,
     addItems,
+    insertItem,
     updateItem,
     toggleItem,
     deleteItem,

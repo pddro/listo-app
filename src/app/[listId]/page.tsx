@@ -10,10 +10,11 @@ import { ListContainer } from '@/components/ListContainer';
 import { DictateButton } from '@/components/DictateButton';
 import { isCategorizedResult } from '@/lib/hooks/useAI';
 import { ThemeColors } from '@/lib/gemini';
+import { API } from '@/lib/api';
 
 export default function ListPage() {
   const params = useParams();
-  const listId = params.listId as string;
+  const listId = params?.listId as string;
   const [copied, setCopied] = useState(false);
   const [copiedMarkdown, setCopiedMarkdown] = useState(false);
   const [showShareView, setShowShareView] = useState(false);
@@ -126,7 +127,7 @@ export default function ListPage() {
 
           if (itemContents.length === 0) return;
 
-          const response = await fetch('/api/title', {
+          const response = await fetch(API.title, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ items: itemContents }),
@@ -208,7 +209,7 @@ export default function ListPage() {
 
   // Handle theme generation
   const handleThemeGenerate = async (description: string) => {
-    const response = await fetch('/api/theme', {
+    const response = await fetch(API.theme, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ description }),
@@ -237,7 +238,7 @@ export default function ListPage() {
   // Helper to emojify text
   const emojifyText = async (text: string): Promise<string> => {
     try {
-      const response = await fetch('/api/emojify', {
+      const response = await fetch(API.emojify, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text }),
@@ -414,7 +415,7 @@ export default function ListPage() {
     if (itemContents.length === 0) return;
 
     try {
-      const response = await fetch('/api/title', {
+      const response = await fetch(API.title, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ items: itemContents }),

@@ -28,6 +28,14 @@ interface NewItemInputProps {
 
 type InputMode = 'single' | 'multiple' | 'ai' | 'manipulate' | 'theme' | 'command' | 'note';
 
+// Normalize iOS smart punctuation to standard characters
+function normalizeInput(text: string): string {
+  return text
+    .replace(/…/g, '...') // iOS ellipsis → three periods
+    .replace(/–/g, '--')  // iOS en-dash → two dashes
+    .replace(/—/g, '--'); // iOS em-dash → two dashes
+}
+
 export function NewItemInput({
   onAdd,
   onBulkAdd,
@@ -82,7 +90,9 @@ export function NewItemInput({
 
   // Detect input mode based on content
   const { mode, displayText } = useMemo(() => {
-    const trimmed = value.trim();
+    // Normalize iOS smart punctuation before processing
+    const normalized = normalizeInput(value);
+    const trimmed = normalized.trim();
 
     const lowerTrimmed = trimmed.toLowerCase();
 
@@ -197,7 +207,9 @@ export function NewItemInput({
   };
 
   const handleSubmit = async (forceAI = false) => {
-    const trimmed = value.trim();
+    // Normalize iOS smart punctuation before processing
+    const normalized = normalizeInput(value);
+    const trimmed = normalized.trim();
     if (!trimmed || isSubmittingRef.current) return;
 
     isSubmittingRef.current = true;
