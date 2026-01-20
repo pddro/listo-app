@@ -266,15 +266,17 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
             </svg>
           )}
         </button>
-        <span className="mt-1.5 text-[10px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
-          {isProcessing ? 'Processing' : 'Dictate items'}
-        </span>
       </div>
 
       {/* Recording overlay */}
       {isRecording && (
         <div
-          className="fixed inset-0 bg-black/80 z-50 flex flex-col items-center justify-center cursor-pointer"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center cursor-pointer"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+          }}
           onClick={stopRecording}
         >
           {/* Pulsing circle visualization */}

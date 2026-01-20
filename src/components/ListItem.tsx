@@ -417,7 +417,7 @@ export function ListItem({
             ${largeMode ? 'w-10 h-10' : isMobile ? 'w-7 h-7' : 'w-5 h-5'}
             ${item.completed
               ? 'checkbox-checked border-[var(--primary)] bg-[var(--primary)]'
-              : 'hover:border-[var(--primary)]'
+              : ''
             }
           `}
           style={{ borderColor: item.completed ? undefined : 'var(--border-medium)' }}

@@ -147,9 +147,13 @@ input::placeholder {
   transition: all 150ms ease;
 }
 
-.checkbox:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 0 3px var(--primary-pale);
+/* Only show hover effects on devices with true hover (mouse/trackpad) */
+@media (hover: hover) {
+  .checkbox:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 3px var(--primary-pale);
+    border-color: var(--primary);
+  }
 }
 
 .checkbox-checked {
@@ -163,13 +167,15 @@ input::placeholder {
   box-shadow: 0 0 0 3px var(--primary-pale);
 }
 
-/* Item hover effect */
+/* Item hover effect - only on devices with true hover (mouse/trackpad) */
 .item-hover {
   transition: background-color 150ms ease;
 }
 
-.item-hover:hover {
-  background-color: var(--primary-pale);
+@media (hover: hover) {
+  .item-hover:hover {
+    background-color: var(--primary-pale);
+  }
 }
 
 /* Drag styles */

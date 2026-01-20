@@ -7,6 +7,8 @@ import { generateListId } from '@/lib/utils/generateId';
 import { useAI, isCategorizedResult, ManipulatedItem } from '@/lib/hooks/useAI';
 import { DictateButton } from '@/components/DictateButton';
 import { analytics } from '@/lib/analytics';
+import { API } from '@/lib/api';
+import { useRecentListsWeb } from '@/lib/hooks/useRecentListsWeb';
 
 type InputMode = 'single' | 'multiple' | 'ai';
 
@@ -39,8 +41,10 @@ export default function Home() {
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [isPlaceholderFading, setIsPlaceholderFading] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
   const router = useRouter();
   const { generateItems } = useAI();
+  const { lists: recentLists, archivedLists, addList, archiveList, restoreList } = useRecentListsWeb();
 
   // Track page visit
   useEffect(() => {
@@ -118,6 +122,7 @@ export default function Home() {
       setIsCreating(true);
       const listId = generateListId();
       await supabase.from('lists').insert({ id: listId, title: null });
+      addList(listId);
       router.push(`/${listId}`);
       return;
     }
@@ -236,6 +241,7 @@ export default function Home() {
       }
 
       // Navigate to the new list
+      addList(listId);
       router.push(`/${listId}`);
     } catch (err) {
       console.error('Failed to create list:', err);
@@ -321,6 +327,7 @@ export default function Home() {
       }
 
       // Navigate to the new list
+      addList(listId);
       router.push(`/${listId}`);
     } catch (err) {
       console.error('Failed to create list from dictation:', err);
@@ -495,6 +502,94 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Recent Lists */}
+        {recentLists.length > 0 && (
+          <div style={{ marginTop: '32px' }}>
+            <div className="font-bold uppercase tracking-wide text-xs mb-3 text-left" style={{ color: 'var(--text-muted)' }}>
+              Your Lists
+            </div>
+            <div className="space-y-1">
+              {recentLists.map((list) => (
+                <div
+                  key={list.id}
+                  className="flex items-center gap-3 py-2 px-3 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors group"
+                  onClick={() => router.push(`/${list.id}`)}
+                >
+                  <div
+                    className="w-3 h-3 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: list.themeColor || 'var(--primary)' }}
+                  />
+                  <span className="flex-1 text-sm text-left truncate" style={{ color: 'var(--text-primary)' }}>
+                    {list.title || 'Untitled List'}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      archiveList(list.id);
+                    }}
+                    className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-200 rounded transition-opacity"
+                    style={{ color: 'var(--text-muted)' }}
+                    title="Archive"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Archived Lists */}
+        {archivedLists.length > 0 && (
+          <div style={{ marginTop: '16px' }}>
+            <button
+              onClick={() => setShowArchived(!showArchived)}
+              className="flex items-center gap-2 text-xs uppercase tracking-wide"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              <svg
+                className={`w-3 h-3 transition-transform ${showArchived ? 'rotate-90' : ''}`}
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
+              Archived ({archivedLists.length})
+            </button>
+            {showArchived && (
+              <div className="space-y-1 mt-2">
+                {archivedLists.map((list) => (
+                  <div
+                    key={list.id}
+                    className="flex items-center gap-3 py-2 px-3 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors group"
+                    onClick={() => router.push(`/${list.id}`)}
+                  >
+                    <div
+                      className="w-3 h-3 rounded-full flex-shrink-0 opacity-50"
+                      style={{ backgroundColor: list.themeColor || 'var(--primary)' }}
+                    />
+                    <span className="flex-1 text-sm text-left truncate opacity-50" style={{ color: 'var(--text-primary)' }}>
+                      {list.title || 'Untitled List'}
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        restoreList(list.id);
+                      }}
+                      className="opacity-0 group-hover:opacity-100 text-xs px-2 py-1 hover:bg-gray-200 rounded transition-opacity"
+                      style={{ color: 'var(--text-muted)' }}
+                    >
+                      Restore
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Infinite Custom Styles */}
         <div
