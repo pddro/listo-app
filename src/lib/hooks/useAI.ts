@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Item } from '@/types';
+import { API } from '@/lib/api';
 
 export interface ManipulatedItem {
   id: string;
@@ -23,11 +24,13 @@ export function useAI() {
   const [error, setError] = useState<string | null>(null);
 
   const generateItems = async (prompt: string): Promise<GenerateResult> => {
+    console.log('[useAI] generateItems called with prompt:', prompt);
+    console.log('[useAI] API endpoint:', API.ai);
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch('/api/ai', {
+      const response = await fetch(API.ai, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -36,12 +39,15 @@ export function useAI() {
         }),
       });
 
+      console.log('[useAI] Response status:', response.status, response.ok);
       if (!response.ok) {
         const data = await response.json();
+        console.error('[useAI] API error:', data);
         throw new Error(data.error || 'Failed to generate items');
       }
 
       const data = await response.json();
+      console.log('[useAI] API success, result:', data.result);
       return data.result;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'AI request failed';
@@ -60,7 +66,7 @@ export function useAI() {
     setError(null);
 
     try {
-      const response = await fetch('/api/ai', {
+      const response = await fetch(API.ai, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -100,7 +106,7 @@ export function useAI() {
     setError(null);
 
     try {
-      const response = await fetch('/api/ai', {
+      const response = await fetch(API.ai, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

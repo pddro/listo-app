@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { ManipulatedItem, GenerateResult, isCategorizedResult } from '@/lib/hooks/useAI';
 import { generateListId } from '@/lib/utils/generateId';
+import { CommandPalette, Command } from './CommandPalette';
 
 interface NewItemInputProps {
   onAdd: (content: string) => Promise<void>;
@@ -25,9 +26,21 @@ interface NewItemInputProps {
   autoFocus?: boolean;
   prefillValue?: string;
   onPrefillConsumed?: () => void;
+  // State props for CommandPalette
+  hasTheme?: boolean;
+  largeMode?: boolean;
+  emojifyMode?: boolean;
 }
 
 type InputMode = 'single' | 'multiple' | 'ai' | 'manipulate' | 'theme' | 'command' | 'note';
+
+// Normalize iOS smart punctuation to standard characters
+function normalizeInput(text: string): string {
+  return text
+    .replace(/…/g, '...') // iOS ellipsis → three periods
+    .replace(/–/g, '--')  // iOS en-dash → two dashes
+    .replace(/—/g, '--'); // iOS em-dash → two dashes
+}
 
 export function NewItemInput({
   onAdd,
@@ -50,11 +63,15 @@ export function NewItemInput({
   autoFocus = false,
   prefillValue,
   onPrefillConsumed,
+  hasTheme = false,
+  largeMode = false,
+  emojifyMode = false,
 }: NewItemInputProps) {
   const [value, setValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingMessage, setProcessingMessage] = useState('AI is thinking...');
   const [aiError, setAiError] = useState<string | null>(null);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isSubmittingRef = useRef(false);
@@ -83,7 +100,9 @@ export function NewItemInput({
 
   // Detect input mode based on content
   const { mode, displayText } = useMemo(() => {
-    const trimmed = value.trim();
+    // Normalize iOS smart punctuation before processing
+    const normalized = normalizeInput(value);
+    const trimmed = normalized.trim();
 
     const lowerTrimmed = trimmed.toLowerCase();
 
@@ -115,6 +134,8 @@ export function NewItemInput({
         displayText = 'Generate list title';
       } else if (command === 'new') {
         displayText = 'Create new list in new tab';
+      } else if (command === 'reset-theme') {
+        displayText = 'Remove custom theme';
       }
       return {
         mode: 'command' as InputMode,
@@ -124,29 +145,25 @@ export function NewItemInput({
 
     // Theme mode: starts with theme: or style:
     if (lowerTrimmed.startsWith('theme:') || lowerTrimmed.startsWith('style:')) {
-      const prefix = lowerTrimmed.startsWith('theme:') ? 'theme:' : 'style:';
-      const description = trimmed.slice(prefix.length).trim();
       return {
         mode: 'theme' as InputMode,
-        displayText: description ? 'AI will generate theme' : ''
+        displayText: 'AI will generate theme'
       };
     }
 
     // Manipulate mode: starts with !
     if (trimmed.startsWith('!')) {
-      const instruction = trimmed.slice(1).trim();
       return {
         mode: 'manipulate' as InputMode,
-        displayText: instruction ? 'AI will reorganize list' : ''
+        displayText: 'AI will transform list'
       };
     }
 
     // AI mode: starts with ...
     if (trimmed.startsWith('...')) {
-      const prompt = trimmed.slice(3).trim();
       return {
         mode: 'ai' as InputMode,
-        displayText: prompt ? 'AI will generate items' : ''
+        displayText: 'AI will generate items'
       };
     }
 
@@ -200,7 +217,9 @@ export function NewItemInput({
   };
 
   const handleSubmit = async (forceAI = false) => {
-    const trimmed = value.trim();
+    // Normalize iOS smart punctuation before processing
+    const normalized = normalizeInput(value);
+    const trimmed = normalized.trim();
     if (!trimmed || isSubmittingRef.current) return;
 
     isSubmittingRef.current = true;
@@ -297,6 +316,13 @@ export function NewItemInput({
         if (command === 'new') {
           const newListId = generateListId();
           window.open(`/${newListId}`, '_blank');
+          return;
+        }
+
+        if (command === 'reset-theme') {
+          if (onThemeReset) {
+            await onThemeReset();
+          }
           return;
         }
 
@@ -449,6 +475,25 @@ export function NewItemInput({
     }
   };
 
+  // Handle command selection from palette
+  const handleCommandSelect = async (command: Command) => {
+    setShowCommandPalette(false);
+
+    // Get the command string to insert
+    const commandString = command.prefix || command.action || '';
+
+    // Insert command into input and focus
+    setValue(commandString);
+    setTimeout(() => {
+      inputRef.current?.focus();
+      // Place cursor at end
+      if (inputRef.current) {
+        const len = commandString.length;
+        inputRef.current.setSelectionRange(len, len);
+      }
+    }, 100);
+  };
+
   // Sparkles icon for generate mode
   const SparklesIcon = () => (
     <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
@@ -502,66 +547,88 @@ export function NewItemInput({
   };
 
   return (
-    <div className="relative" style={{ marginBottom: '16px' }}>
+    <div className="relative" style={{ marginBottom: '4px' }}>
       <div
         className={`
           rounded relative
           transition-all duration-200
-          ${isProcessing
-            ? 'border-[var(--primary)] bg-[var(--primary-pale)]'
-            : ''
-          }
-          ${isAIMode && value.trim().length > 1 ? 'border-[var(--primary-light)]' : ''}
+          ${isProcessing ? 'bg-[var(--primary-pale)]' : ''}
         `}
         style={{
-          paddingTop: '4px',
-          paddingBottom: '4px',
-          paddingLeft: '4px',
-          paddingRight: '4px',
-          border: isProcessing ? undefined : `1px solid var(--border-light)`,
-          ...(isAIMode && value.trim().length > 1 ? { borderColor: 'var(--primary-light)' } : {})
+          padding: '8px',
         }}
       >
-        {isNoteMode ? (
-          <textarea
-            ref={textareaRef}
-            value={value}
-            onChange={handleTextareaChange}
-            onKeyDown={handleTextareaKeyDown}
-            placeholder="note: Write your note here... (Shift+Enter for new line)"
-            disabled={isProcessing}
-            rows={1}
-            className={`
-              w-full bg-transparent border-none outline-none resize-none
-              transition-colors
-              ${isProcessing ? 'opacity-50' : ''}
-            `}
-            style={{
-              color: 'var(--text-primary)',
-              minHeight: '24px',
-            }}
-          />
-        ) : (
-          <input
-            ref={inputRef}
-            type="text"
-            value={value}
-            onChange={(e) => {
-              setValue(e.target.value);
-              setAiError(null);
-            }}
-            onKeyDown={handleKeyDown}
-            placeholder={placeholder}
-            disabled={isProcessing}
-            className={`
-              w-full bg-transparent border-none outline-none
-              transition-colors
-              ${isProcessing ? 'opacity-50' : ''}
-            `}
-            style={{
-              color: 'var(--text-primary)',
-            }}
-          />
+        <div className="flex items-center gap-2">
+          {isNoteMode ? (
+            <textarea
+              ref={textareaRef}
+              value={value}
+              onChange={handleTextareaChange}
+              onKeyDown={handleTextareaKeyDown}
+              placeholder="note: Write your note here... (Shift+Enter for new line)"
+              disabled={isProcessing}
+              rows={1}
+              className={`
+                flex-1 bg-transparent border-none outline-none resize-none
+                transition-colors
+                ${isProcessing ? 'opacity-50' : ''}
+              `}
+              style={{
+                color: 'var(--text-primary)',
+                minHeight: '24px',
+              }}
+            />
+          ) : (
+            <input
+              ref={inputRef}
+              type="text"
+              value={value}
+              onChange={(e) => {
+                setValue(e.target.value);
+                setAiError(null);
+              }}
+              onKeyDown={handleKeyDown}
+              placeholder={placeholder}
+              disabled={isProcessing}
+              className={`
+                flex-1 bg-transparent border-none outline-none
+                transition-colors
+                ${isProcessing ? 'opacity-50' : ''}
+              `}
+              style={{
+                color: 'var(--text-primary)',
+              }}
+            />
+          )}
+
+          {/* Command Palette Button */}
+          {!isProcessing && !value.trim() && (
+            <button
+              type="button"
+              onClick={() => setShowCommandPalette(true)}
+              className="flex-shrink-0 p-2 rounded-md active:opacity-60 transition-opacity"
+              style={{ color: 'var(--text-muted)' }}
+              aria-label="Open commands"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13 3L4 14h7v7l9-11h-7V3z" />
+              </svg>
+            </button>
+          )}
+        </div>
+
+        {/* Inline hints - only show when input is empty and not processing */}
+        {!isProcessing && !value.trim() && (
+          <div
+            className="flex items-center justify-between gap-2 pt-1.5"
+            style={{ fontSize: '10px', color: 'var(--text-muted)' }}
+          >
+            <span><span style={{ color: 'var(--primary)' }}>...</span> generate</span>
+            <span><span style={{ color: 'var(--primary)' }}>!</span> transform</span>
+            <span><span style={{ color: 'var(--primary)' }}>style:</span> theme</span>
+            <span><span style={{ color: 'var(--text-secondary)' }}>#</span> category</span>
+            <span><span style={{ color: 'var(--text-secondary)' }}>,</span> multi</span>
+          </div>
         )}
       </div>
 
@@ -596,6 +663,16 @@ export function NewItemInput({
           {aiError}
         </div>
       )}
+
+      {/* Command Palette */}
+      <CommandPalette
+        isOpen={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
+        onSelectCommand={handleCommandSelect}
+        hasTheme={hasTheme}
+        largeMode={largeMode}
+        emojifyMode={emojifyMode}
+      />
     </div>
   );
 }

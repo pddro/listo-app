@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { API } from '@/lib/api';
 
 interface DictateButtonProps {
   onTranscription: (text: string) => void;
@@ -162,7 +163,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
       const formData = new FormData();
       formData.append('audio', audioBlob);
 
-      const response = await fetch('/api/transcribe', {
+      const response = await fetch(API.transcribe, {
         method: 'POST',
         body: formData,
       });
@@ -213,10 +214,13 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
   return (
     <>
       {/* Button container */}
-      <div className={`
-        flex flex-col items-center
-        ${isFloating ? 'fixed bottom-6 right-6 z-40' : ''}
-      `}>
+      <div
+        className={`
+          flex flex-col items-center
+          ${isFloating ? 'fixed right-6 z-40' : ''}
+        `}
+        style={isFloating ? { bottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' } : undefined}
+      >
         <button
           onClick={handleClick}
           disabled={disabled || isProcessing}
@@ -262,15 +266,17 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
             </svg>
           )}
         </button>
-        <span className="mt-1.5 text-[10px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
-          {isProcessing ? 'Processing' : 'Dictate items'}
-        </span>
       </div>
 
       {/* Recording overlay */}
       {isRecording && (
         <div
-          className="fixed inset-0 bg-black/80 z-50 flex flex-col items-center justify-center cursor-pointer"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center cursor-pointer"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+          }}
           onClick={stopRecording}
         >
           {/* Pulsing circle visualization */}

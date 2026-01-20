@@ -5,8 +5,8 @@ import {
   DndContext,
   closestCenter,
   rectIntersection,
-  KeyboardSensor,
-  PointerSensor,
+  TouchSensor,
+  MouseSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -18,7 +18,6 @@ import {
 } from '@dnd-kit/core';
 import {
   SortableContext,
-  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { ItemWithChildren } from '@/types';
@@ -80,6 +79,7 @@ interface ListContainerProps {
   onNuke?: () => Promise<void>;
   onGenerateTitle?: () => Promise<void>;
   hideBottomPadding?: boolean;
+  hideInput?: boolean;
   prefillValue?: string;
   onPrefillConsumed?: () => void;
 }
@@ -228,6 +228,7 @@ export function ListContainer({
   onNuke,
   onGenerateTitle,
   hideBottomPadding,
+  hideInput,
   prefillValue,
   onPrefillConsumed,
 }: ListContainerProps) {
@@ -242,14 +243,20 @@ export function ListContainer({
   const hasGroups = items.some(item => item.content.startsWith('#'));
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    // Touch: short delay, once activated prevents scroll
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150,
+        tolerance: 8,
+      },
+    }),
+    // Mouse: small distance threshold
+    useSensor(MouseSensor, {
       activationConstraint: {
         distance: 8,
       },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
     })
+    // Note: KeyboardSensor removed to prevent spacebar from triggering drag when editing text
   );
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -519,28 +526,45 @@ export function ListContainer({
 
   return (
     <div className="space-y-1" style={{ paddingBottom: hideBottomPadding ? '0' : '80px' }}>
-      {/* New item input at TOP */}
-      <NewItemInput
-        onAdd={(content) => onAddItem(content)}
-        onBulkAdd={(contents) => onAddItems(contents)}
-        onAIGenerate={generateItems}
-        onAICategorizedGenerate={onCategorizedGenerate}
-        onAIManipulate={onManipulateList}
-        onThemeGenerate={onThemeGenerate}
-        onThemeReset={onThemeReset}
-        onCompleteAll={onCompleteAll}
-        onUncompleteAll={onUncompleteAll}
-        onSetLargeMode={onSetLargeMode}
-        onClearCompleted={onClearCompleted}
-        onSort={onSort}
-        onUngroupAll={onUngroupAll}
-        onToggleEmojify={onToggleEmojify}
-        onNuke={onNuke}
-        onGenerateTitle={onGenerateTitle}
-        prefillValue={prefillValue}
-        onPrefillConsumed={onPrefillConsumed}
-        autoFocus
-      />
+      {/* New item input at TOP - Sticky (only if not hidden) */}
+      {!hideInput && (
+        <div
+          style={{
+            position: 'sticky',
+            top: 'calc(env(safe-area-inset-top, 0px) + 44px)',
+            zIndex: 10,
+            backgroundColor: 'var(--bg-primary)',
+            paddingTop: '8px',
+            paddingBottom: '8px',
+            marginLeft: '-8px',
+            marginRight: '-8px',
+            paddingLeft: '8px',
+            paddingRight: '8px',
+          }}
+        >
+          <NewItemInput
+            onAdd={(content) => onAddItem(content)}
+            onBulkAdd={(contents) => onAddItems(contents)}
+            onAIGenerate={generateItems}
+            onAICategorizedGenerate={onCategorizedGenerate}
+            onAIManipulate={onManipulateList}
+            onThemeGenerate={onThemeGenerate}
+            onThemeReset={onThemeReset}
+            onCompleteAll={onCompleteAll}
+            onUncompleteAll={onUncompleteAll}
+            onSetLargeMode={onSetLargeMode}
+            onClearCompleted={onClearCompleted}
+            onSort={onSort}
+            onUngroupAll={onUngroupAll}
+            onToggleEmojify={onToggleEmojify}
+            onNuke={onNuke}
+            onGenerateTitle={onGenerateTitle}
+            prefillValue={prefillValue}
+            onPrefillConsumed={onPrefillConsumed}
+            autoFocus
+          />
+        </div>
+      )}
 
       <DndContext
         sensors={sensors}
@@ -549,6 +573,7 @@ export function ListContainer({
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
+        autoScroll={false}
       >
         {/* Top drop zone for moving items to root level */}
         <RootDropZone
