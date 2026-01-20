@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { generateListId } from '@/lib/utils/generateId';
@@ -6,6 +6,9 @@ import { useAI, isCategorizedResult, ManipulatedItem } from '@/lib/hooks/useAI';
 import { DictateButton } from '@/components/DictateButton';
 import { API } from '@/lib/api';
 import { useRecentLists, SavedList } from '@/lib/hooks/useRecentLists';
+import { useHomeTheme } from '@/lib/hooks/useHomeTheme';
+import { HomeThemeModal } from '@/mobile/components/HomeThemeModal';
+import { ThemeColors } from '@/lib/gemini';
 
 // Swipeable List Row Component
 interface SwipeableListRowProps {
@@ -212,10 +215,79 @@ export default function HomePage() {
   const [isPlaceholderFading, setIsPlaceholderFading] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showTipsModal, setShowTipsModal] = useState(false);
+  const [showThemeModal, setShowThemeModal] = useState(false);
   const navigate = useNavigate();
   const { generateItems } = useAI();
   const { lists: recentLists, archivedLists, addList, archiveList, restoreList, deleteList } = useRecentLists();
   const [showArchived, setShowArchived] = useState(false);
+  const { theme: homeTheme, description: homeThemeDescription, setHomeTheme, clearHomeTheme } = useHomeTheme();
+
+  // Apply theme to CSS variables
+  const applyThemeToRoot = useCallback((theme: ThemeColors | null) => {
+    const root = document.documentElement;
+    if (theme) {
+      root.style.setProperty('--primary', theme.primary);
+      root.style.setProperty('--primary-dark', theme.primaryDark);
+      root.style.setProperty('--primary-light', theme.primaryLight);
+      root.style.setProperty('--primary-pale', theme.primaryPale);
+      root.style.setProperty('--primary-glow', theme.primaryGlow);
+      root.style.setProperty('--text-primary', theme.textPrimary);
+      root.style.setProperty('--text-secondary', theme.textSecondary);
+      root.style.setProperty('--text-muted', theme.textMuted);
+      root.style.setProperty('--text-placeholder', theme.textPlaceholder);
+      root.style.setProperty('--bg-primary', theme.bgPrimary);
+      root.style.setProperty('--bg-secondary', theme.bgSecondary);
+      root.style.setProperty('--bg-hover', theme.bgHover);
+      root.style.setProperty('--border-light', theme.borderLight);
+      root.style.setProperty('--border-medium', theme.borderMedium);
+      root.style.setProperty('--error', theme.error);
+    } else {
+      root.style.removeProperty('--primary');
+      root.style.removeProperty('--primary-dark');
+      root.style.removeProperty('--primary-light');
+      root.style.removeProperty('--primary-pale');
+      root.style.removeProperty('--primary-glow');
+      root.style.removeProperty('--text-primary');
+      root.style.removeProperty('--text-secondary');
+      root.style.removeProperty('--text-muted');
+      root.style.removeProperty('--text-placeholder');
+      root.style.removeProperty('--bg-primary');
+      root.style.removeProperty('--bg-secondary');
+      root.style.removeProperty('--bg-hover');
+      root.style.removeProperty('--border-light');
+      root.style.removeProperty('--border-medium');
+      root.style.removeProperty('--error');
+    }
+  }, []);
+
+  // Apply home theme on mount and when theme changes
+  useEffect(() => {
+    applyThemeToRoot(homeTheme);
+  }, [homeTheme, applyThemeToRoot]);
+
+  // Handle theme generation
+  const handleHomeThemeGenerate = async (description: string) => {
+    const response = await fetch(API.theme, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ description }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || 'Theme generation failed');
+    }
+
+    const { theme } = await response.json();
+    applyThemeToRoot(theme);
+    await setHomeTheme(theme, description);
+  };
+
+  // Handle theme reset
+  const handleHomeThemeReset = async () => {
+    applyThemeToRoot(null);
+    await clearHomeTheme();
+  };
 
   // Share a list using native share sheet
   const handleShare = async (listId: string, title: string | null) => {
@@ -501,8 +573,9 @@ export default function HomePage() {
 
   return (
     <div
-      className="min-h-screen flex flex-col bg-white"
+      className="min-h-screen flex flex-col"
       style={{
+        backgroundColor: 'var(--bg-primary)',
         paddingTop: 'env(safe-area-inset-top, 0px)',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
@@ -510,20 +583,31 @@ export default function HomePage() {
       {/* Header */}
       <div className="flex items-center justify-between" style={{ padding: '16px 20px 0 20px' }}>
         <div className="flex items-baseline gap-2">
-          <h1 className="text-xl font-bold text-gray-900 uppercase tracking-[0.15em]">
+          <h1 className="text-xl font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--text-primary)' }}>
             Listo
           </h1>
           <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
             Create a list. Share the link.
           </p>
         </div>
-        <button
-          onClick={() => setShowTipsModal(true)}
-          className="font-medium"
-          style={{ color: 'var(--primary)', fontSize: '15px' }}
-        >
-          Tips
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowThemeModal(true)}
+            className="active:opacity-60"
+            style={{ color: 'var(--primary)' }}
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.2-.64-1.67-.08-.1-.13-.21-.13-.33 0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 8 6.5 8 8 8.67 8 9.5 7.33 11 6.5 11zm3-4C8.67 7 8 6.33 8 5.5S8.67 4 9.5 4s1.5.67 1.5 1.5S10.33 7 9.5 7zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 4 14.5 4s1.5.67 1.5 1.5S15.33 7 14.5 7zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 8 17.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+            </svg>
+          </button>
+          <button
+            onClick={() => setShowTipsModal(true)}
+            className="font-medium"
+            style={{ color: 'var(--primary)', fontSize: '15px' }}
+          >
+            Tips
+          </button>
+        </div>
       </div>
 
       {/* Scrollable Content */}
@@ -903,6 +987,15 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+      {/* Home Theme Modal */}
+      <HomeThemeModal
+        isOpen={showThemeModal}
+        onClose={() => setShowThemeModal(false)}
+        onGenerate={handleHomeThemeGenerate}
+        onReset={homeTheme ? handleHomeThemeReset : undefined}
+        hasTheme={!!homeTheme}
+      />
     </div>
   );
 }
