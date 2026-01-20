@@ -12,6 +12,14 @@ import { useRecentListsWeb } from '@/lib/hooks/useRecentListsWeb';
 
 type InputMode = 'single' | 'multiple' | 'ai';
 
+// Normalize iOS smart punctuation to standard characters
+function normalizeInput(text: string): string {
+  return text
+    .replace(/…/g, '...') // iOS ellipsis → three periods
+    .replace(/–/g, '--')  // iOS en-dash → two dashes
+    .replace(/—/g, '--'); // iOS em-dash → two dashes
+}
+
 const PLACEHOLDERS = [
   '...groceries for the week',
   'passport, tickets, charger, headphones',
@@ -44,12 +52,39 @@ export default function Home() {
   const [showArchived, setShowArchived] = useState(false);
   const router = useRouter();
   const { generateItems } = useAI();
-  const { lists: recentLists, archivedLists, addList, archiveList, restoreList } = useRecentListsWeb();
+  const { lists: recentLists, archivedLists, addList, updateList, archiveList, restoreList } = useRecentListsWeb();
 
   // Track page visit
   useEffect(() => {
     analytics.pageVisit('/');
   }, []);
+
+  // Sync list titles from database on mount
+  useEffect(() => {
+    const syncListTitles = async () => {
+      if (recentLists.length === 0) return;
+
+      const listIds = recentLists.map(list => list.id);
+      const { data } = await supabase
+        .from('lists')
+        .select('id, title, theme')
+        .in('id', listIds);
+
+      if (data) {
+        data.forEach(dbList => {
+          const localList = recentLists.find(l => l.id === dbList.id);
+          if (localList && (localList.title !== dbList.title || localList.themeColor !== dbList.theme?.bgPrimary)) {
+            updateList(dbList.id, {
+              title: dbList.title,
+              themeColor: dbList.theme?.bgPrimary || null,
+            });
+          }
+        });
+      }
+    };
+
+    syncListTitles();
+  }, [recentLists.length]); // Only re-run when list count changes
 
   // Rotate placeholders every 2.5 seconds
   useEffect(() => {
@@ -66,7 +101,9 @@ export default function Home() {
 
   // Detect input mode based on content
   const { mode, itemCount, displayText } = useMemo(() => {
-    const trimmed = value.trim();
+    // Normalize iOS smart punctuation before processing
+    const normalized = normalizeInput(value);
+    const trimmed = normalized.trim();
 
     // AI mode: starts with ...
     if (trimmed.startsWith('...')) {
@@ -116,7 +153,9 @@ export default function Home() {
   const handleCreate = async (forceAI = false) => {
     if (isCreating) return;
 
-    const trimmed = value.trim();
+    // Normalize iOS smart punctuation before processing
+    const normalized = normalizeInput(value);
+    const trimmed = normalized.trim();
     if (!trimmed) {
       // Create empty list
       setIsCreating(true);
@@ -337,8 +376,16 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4">
-      <div className="w-full max-w-md md:max-w-[540px] text-center">
+    <div
+      className="min-h-screen flex flex-col items-center bg-white"
+      style={{
+        paddingLeft: 'max(16px, env(safe-area-inset-left))',
+        paddingRight: 'max(16px, env(safe-area-inset-right))',
+        paddingTop: 'max(48px, env(safe-area-inset-top, 48px))',
+        paddingBottom: 'max(24px, env(safe-area-inset-bottom))',
+      }}
+    >
+      <div className="w-full max-w-md md:max-w-[540px] text-center" style={{ marginTop: 'auto', marginBottom: 'auto' }}>
         {/* Logo/Title */}
         <div className="space-y-3" style={{ marginBottom: '24px' }}>
           <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-[0.2em]">
@@ -513,11 +560,11 @@ export default function Home() {
               {recentLists.map((list) => (
                 <div
                   key={list.id}
-                  className="flex items-center gap-3 py-2 px-3 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors group"
+                  className="flex items-center gap-3 py-3 px-3 rounded-lg cursor-pointer active:bg-gray-100 hover:bg-gray-50 transition-colors"
                   onClick={() => router.push(`/${list.id}`)}
                 >
                   <div
-                    className="w-3 h-3 rounded-full flex-shrink-0"
+                    className="w-4 h-4 rounded-full flex-shrink-0"
                     style={{ backgroundColor: list.themeColor || 'var(--primary)' }}
                   />
                   <span className="flex-1 text-sm text-left truncate" style={{ color: 'var(--text-primary)' }}>
@@ -528,7 +575,7 @@ export default function Home() {
                       e.stopPropagation();
                       archiveList(list.id);
                     }}
-                    className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-200 rounded transition-opacity"
+                    className="p-2 -mr-1 active:bg-gray-200 rounded-full transition-colors"
                     style={{ color: 'var(--text-muted)' }}
                     title="Archive"
                   >

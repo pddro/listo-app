@@ -531,7 +531,7 @@ export function ListContainer({
         <div
           style={{
             position: 'sticky',
-            top: 'calc(env(safe-area-inset-top, 0px) + 44px)',
+            top: 'calc(max(16px, env(safe-area-inset-top, 0px)) + 44px)',
             zIndex: 10,
             backgroundColor: 'var(--bg-primary)',
             paddingTop: '8px',
