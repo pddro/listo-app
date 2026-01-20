@@ -3,13 +3,17 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 import { ItemWithChildren } from '@/types';
 
-// Detect if device is touch-enabled (mobile)
-const isTouchDevice = () => {
+// Detect if device is touch-enabled (mobile) - evaluated once at module load
+const isTouchDevice = (): boolean => {
   if (typeof window === 'undefined') return false;
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 };
+
+// Cache the result to avoid recalculation and ensure consistent initial render
+const IS_MOBILE = typeof window !== 'undefined' ? isTouchDevice() : false;
 
 interface ListItemProps {
   item: ItemWithChildren;
@@ -74,15 +78,12 @@ export function ListItem({
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(item.content);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const checkboxRef = useRef<HTMLButtonElement>(null);
 
-  // Detect mobile on mount
-  useEffect(() => {
-    setIsMobile(isTouchDevice());
-  }, []);
+  // Use cached mobile detection to prevent size jitter on mount
+  const isMobile = IS_MOBILE;
 
   const {
     attributes,
@@ -180,6 +181,19 @@ export function ListItem({
 
   const handleCheckboxClick = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
+
+    // Haptic feedback - success "cha-ching" feel when completing, light tap when uncompleting
+    try {
+      if (!item.completed) {
+        // Completing: satisfying double-tap success feel
+        await Haptics.notification({ type: NotificationType.Success });
+      } else {
+        // Uncompleting: simple light tap
+        await Haptics.impact({ style: ImpactStyle.Light });
+      }
+    } catch {
+      // Haptics not available (web or unsupported device)
+    }
 
     // Create sparkles only when completing (not uncompleting)
     if (!item.completed && checkboxRef.current) {

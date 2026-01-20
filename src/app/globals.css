@@ -80,36 +80,23 @@ input::placeholder {
   animation: sparkle 600ms ease-out forwards;
 }
 
-/* New item flash effect */
-@keyframes item-flash {
+/* New item highlight effect - simple background flash, no transform to prevent jitter */
+@keyframes item-highlight {
   0% {
     background-color: var(--primary-light);
-    transform: scale(1.01);
   }
   100% {
     background-color: transparent;
-    transform: scale(1);
   }
 }
 
 .item-new {
-  animation: item-flash 400ms ease-out;
+  animation: item-highlight 500ms ease-out;
 }
 
-/* Slide in animation for new items */
-@keyframes slide-in {
-  0% {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* Slide in class kept for compatibility but no animation to prevent jitter */
 .item-slide-in {
-  animation: slide-in 300ms ease-out;
+  /* Animation removed to prevent jittering with optimistic UI */
 }
 
 /* Fade to bottom animation for completed items */

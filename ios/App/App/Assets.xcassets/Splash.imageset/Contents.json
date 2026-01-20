@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "listo splash.png",
+      "filename" : "iPhone 16 Pro - 1.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "listo splash 1.png",
+      "filename" : "iPhone 16 Pro - 1@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "listo splash 2.png",
+      "filename" : "iPhone 16 Pro - 1@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

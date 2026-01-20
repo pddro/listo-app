@@ -60,6 +60,23 @@ export default function ListPage() {
   // Check if this list is already saved
   const isListSaved = savedLists.some(savedList => savedList.id === listId);
 
+  // Get saved list data for this list (for early theme application)
+  const savedListData = savedLists.find(savedList => savedList.id === listId);
+
+  // Apply partial theme immediately from saved list data (before full list loads)
+  // This prevents the jarring theme change during loading
+  useEffect(() => {
+    if (savedListData?.themeColor || savedListData?.themeTextColor) {
+      const root = document.documentElement;
+      if (savedListData.themeColor) {
+        root.style.setProperty('--bg-primary', savedListData.themeColor);
+      }
+      if (savedListData.themeTextColor) {
+        root.style.setProperty('--primary', savedListData.themeTextColor);
+      }
+    }
+  }, [savedListData?.themeColor, savedListData?.themeTextColor]);
+
   // Create list if it doesn't exist
   useEffect(() => {
     if (!loading && !list && !error) {
@@ -435,15 +452,99 @@ export default function ListPage() {
   };
 
   if (loading) {
+    // Show themed skeleton loading based on saved list data
+    const skeletonCount = savedListData?.itemCount || 5;
     return (
       <div
-        className="min-h-screen flex items-center justify-center"
         style={{
+          position: 'relative',
+          height: '100vh',
           backgroundColor: 'var(--bg-primary)',
-          paddingTop: 'env(safe-area-inset-top, 0px)',
         }}
       >
-        <div className="text-[var(--primary)] animate-pulse">Loading...</div>
+        {/* Skeleton header */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 30,
+            backgroundColor: 'var(--bg-primary)',
+            paddingTop: 'env(safe-area-inset-top, 0px)',
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
+          <div
+            className="flex items-center justify-between"
+            style={{ height: '44px', padding: '0 16px' }}
+          >
+            <div
+              className="rounded"
+              style={{ width: '60px', height: '20px', backgroundColor: 'var(--primary)', opacity: 0.2 }}
+            />
+            <div
+              className="rounded"
+              style={{ width: '100px', height: '20px', backgroundColor: 'var(--primary)', opacity: 0.15 }}
+            />
+            <div
+              className="rounded"
+              style={{ width: '24px', height: '24px', backgroundColor: 'var(--primary)', opacity: 0.2 }}
+            />
+          </div>
+          {/* Skeleton input */}
+          <div style={{ padding: '8px 16px 12px' }}>
+            <div
+              className="rounded-xl"
+              style={{ height: '48px', backgroundColor: 'var(--primary)', opacity: 0.08 }}
+            />
+          </div>
+        </div>
+
+        {/* Skeleton items */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            overflowY: 'auto',
+            paddingTop: 'calc(env(safe-area-inset-top, 0px) + 120px)',
+            paddingLeft: '16px',
+            paddingRight: '16px',
+          }}
+        >
+          {Array.from({ length: Math.min(skeletonCount, 8) }).map((_, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3"
+              style={{
+                padding: '12px 0',
+                opacity: 1 - (i * 0.1),
+              }}
+            >
+              <div
+                className="rounded-md flex-shrink-0"
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  backgroundColor: 'var(--primary)',
+                  opacity: 0.15,
+                }}
+              />
+              <div
+                className="rounded flex-1"
+                style={{
+                  height: '20px',
+                  backgroundColor: 'var(--primary)',
+                  opacity: 0.1,
+                  width: `${60 + Math.random() * 30}%`,
+                }}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

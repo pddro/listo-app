@@ -5,8 +5,6 @@ import {
   DndContext,
   closestCenter,
   rectIntersection,
-  KeyboardSensor,
-  PointerSensor,
   TouchSensor,
   MouseSensor,
   useSensor,
@@ -20,7 +18,6 @@ import {
 } from '@dnd-kit/core';
 import {
   SortableContext,
-  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { ItemWithChildren } from '@/types';
@@ -258,10 +255,8 @@ export function ListContainer({
       activationConstraint: {
         distance: 8,
       },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
     })
+    // Note: KeyboardSensor removed to prevent spacebar from triggering drag when editing text
   );
 
   const handleDragStart = (event: DragStartEvent) => {
