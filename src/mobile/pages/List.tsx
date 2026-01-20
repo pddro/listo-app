@@ -75,11 +75,31 @@ export default function ListPage() {
       const isNewList = now - createdAt < 30000;
 
       if (isNewList) {
-        // Auto-save newly created lists
-        addSavedList(listId, list.title || null, list.theme?.primary || null);
+        // Auto-save newly created lists (bgPrimary for square, primary for text)
+        addSavedList(listId, list.title || null, list.theme?.bgPrimary || null, list.theme?.primary || null);
       }
     }
   }, [list, listId, isListSaved, addSavedList]);
+
+  // Update item counts in saved list whenever items change
+  useEffect(() => {
+    if (listId && isListSaved && items.length > 0) {
+      const nonHeaderItems = items.filter(item => !item.content.startsWith('#'));
+      const completedCount = nonHeaderItems.filter(item => item.completed).length;
+      const itemCount = nonHeaderItems.length;
+      updateSavedList(listId, { itemCount, completedCount });
+    }
+  }, [listId, isListSaved, items, updateSavedList]);
+
+  // Sync theme colors to saved list when visiting (keeps homepage squares up to date)
+  useEffect(() => {
+    if (listId && isListSaved && list) {
+      updateSavedList(listId, {
+        themeColor: list.theme?.bgPrimary || null,
+        themeTextColor: list.theme?.primary || null,
+      });
+    }
+  }, [listId, isListSaved, list?.theme, updateSavedList]);
 
   // Auto-generate title after 3+ items
   useEffect(() => {
@@ -192,13 +212,13 @@ export default function ListPage() {
     const { theme } = await response.json();
     applyTheme(theme);
     await updateTheme(theme);
-    if (listId) updateSavedList(listId, { themeColor: theme.primary });
+    if (listId) updateSavedList(listId, { themeColor: theme.bgPrimary, themeTextColor: theme.primary });
   };
 
   const handleThemeReset = async () => {
     applyTheme(null);
     await updateTheme(null);
-    if (listId) updateSavedList(listId, { themeColor: null });
+    if (listId) updateSavedList(listId, { themeColor: null, themeTextColor: null });
   };
 
   const emojifyText = async (text: string): Promise<string> => {
@@ -293,7 +313,7 @@ export default function ListPage() {
 
   const handleAddToMyLists = () => {
     if (listId) {
-      addSavedList(listId, list?.title || null, list?.theme?.primary || null);
+      addSavedList(listId, list?.title || null, list?.theme?.bgPrimary || null, list?.theme?.primary || null);
       setJustAddedToMyLists(true);
       setTimeout(() => setJustAddedToMyLists(false), 2000);
     }
@@ -467,11 +487,11 @@ export default function ListPage() {
           left: 0,
           right: 0,
           zIndex: 30,
-          backgroundColor: 'rgba(255, 255, 255, 0.75)',
+          backgroundColor: 'var(--bg-primary)',
           backdropFilter: 'blur(20px) saturate(180%)',
           WebkitBackdropFilter: 'blur(20px) saturate(180%)',
           paddingTop: 'env(safe-area-inset-top, 0px)',
-          borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+          borderBottom: '1px solid var(--border-light)',
         }}
       >
         <div

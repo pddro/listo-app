@@ -7,8 +7,11 @@ export interface SavedList {
   id: string;
   title: string | null;
   themeColor: string | null; // primary color from theme
+  themeTextColor: string | null; // text color from theme (for contrast)
   createdAt: string;
   archived: boolean;
+  itemCount?: number;
+  completedCount?: number;
 }
 
 const STORAGE_KEY = 'listo_saved_lists';
@@ -57,7 +60,7 @@ export function useRecentLists() {
   }, []);
 
   // Add a new list (called when user creates a list)
-  const addList = useCallback(async (id: string, title: string | null = null, themeColor: string | null = null) => {
+  const addList = useCallback(async (id: string, title: string | null = null, themeColor: string | null = null, themeTextColor: string | null = null) => {
     // Use ref to get current lists (avoids stale closure)
     const currentLists = listsRef.current;
 
@@ -69,6 +72,7 @@ export function useRecentLists() {
       id,
       title,
       themeColor,
+      themeTextColor,
       createdAt: new Date().toISOString(),
       archived: false,
     };
@@ -76,8 +80,8 @@ export function useRecentLists() {
     await saveLists([newList, ...currentLists]);
   }, [saveLists]);
 
-  // Update list metadata (title, theme color)
-  const updateList = useCallback(async (id: string, updates: Partial<Pick<SavedList, 'title' | 'themeColor'>>) => {
+  // Update list metadata (title, theme color, item counts)
+  const updateList = useCallback(async (id: string, updates: Partial<Pick<SavedList, 'title' | 'themeColor' | 'themeTextColor' | 'itemCount' | 'completedCount'>>) => {
     const currentLists = listsRef.current;
     const newLists = currentLists.map(list =>
       list.id === id ? { ...list, ...updates } : list

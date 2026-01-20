@@ -10,13 +10,12 @@ import { useRecentLists, SavedList } from '@/lib/hooks/useRecentLists';
 // Swipeable List Row Component
 interface SwipeableListRowProps {
   list: SavedList;
-  isLast: boolean;
   onNavigate: () => void;
   onDelete: () => void;
   onShare: () => void;
 }
 
-function SwipeableListRow({ list, isLast, onNavigate, onDelete, onShare }: SwipeableListRowProps) {
+function SwipeableListRow({ list, onNavigate, onDelete, onShare }: SwipeableListRowProps) {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwipeActive, setIsSwipeActive] = useState(false);
   const touchStartX = useRef(0);
@@ -92,7 +91,7 @@ function SwipeableListRow({ list, isLast, onNavigate, onDelete, onShare }: Swipe
   const closeSwipe = () => setSwipeOffset(0);
 
   return (
-    <div className="relative overflow-hidden" style={{ borderBottom: isLast ? 'none' : '1px solid #e5e5e7' }}>
+    <div className="relative overflow-hidden">
       {/* Action buttons (behind the row) */}
       <div className="absolute right-0 top-0 bottom-0 flex">
         <button
@@ -118,11 +117,12 @@ function SwipeableListRow({ list, isLast, onNavigate, onDelete, onShare }: Swipe
       {/* Main row content */}
       <div
         ref={rowRef}
-        className="flex items-center bg-[#f5f5f7] active:bg-gray-200 transition-colors relative"
+        className="flex items-center active:bg-gray-100 transition-colors relative"
         style={{
-          padding: '16px',
+          padding: '12px 0',
           transform: `translateX(${swipeOffset}px)`,
           transition: isSwipeActive ? 'none' : 'transform 0.25s ease-out',
+          backgroundColor: 'var(--bg-primary)',
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -130,14 +130,26 @@ function SwipeableListRow({ list, isLast, onNavigate, onDelete, onShare }: Swipe
         onClick={handleClick}
       >
         <div
-          className="rounded-lg flex-shrink-0"
+          className="rounded-lg flex-shrink-0 flex items-center justify-center"
           style={{
             width: '44px',
             height: '44px',
-            backgroundColor: list.themeColor || 'var(--primary)',
-            opacity: 0.9,
+            backgroundColor: list.themeColor || 'var(--bg-secondary)',
+            border: '1px solid var(--border-light)',
           }}
-        />
+        >
+          {list.itemCount !== undefined && list.itemCount > 0 && (
+            <span
+              className="font-semibold"
+              style={{
+                fontSize: '12px',
+                color: list.themeTextColor || 'var(--primary)',
+              }}
+            >
+              {(list.itemCount || 0) - (list.completedCount || 0)}/{list.itemCount}
+            </span>
+          )}
+        </div>
         <div className="flex-1 min-w-0" style={{ marginLeft: '14px' }}>
           <div
             className="font-medium truncate"
@@ -199,6 +211,7 @@ export default function HomePage() {
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [isPlaceholderFading, setIsPlaceholderFading] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [showTipsModal, setShowTipsModal] = useState(false);
   const navigate = useNavigate();
   const { generateItems } = useAI();
   const { lists: recentLists, archivedLists, addList, archiveList, restoreList, deleteList } = useRecentLists();
@@ -495,13 +508,22 @@ export default function HomePage() {
       }}
     >
       {/* Header */}
-      <div style={{ padding: '16px 20px 0 20px' }}>
-        <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-[0.2em] text-center">
-          Listo
-        </h1>
-        <p className="text-sm text-center" style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>
-          Create a list. Share the link.
-        </p>
+      <div className="flex items-center justify-between" style={{ padding: '16px 20px 0 20px' }}>
+        <div className="flex items-baseline gap-2">
+          <h1 className="text-xl font-bold text-gray-900 uppercase tracking-[0.15em]">
+            Listo
+          </h1>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+            Create a list. Share the link.
+          </p>
+        </div>
+        <button
+          onClick={() => setShowTipsModal(true)}
+          className="font-medium"
+          style={{ color: 'var(--primary)', fontSize: '15px' }}
+        >
+          Tips
+        </button>
       </div>
 
       {/* Scrollable Content */}
@@ -610,25 +632,22 @@ export default function HomePage() {
 
         {/* Your Lists */}
         {recentLists.length > 0 && (
-          <div style={{ marginTop: '32px' }}>
+          <div style={{ marginTop: '24px' }}>
             <div
               className="font-semibold uppercase tracking-wide text-left"
-              style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '12px', paddingLeft: '4px' }}
+              style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '8px' }}
             >
               Your Lists
             </div>
-            <div className="rounded-xl overflow-hidden">
-              {recentLists.map((list, index) => (
-                <SwipeableListRow
-                  key={list.id}
-                  list={list}
-                  isLast={index === recentLists.length - 1}
-                  onNavigate={() => navigate(`/${list.id}`)}
-                  onDelete={() => deleteList(list.id)}
-                  onShare={() => handleShare(list.id, list.title)}
-                />
-              ))}
-            </div>
+            {recentLists.map((list) => (
+              <SwipeableListRow
+                key={list.id}
+                list={list}
+                onNavigate={() => navigate(`/${list.id}`)}
+                onDelete={() => deleteList(list.id)}
+                onShare={() => handleShare(list.id, list.title)}
+              />
+            ))}
           </div>
         )}
 
@@ -651,29 +670,36 @@ export default function HomePage() {
               Archived ({archivedLists.length})
             </button>
             {showArchived && (
-              <div
-                className="rounded-xl overflow-hidden"
-                style={{ backgroundColor: '#f5f5f7', marginTop: '12px' }}
-              >
-                {archivedLists.map((list, index) => (
+              <div style={{ marginTop: '8px' }}>
+                {archivedLists.map((list) => (
                   <div
                     key={list.id}
-                    className="flex items-center active:bg-gray-200 transition-colors"
-                    style={{
-                      padding: '16px',
-                      borderBottom: index < archivedLists.length - 1 ? '1px solid #e5e5e7' : 'none',
-                    }}
+                    className="flex items-center active:bg-gray-100 transition-colors"
+                    style={{ padding: '12px 0' }}
                     onClick={() => navigate(`/${list.id}`)}
                   >
                     <div
-                      className="rounded-lg flex-shrink-0"
+                      className="rounded-lg flex-shrink-0 flex items-center justify-center"
                       style={{
                         width: '44px',
                         height: '44px',
-                        backgroundColor: list.themeColor || 'var(--primary)',
-                        opacity: 0.4,
+                        backgroundColor: list.themeColor || 'var(--bg-secondary)',
+                        border: '1px solid var(--border-light)',
+                        opacity: 0.5,
                       }}
-                    />
+                    >
+                      {list.itemCount !== undefined && list.itemCount > 0 && (
+                        <span
+                          className="font-semibold"
+                          style={{
+                            fontSize: '12px',
+                            color: list.themeTextColor || 'var(--primary)',
+                          }}
+                        >
+                          {(list.itemCount || 0) - (list.completedCount || 0)}/{list.itemCount}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex-1 min-w-0" style={{ marginLeft: '14px' }}>
                       <div
                         className="font-medium truncate"
@@ -698,28 +724,6 @@ export default function HomePage() {
             )}
           </div>
         )}
-
-        {/* Shortcuts */}
-        <div
-          className="rounded-xl text-left"
-          style={{
-            marginTop: '32px',
-            padding: '16px',
-            backgroundColor: 'var(--primary-pale)',
-          }}
-        >
-          <div className="font-semibold uppercase tracking-wide" style={{ color: 'var(--primary)', fontSize: '13px', marginBottom: '12px' }}>
-            Tips
-          </div>
-          <div className="space-y-3" style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>
-            <div>
-              <div>Start with <code className="font-semibold px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary)' }}>...</code> to AI-generate items</div>
-            </div>
-            <div>
-              <div>Use commas to add multiple items at once</div>
-            </div>
-          </div>
-        </div>
 
         {/* Privacy note - at the bottom, pushed by content */}
         <div className="text-center" style={{ marginTop: '48px', paddingBottom: '20px' }}>
@@ -791,6 +795,110 @@ export default function HomePage() {
               style={{ backgroundColor: 'var(--primary)', padding: '16px', marginTop: '24px', fontSize: '17px' }}
             >
               Done
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Tips Modal */}
+      {showTipsModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}
+          onClick={() => setShowTipsModal(false)}
+        >
+          <div
+            className="bg-white w-full"
+            style={{
+              padding: '24px',
+              paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
+              borderRadius: '20px 20px 0 0',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Handle bar */}
+            <div className="flex justify-center" style={{ marginBottom: '16px' }}>
+              <div style={{ width: '36px', height: '5px', backgroundColor: '#e0e0e0', borderRadius: '3px' }} />
+            </div>
+
+            <h2 className="text-lg font-bold text-center" style={{ color: 'var(--text-primary)', marginBottom: '20px' }}>
+              Tips
+            </h2>
+
+            <div className="space-y-4" style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>
+              <div className="flex items-start gap-3">
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: 'var(--primary-pale)' }}
+                >
+                  <SparklesIcon />
+                </div>
+                <div>
+                  <div className="font-medium" style={{ color: 'var(--text-primary)' }}>AI Generate</div>
+                  <div className="text-sm" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
+                    Start with <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--primary-pale)', color: 'var(--primary)' }}>...</code> to generate items from a prompt
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: 'var(--primary-pale)', color: 'var(--primary)' }}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="font-medium" style={{ color: 'var(--text-primary)' }}>Multiple Items</div>
+                  <div className="text-sm" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
+                    Use commas to add several items at once
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: 'var(--primary-pale)', color: 'var(--primary)' }}
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.2-.64-1.67-.08-.1-.13-.21-.13-.33 0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 8 6.5 8 8 8.67 8 9.5 7.33 11 6.5 11zm3-4C8.67 7 8 6.33 8 5.5S8.67 4 9.5 4s1.5.67 1.5 1.5S10.33 7 9.5 7zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 4 14.5 4s1.5.67 1.5 1.5S15.33 7 14.5 7zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 8 17.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="font-medium" style={{ color: 'var(--text-primary)' }}>Custom Themes</div>
+                  <div className="text-sm" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
+                    Type <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--primary-pale)', color: 'var(--primary)' }}>style: ocean</code> in a list to theme it
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: 'var(--primary-pale)', color: 'var(--primary)' }}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="font-medium" style={{ color: 'var(--text-primary)' }}>AI Transform</div>
+                  <div className="text-sm" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
+                    Use <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--primary-pale)', color: 'var(--primary)' }}>!</code> to reorganize or transform your list
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowTipsModal(false)}
+              className="w-full text-white rounded-xl font-semibold"
+              style={{ backgroundColor: 'var(--primary)', padding: '16px', marginTop: '24px', fontSize: '17px' }}
+            >
+              Got it
             </button>
           </div>
         </div>
