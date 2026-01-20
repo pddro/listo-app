@@ -65,9 +65,10 @@ export function HomeThemeModal({
         }}
       >
         <div
-          className="bg-white rounded-2xl shadow-lg"
+          className="rounded-2xl shadow-lg"
           style={{
             padding: '20px',
+            backgroundColor: 'var(--bg-secondary)',
             border: '1px solid var(--border-light)',
           }}
         >
@@ -125,6 +126,8 @@ export function HomeThemeModal({
               padding: '12px 14px',
               fontSize: '17px',
               borderColor: 'var(--border-light)',
+              backgroundColor: 'var(--bg-primary)',
+              color: 'var(--text-primary)',
             }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && description.trim()) {
@@ -145,6 +148,7 @@ export function HomeThemeModal({
                   padding: '12px 16px',
                   fontSize: '15px',
                   border: '1px solid var(--border-light)',
+                  backgroundColor: 'var(--bg-primary)',
                 }}
               >
                 Reset

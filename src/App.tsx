@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { App as CapacitorApp } from '@capacitor/app';
 import { Preferences } from '@capacitor/preferences';
@@ -31,6 +31,7 @@ function applyThemeToRoot(theme: ThemeColors | null) {
 
 export default function App() {
   const navigate = useNavigate();
+  const hasHandledLaunchUrl = useRef(false);
 
   // Apply stored home theme early before routes render
   useEffect(() => {
@@ -46,7 +47,7 @@ export default function App() {
 
   // Handle deep links (listo://listId or https://listo.to/listId)
   useEffect(() => {
-    // Handle app opened via deep link
+    // Handle app opened via deep link (while app is running)
     CapacitorApp.addListener('appUrlOpen', (event) => {
       const url = event.url;
 
@@ -67,26 +68,30 @@ export default function App() {
       }
     });
 
-    // Check if app was launched with a URL (cold start)
-    CapacitorApp.getLaunchUrl().then((result) => {
-      if (result?.url) {
-        const url = result.url;
+    // Check if app was launched with a URL (cold start) - only handle once
+    if (!hasHandledLaunchUrl.current) {
+      hasHandledLaunchUrl.current = true;
 
-        if (url.startsWith('listo://')) {
-          const listId = url.replace('listo://', '').replace(/^\/+/, '');
-          if (listId) {
-            navigate(`/${listId}`);
+      CapacitorApp.getLaunchUrl().then((result) => {
+        if (result?.url) {
+          const url = result.url;
+
+          if (url.startsWith('listo://')) {
+            const listId = url.replace('listo://', '').replace(/^\/+/, '');
+            if (listId) {
+              navigate(`/${listId}`);
+            }
+          }
+
+          if (url.includes('listo.to/')) {
+            const match = url.match(/listo\.to\/([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) {
+              navigate(`/${match[1]}`);
+            }
           }
         }
-
-        if (url.includes('listo.to/')) {
-          const match = url.match(/listo\.to\/([a-zA-Z0-9_-]+)/);
-          if (match && match[1]) {
-            navigate(`/${match[1]}`);
-          }
-        }
-      }
-    });
+      });
+    }
 
     return () => {
       CapacitorApp.removeAllListeners();

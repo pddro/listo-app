@@ -472,7 +472,6 @@ export default function ListPage() {
             zIndex: 30,
             backgroundColor: 'var(--bg-primary)',
             paddingTop: 'env(safe-area-inset-top, 0px)',
-            borderBottom: '1px solid var(--border-light)',
           }}
         >
           <div
@@ -588,13 +587,22 @@ export default function ListPage() {
           left: 0,
           right: 0,
           zIndex: 30,
-          backgroundColor: 'var(--bg-primary)',
           backdropFilter: 'blur(20px) saturate(180%)',
           WebkitBackdropFilter: 'blur(20px) saturate(180%)',
           paddingTop: 'env(safe-area-inset-top, 0px)',
           borderBottom: '1px solid var(--border-light)',
         }}
       >
+        {/* Theme color overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundColor: 'var(--bg-primary)',
+            opacity: 0.35,
+            pointerEvents: 'none',
+          }}
+        />
         <div
           className="flex items-center justify-between"
           style={{

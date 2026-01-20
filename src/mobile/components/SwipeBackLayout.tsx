@@ -29,8 +29,8 @@ export function SwipeBackLayout({ children }: SwipeBackLayoutProps) {
       touchStartY.current = touch.clientY;
       swipeDirection.current = null;
 
-      // Edge swipe detection - within 30px of left edge
-      isEdgeSwipe.current = touch.clientX <= 30;
+      // Edge swipe detection - within 70px of left edge (generous zone)
+      isEdgeSwipe.current = touch.clientX <= 70;
 
       if (isEdgeSwipe.current) {
         setIsSwipeActive(true);
@@ -44,9 +44,10 @@ export function SwipeBackLayout({ children }: SwipeBackLayoutProps) {
       const deltaX = touch.clientX - touchStartX.current;
       const deltaY = touch.clientY - touchStartY.current;
 
-      // Determine swipe direction on first significant movement
-      if (swipeDirection.current === null && (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10)) {
-        swipeDirection.current = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+      // Determine swipe direction on first significant movement (reduced threshold for quicker detection)
+      if (swipeDirection.current === null && (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5)) {
+        // More forgiving: horizontal if deltaX >= deltaY (not strictly greater)
+        swipeDirection.current = Math.abs(deltaX) >= Math.abs(deltaY) ? 'horizontal' : 'vertical';
       }
 
       // Only process horizontal swipes
@@ -78,8 +79,8 @@ export function SwipeBackLayout({ children }: SwipeBackLayoutProps) {
 
       const currentProgress = swipeProgressRef.current;
 
-      // If swiped more than 35%, go back
-      if (currentProgress > 0.35) {
+      // If swiped more than 25%, go back (more sensitive)
+      if (currentProgress > 0.25) {
         // Animate to completion then navigate
         setSwipeProgress(1);
         setTimeout(() => {
@@ -102,17 +103,17 @@ export function SwipeBackLayout({ children }: SwipeBackLayoutProps) {
       swipeDirection.current = null;
     };
 
-    // Use document-level listeners for better touch capture on iOS
-    document.addEventListener('touchstart', handleTouchStart, { passive: true });
-    document.addEventListener('touchmove', handleTouchMove, { passive: false });
-    document.addEventListener('touchend', handleTouchEnd, { passive: true });
-    document.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+    // Use document-level listeners with capture phase for reliable edge swipe detection
+    document.addEventListener('touchstart', handleTouchStart, { passive: true, capture: true });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false, capture: true });
+    document.addEventListener('touchend', handleTouchEnd, { passive: true, capture: true });
+    document.addEventListener('touchcancel', handleTouchEnd, { passive: true, capture: true });
 
     return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('touchend', handleTouchEnd);
-      document.removeEventListener('touchcancel', handleTouchEnd);
+      document.removeEventListener('touchstart', handleTouchStart, { capture: true });
+      document.removeEventListener('touchmove', handleTouchMove, { capture: true });
+      document.removeEventListener('touchend', handleTouchEnd, { capture: true });
+      document.removeEventListener('touchcancel', handleTouchEnd, { capture: true });
     };
   }, [isListPage, navigate]);
 
@@ -133,11 +134,11 @@ export function SwipeBackLayout({ children }: SwipeBackLayoutProps) {
             transform: `translateX(${previousPageTranslate}%) scale(${previousPageScale})`,
             transition: swipeProgress === 0 || swipeProgress === 1 ? 'transform 0.25s ease-out' : 'none',
             zIndex: 1,
-            backgroundColor: '#f5f5f5',
+            backgroundColor: 'var(--bg-primary)',
           }}
         >
           <div className="w-full h-full flex items-center justify-center">
-            <div className="text-center" style={{ color: '#999' }}>
+            <div className="text-center" style={{ color: 'var(--text-muted)' }}>
               <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
               </svg>
@@ -149,8 +150,9 @@ export function SwipeBackLayout({ children }: SwipeBackLayoutProps) {
 
       {/* Current page */}
       <div
-        className="relative w-full h-full bg-white"
+        className="relative w-full h-full"
         style={{
+          backgroundColor: 'var(--bg-primary)',
           transform: isListPage && isSwipeActive
             ? `translateX(${currentPageTranslate}%) scale(${currentPageScale})`
             : 'none',

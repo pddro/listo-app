@@ -16,9 +16,10 @@ interface SwipeableListRowProps {
   onNavigate: () => void;
   onDelete: () => void;
   onShare: () => void;
+  onDuplicate: () => void;
 }
 
-function SwipeableListRow({ list, onNavigate, onDelete, onShare }: SwipeableListRowProps) {
+function SwipeableListRow({ list, onNavigate, onDelete, onShare, onDuplicate }: SwipeableListRowProps) {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwipeActive, setIsSwipeActive] = useState(false);
   const touchStartX = useRef(0);
@@ -26,9 +27,12 @@ function SwipeableListRow({ list, onNavigate, onDelete, onShare }: SwipeableList
   const swipeDirection = useRef<'horizontal' | 'vertical' | null>(null);
   const rowRef = useRef<HTMLDivElement>(null);
 
-  const ACTION_WIDTH = 75; // Width of each action button
-  const TOTAL_ACTIONS_WIDTH = ACTION_WIDTH * 2; // Delete + Share
+  const ACTION_WIDTH = 56; // Width of each action button
+  const TOTAL_ACTIONS_WIDTH = ACTION_WIDTH * 3; // Duplicate + Share + Delete
   const SNAP_THRESHOLD = ACTION_WIDTH / 2;
+
+  // Get theme color for icons (use list's theme or default primary)
+  const iconColor = list.themeTextColor || 'var(--primary)';
 
   const handleTouchStart = (e: React.TouchEvent) => {
     const touch = e.touches[0];
@@ -96,23 +100,35 @@ function SwipeableListRow({ list, onNavigate, onDelete, onShare }: SwipeableList
   return (
     <div className="relative overflow-hidden">
       {/* Action buttons (behind the row) */}
-      <div className="absolute right-0 top-0 bottom-0 flex">
+      <div className="absolute right-0 top-0 bottom-0 flex items-center">
+        {/* Duplicate */}
         <button
-          onClick={() => { onShare(); closeSwipe(); }}
-          className="flex items-center justify-center text-white font-medium"
-          style={{ width: `${ACTION_WIDTH}px`, backgroundColor: '#007AFF' }}
+          onClick={() => { onDuplicate(); closeSwipe(); }}
+          className="flex items-center justify-center active:opacity-60"
+          style={{ width: `${ACTION_WIDTH}px`, height: '100%', color: iconColor }}
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
           </svg>
         </button>
+        {/* Share */}
         <button
-          onClick={() => { onDelete(); closeSwipe(); }}
-          className="flex items-center justify-center text-white font-medium"
-          style={{ width: `${ACTION_WIDTH}px`, backgroundColor: '#FF3B30' }}
+          onClick={() => { onShare(); closeSwipe(); }}
+          className="flex items-center justify-center active:opacity-60"
+          style={{ width: `${ACTION_WIDTH}px`, height: '100%', color: iconColor }}
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+          </svg>
+        </button>
+        {/* Delete */}
+        <button
+          onClick={() => { onDelete(); closeSwipe(); }}
+          className="flex items-center justify-center active:opacity-60"
+          style={{ width: `${ACTION_WIDTH}px`, height: '100%', color: '#FF3B30' }}
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
         </button>
       </div>
@@ -216,6 +232,8 @@ export default function HomePage() {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showTipsModal, setShowTipsModal] = useState(false);
   const [showThemeModal, setShowThemeModal] = useState(false);
+  const [deleteConfirmList, setDeleteConfirmList] = useState<SavedList | null>(null);
+  const [duplicateConfirmList, setDuplicateConfirmList] = useState<SavedList | null>(null);
   const navigate = useNavigate();
   const { generateItems } = useAI();
   const { lists: recentLists, archivedLists, addList, archiveList, restoreList, deleteList } = useRecentLists();
@@ -310,6 +328,76 @@ export default function HomePage() {
     } else {
       // Fallback: copy to clipboard
       await navigator.clipboard.writeText(url);
+    }
+  };
+
+  // Duplicate a list with all items (unchecked)
+  const handleDuplicate = async (sourceListId: string, sourceTitle: string | null, sourceThemeColor: string | null) => {
+    try {
+      // Generate new list ID
+      const newListId = generateListId();
+      const newTitle = sourceTitle ? `${sourceTitle} (Copy)` : 'Untitled List (Copy)';
+
+      // Fetch source list to get theme
+      const { data: sourceList } = await supabase
+        .from('lists')
+        .select('theme')
+        .eq('id', sourceListId)
+        .single();
+
+      // Create the new list with theme
+      const { error: listError } = await supabase
+        .from('lists')
+        .insert({
+          id: newListId,
+          title: newTitle,
+          theme: sourceList?.theme || null,
+        });
+
+      if (listError) throw listError;
+
+      // Fetch all items from source list
+      const { data: sourceItems, error: fetchError } = await supabase
+        .from('items')
+        .select('*')
+        .eq('list_id', sourceListId)
+        .order('position', { ascending: true });
+
+      if (fetchError) throw fetchError;
+
+      if (sourceItems && sourceItems.length > 0) {
+        // Create a mapping from old IDs to new IDs for parent relationships
+        const idMapping: Record<string, string> = {};
+
+        // First pass: create ID mappings
+        sourceItems.forEach((item) => {
+          idMapping[item.id] = crypto.randomUUID();
+        });
+
+        // Second pass: insert items with new IDs and mapped parent_ids
+        const newItems = sourceItems.map((item) => ({
+          id: idMapping[item.id],
+          list_id: newListId,
+          content: item.content,
+          completed: false, // All items start unchecked
+          parent_id: item.parent_id ? idMapping[item.parent_id] : null,
+          position: item.position,
+        }));
+
+        const { error: itemsError } = await supabase
+          .from('items')
+          .insert(newItems);
+
+        if (itemsError) throw itemsError;
+      }
+
+      // Add to recent lists
+      addList(newListId, newTitle, sourceThemeColor);
+
+      // Navigate to new list
+      navigate(`/${newListId}`);
+    } catch (err) {
+      console.error('Duplicate failed:', err);
     }
   };
 
@@ -573,46 +661,48 @@ export default function HomePage() {
 
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="h-screen flex flex-col"
       style={{
         backgroundColor: 'var(--bg-primary)',
         paddingTop: 'env(safe-area-inset-top, 0px)',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between" style={{ padding: '16px 20px 0 20px' }}>
-        <div className="flex items-baseline gap-2">
-          <h1 className="text-xl font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--text-primary)' }}>
-            Listo
-          </h1>
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-            Create a list. Share the link.
-          </p>
+      {/* Fixed Header Section */}
+      <div className="flex-shrink-0" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        {/* Header */}
+        <div className="flex items-center justify-between" style={{ padding: '16px 20px 0 20px' }}>
+          <div className="flex items-baseline gap-2">
+            <h1 className="text-xl font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--text-primary)' }}>
+              Listo
+            </h1>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+              Create a list. Share the link.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowThemeModal(true)}
+              className="active:opacity-60"
+              style={{ color: 'var(--primary)' }}
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.2-.64-1.67-.08-.1-.13-.21-.13-.33 0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 8 6.5 8 8 8.67 8 9.5 7.33 11 6.5 11zm3-4C8.67 7 8 6.33 8 5.5S8.67 4 9.5 4s1.5.67 1.5 1.5S10.33 7 9.5 7zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 4 14.5 4s1.5.67 1.5 1.5S15.33 7 14.5 7zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 8 17.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setShowTipsModal(true)}
+              className="font-medium"
+              style={{ color: 'var(--primary)', fontSize: '15px' }}
+            >
+              Tips
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setShowThemeModal(true)}
-            className="active:opacity-60"
-            style={{ color: 'var(--primary)' }}
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.2-.64-1.67-.08-.1-.13-.21-.13-.33 0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 8 6.5 8 8 8.67 8 9.5 7.33 11 6.5 11zm3-4C8.67 7 8 6.33 8 5.5S8.67 4 9.5 4s1.5.67 1.5 1.5S10.33 7 9.5 7zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 4 14.5 4s1.5.67 1.5 1.5S15.33 7 14.5 7zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 8 17.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
-            </svg>
-          </button>
-          <button
-            onClick={() => setShowTipsModal(true)}
-            className="font-medium"
-            style={{ color: 'var(--primary)', fontSize: '15px' }}
-          >
-            Tips
-          </button>
-        </div>
-      </div>
 
-      {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto" style={{ padding: '20px' }}>
         {/* Create List Input */}
+        <div style={{ padding: '20px 20px 0 20px' }}>
+          {/* Create List Input */}
         <div className="relative">
           <div className="flex">
             <div className="relative flex-1">
@@ -714,22 +804,34 @@ export default function HomePage() {
           />
         </div>
 
+        {/* Your Lists Title */}
+        {recentLists.length > 0 && (
+          <div
+            className="font-semibold uppercase tracking-wide text-left"
+            style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '24px', marginBottom: '8px' }}
+          >
+            Your Lists
+          </div>
+        )}
+        </div>
+      </div>
+
+      {/* Scrollable Lists Section */}
+      <div
+        className="flex-1 overflow-y-auto"
+        style={{ paddingLeft: '20px', paddingRight: '20px' }}
+      >
         {/* Your Lists */}
         {recentLists.length > 0 && (
-          <div style={{ marginTop: '24px' }}>
-            <div
-              className="font-semibold uppercase tracking-wide text-left"
-              style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '8px' }}
-            >
-              Your Lists
-            </div>
+          <div>
             {recentLists.map((list) => (
               <SwipeableListRow
                 key={list.id}
                 list={list}
                 onNavigate={() => navigate(`/${list.id}`)}
-                onDelete={() => deleteList(list.id)}
+                onDelete={() => setDeleteConfirmList(list)}
                 onShare={() => handleShare(list.id, list.title)}
+                onDuplicate={() => setDuplicateConfirmList(list)}
               />
             ))}
           </div>
@@ -828,7 +930,7 @@ export default function HomePage() {
       {showPrivacyModal && (
         <div
           className="fixed inset-0 z-50 flex items-end justify-center"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
           onClick={() => setShowPrivacyModal(false)}
         >
           <div
@@ -888,7 +990,7 @@ export default function HomePage() {
       {showTipsModal && (
         <div
           className="fixed inset-0 z-50 flex items-end justify-center"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
           onClick={() => setShowTipsModal(false)}
         >
           <div
@@ -996,6 +1098,92 @@ export default function HomePage() {
         onReset={homeTheme ? handleHomeThemeReset : undefined}
         hasTheme={!!homeTheme}
       />
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmList && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
+          onClick={() => setDeleteConfirmList(null)}
+        >
+          <div
+            className="rounded-2xl mx-6 overflow-hidden"
+            style={{ maxWidth: '300px', width: '100%', backgroundColor: 'var(--bg-primary)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ padding: '24px 24px 20px' }}>
+              <h3 className="text-lg font-semibold text-center" style={{ color: 'var(--text-primary)' }}>
+                Delete List?
+              </h3>
+              <p className="text-center" style={{ color: 'var(--text-muted)', fontSize: '14px', marginTop: '8px' }}>
+                "{deleteConfirmList.title || 'Untitled List'}" will be removed from your lists.
+              </p>
+            </div>
+            <div style={{ borderTop: '1px solid var(--border-light)' }} className="flex">
+              <button
+                onClick={() => setDeleteConfirmList(null)}
+                className="flex-1 font-medium active:opacity-60"
+                style={{ color: 'var(--primary)', borderRight: '1px solid var(--border-light)', padding: '16px' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  deleteList(deleteConfirmList.id);
+                  setDeleteConfirmList(null);
+                }}
+                className="flex-1 font-medium active:opacity-60"
+                style={{ color: '#FF3B30', padding: '16px' }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Duplicate Confirmation Modal */}
+      {duplicateConfirmList && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
+          onClick={() => setDuplicateConfirmList(null)}
+        >
+          <div
+            className="rounded-2xl mx-6 overflow-hidden"
+            style={{ maxWidth: '300px', width: '100%', backgroundColor: 'var(--bg-primary)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ padding: '24px 24px 20px' }}>
+              <h3 className="text-lg font-semibold text-center" style={{ color: 'var(--text-primary)' }}>
+                Duplicate List?
+              </h3>
+              <p className="text-center" style={{ color: 'var(--text-muted)', fontSize: '14px', marginTop: '8px' }}>
+                A copy of "{duplicateConfirmList.title || 'Untitled List'}" will be created and opened.
+              </p>
+            </div>
+            <div style={{ borderTop: '1px solid var(--border-light)' }} className="flex">
+              <button
+                onClick={() => setDuplicateConfirmList(null)}
+                className="flex-1 font-medium active:opacity-60"
+                style={{ color: 'var(--text-muted)', borderRight: '1px solid var(--border-light)', padding: '16px' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  handleDuplicate(duplicateConfirmList.id, duplicateConfirmList.title, duplicateConfirmList.themeColor);
+                  setDuplicateConfirmList(null);
+                }}
+                className="flex-1 font-medium active:opacity-60"
+                style={{ color: 'var(--primary)', padding: '16px' }}
+              >
+                Duplicate
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
