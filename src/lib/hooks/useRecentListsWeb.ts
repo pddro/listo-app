@@ -6,6 +6,9 @@ export interface SavedList {
   id: string;
   title: string | null;
   themeColor: string | null;
+  themeTextColor: string | null;
+  completedCount: number;
+  totalCount: number;
   createdAt: string;
   archived: boolean;
 }
@@ -59,6 +62,9 @@ export function useRecentListsWeb() {
       id,
       title,
       themeColor,
+      themeTextColor: null,
+      completedCount: 0,
+      totalCount: 0,
       createdAt: new Date().toISOString(),
       archived: false,
     };
@@ -67,7 +73,7 @@ export function useRecentListsWeb() {
   }, [saveLists]);
 
   // Update list metadata
-  const updateList = useCallback((id: string, updates: Partial<Pick<SavedList, 'title' | 'themeColor'>>) => {
+  const updateList = useCallback((id: string, updates: Partial<Pick<SavedList, 'title' | 'themeColor' | 'themeTextColor' | 'completedCount' | 'totalCount'>>) => {
     const currentLists = listsRef.current;
     const newLists = currentLists.map(list =>
       list.id === id ? { ...list, ...updates } : list

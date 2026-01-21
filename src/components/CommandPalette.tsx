@@ -299,16 +299,17 @@ export function CommandPalette({
       />
 
       {/* Bottom Sheet */}
-      <div
-        ref={sheetRef}
-        className="fixed bottom-0 left-0 right-0 z-[60] rounded-t-2xl overflow-hidden"
-        style={{
-          backgroundColor: 'var(--bg-primary)',
-          maxHeight: '70vh',
-          paddingBottom: 'env(safe-area-inset-bottom, 16px)',
-          animation: 'slideUp 0.25s ease-out',
-        }}
-      >
+      <div className="fixed bottom-0 left-0 right-0 z-[60] flex justify-center">
+        <div
+          ref={sheetRef}
+          className="w-full max-w-lg rounded-t-2xl overflow-hidden"
+          style={{
+            backgroundColor: 'var(--bg-primary)',
+            maxHeight: '70vh',
+            paddingBottom: 'env(safe-area-inset-bottom, 16px)',
+            animation: 'slideUp 0.25s ease-out',
+          }}
+        >
         {/* Handle */}
         <div className="flex justify-center" style={{ padding: '12px 16px 8px 16px' }}>
           <div
@@ -452,6 +453,7 @@ export function CommandPalette({
               </button>
             ))}
           </div>
+        </div>
         </div>
       </div>
 

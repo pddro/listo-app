@@ -607,7 +607,7 @@ export function NewItemInput({
               type="button"
               onClick={() => setShowCommandPalette(true)}
               className="flex-shrink-0 p-2 rounded-md active:opacity-60 transition-opacity"
-              style={{ color: 'var(--text-muted)' }}
+              style={{ color: 'var(--primary)' }}
               aria-label="Open commands"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -620,8 +620,8 @@ export function NewItemInput({
         {/* Inline hints - only show when input is empty and not processing */}
         {!isProcessing && !value.trim() && (
           <div
-            className="flex items-center justify-between gap-2 pt-1.5"
-            style={{ fontSize: '10px', color: 'var(--text-muted)' }}
+            className="flex items-center justify-between gap-2"
+            style={{ fontSize: '10px', color: 'var(--text-muted)', paddingTop: '8px' }}
           >
             <span><span style={{ color: 'var(--primary)' }}>...</span> generate</span>
             <span><span style={{ color: 'var(--primary)' }}>!</span> transform</span>

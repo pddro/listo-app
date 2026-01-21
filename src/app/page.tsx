@@ -50,6 +50,9 @@ export default function Home() {
   const [isPlaceholderFading, setIsPlaceholderFading] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
+  const [copiedListId, setCopiedListId] = useState<string | null>(null);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [welcomeAnimating, setWelcomeAnimating] = useState(false);
   const router = useRouter();
   const { generateItems } = useAI();
   const { lists: recentLists, archivedLists, addList, updateList, archiveList, restoreList } = useRecentListsWeb();
@@ -59,31 +62,85 @@ export default function Home() {
     analytics.pageVisit('/');
   }, []);
 
-  // Sync list titles from database on mount
+  // Show welcome popup for first-time visitors
   useEffect(() => {
-    const syncListTitles = async () => {
+    const hasSeenWelcome = localStorage.getItem('listo_has_seen_welcome');
+    if (!hasSeenWelcome) {
+      // Small delay for smoother experience
+      setTimeout(() => {
+        setShowWelcome(true);
+        setTimeout(() => setWelcomeAnimating(true), 50);
+      }, 500);
+    }
+  }, []);
+
+  const dismissWelcome = () => {
+    setWelcomeAnimating(false);
+    setTimeout(() => {
+      setShowWelcome(false);
+      localStorage.setItem('listo_has_seen_welcome', 'true');
+    }, 300);
+  };
+
+  // Sync list data from database on mount
+  useEffect(() => {
+    const syncListData = async () => {
       if (recentLists.length === 0) return;
 
       const listIds = recentLists.map(list => list.id);
-      const { data } = await supabase
+
+      // Fetch list metadata
+      const { data: listsData } = await supabase
         .from('lists')
         .select('id, title, theme')
         .in('id', listIds);
 
-      if (data) {
-        data.forEach(dbList => {
+      // Fetch item counts for each list
+      const { data: itemsData } = await supabase
+        .from('items')
+        .select('list_id, completed')
+        .in('list_id', listIds);
+
+      // Calculate counts per list
+      const countsByList: Record<string, { total: number; completed: number }> = {};
+      if (itemsData) {
+        itemsData.forEach(item => {
+          if (!countsByList[item.list_id]) {
+            countsByList[item.list_id] = { total: 0, completed: 0 };
+          }
+          countsByList[item.list_id].total++;
+          if (item.completed) {
+            countsByList[item.list_id].completed++;
+          }
+        });
+      }
+
+      if (listsData) {
+        listsData.forEach(dbList => {
           const localList = recentLists.find(l => l.id === dbList.id);
-          if (localList && (localList.title !== dbList.title || localList.themeColor !== dbList.theme?.bgPrimary)) {
+          const counts = countsByList[dbList.id] || { total: 0, completed: 0 };
+          const needsUpdate = localList && (
+            localList.title !== dbList.title ||
+            localList.themeColor !== dbList.theme?.primary ||
+            localList.themeTextColor !== dbList.theme?.textPrimary ||
+            localList.totalCount !== counts.total ||
+            localList.completedCount !== counts.completed
+          );
+
+          if (needsUpdate) {
             updateList(dbList.id, {
               title: dbList.title,
-              themeColor: dbList.theme?.bgPrimary || null,
+              themeColor: dbList.theme?.primary || null,
+              themeTextColor: dbList.theme?.textPrimary || null,
+              totalCount: counts.total,
+              completedCount: counts.completed,
             });
           }
         });
       }
     };
 
-    syncListTitles();
+    syncListData();
   }, [recentLists.length]); // Only re-run when list count changes
 
   // Rotate placeholders every 2.5 seconds
@@ -525,30 +582,6 @@ export default function Home() {
           />
         </div>
 
-        {/* Shortcuts */}
-        <div
-          className="rounded-lg text-xs text-left"
-          style={{
-            marginTop: '32px',
-            padding: '16px 20px',
-            backgroundColor: 'var(--primary-pale)',
-            color: 'var(--text-secondary)',
-          }}
-        >
-          <div className="font-bold uppercase tracking-wide text-xs mb-3" style={{ color: 'var(--primary)' }}>
-            Shortcuts
-          </div>
-          <div className="space-y-3">
-            <div>
-              <div>Start with <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary)' }}>...</code> and a prompt to auto generate items</div>
-              <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Example: ...packing list for hiking day trip</div>
-            </div>
-            <div style={{ marginTop: '16px' }}>
-              <div>Create many items at once by separating them with a comma</div>
-              <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Example: cheese, bread, tomatoes, bacon, mayonnaise</div>
-            </div>
-          </div>
-        </div>
 
         {/* Recent Lists */}
         {recentLists.length > 0 && (
@@ -556,31 +589,63 @@ export default function Home() {
             <div className="font-bold uppercase tracking-wide text-xs mb-3 text-left" style={{ color: 'var(--text-muted)' }}>
               Your Lists
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               {recentLists.map((list) => (
                 <div
                   key={list.id}
-                  className="flex items-center gap-3 py-3 px-3 rounded-lg cursor-pointer active:bg-gray-100 hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-4 py-4 px-4 rounded-xl cursor-pointer active:bg-gray-100 hover:bg-gray-50 transition-colors"
+                  style={{ border: '1px solid var(--border-light)', paddingRight: '8px' }}
                   onClick={() => router.push(`/${list.id}`)}
                 >
+                  {/* Progress badge */}
                   <div
-                    className="w-4 h-4 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: list.themeColor || 'var(--primary)' }}
-                  />
-                  <span className="flex-1 text-sm text-left truncate" style={{ color: 'var(--text-primary)' }}>
+                    className="flex-shrink-0 rounded-lg font-semibold text-sm flex items-center justify-center"
+                    style={{
+                      width: '56px',
+                      height: '56px',
+                      backgroundColor: list.themeColor || 'var(--primary)',
+                      color: list.themeTextColor || 'white',
+                    }}
+                  >
+                    {list.totalCount > 0 ? `${list.completedCount}/${list.totalCount}` : '0'}
+                  </div>
+                  <span className="flex-1 text-base text-left truncate font-medium" style={{ color: 'var(--text-primary)' }}>
                     {list.title || 'Untitled List'}
                   </span>
+                  {/* Copy link button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigator.clipboard.writeText(`${window.location.origin}/${list.id}`);
+                      setCopiedListId(list.id);
+                      setTimeout(() => setCopiedListId(null), 1500);
+                    }}
+                    className="p-2 transition-colors duration-200 hover:text-[var(--primary)]"
+                    style={{ color: copiedListId === list.id ? 'var(--primary)' : 'var(--text-muted)' }}
+                    title="Copy link"
+                  >
+                    {copiedListId === list.id ? (
+                      <svg className="w-5 h-5 transition-transform duration-200 scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                      </svg>
+                    )}
+                  </button>
+                  {/* Archive button */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       archiveList(list.id);
                     }}
-                    className="p-2 -mr-1 active:bg-gray-200 rounded-full transition-colors"
+                    className="p-2 transition-colors duration-200 hover:text-[var(--primary)]"
                     style={{ color: 'var(--text-muted)' }}
                     title="Archive"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                     </svg>
                   </button>
                 </div>
@@ -607,18 +672,27 @@ export default function Home() {
               Archived ({archivedLists.length})
             </button>
             {showArchived && (
-              <div className="space-y-1 mt-2">
+              <div className="space-y-2 mt-2">
                 {archivedLists.map((list) => (
                   <div
                     key={list.id}
-                    className="flex items-center gap-3 py-2 px-3 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors group"
+                    className="flex items-center gap-4 py-3 px-4 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors group opacity-60"
+                    style={{ border: '1px solid var(--border-light)' }}
                     onClick={() => router.push(`/${list.id}`)}
                   >
+                    {/* Progress badge */}
                     <div
-                      className="w-3 h-3 rounded-full flex-shrink-0 opacity-50"
-                      style={{ backgroundColor: list.themeColor || 'var(--primary)' }}
-                    />
-                    <span className="flex-1 text-sm text-left truncate opacity-50" style={{ color: 'var(--text-primary)' }}>
+                      className="flex-shrink-0 rounded-lg font-semibold text-xs flex items-center justify-center"
+                      style={{
+                        width: '44px',
+                        height: '44px',
+                        backgroundColor: list.themeColor || 'var(--primary)',
+                        color: list.themeTextColor || 'white',
+                      }}
+                    >
+                      {list.totalCount > 0 ? `${list.completedCount}/${list.totalCount}` : '0'}
+                    </div>
+                    <span className="flex-1 text-sm text-left truncate" style={{ color: 'var(--text-primary)' }}>
                       {list.title || 'Untitled List'}
                     </span>
                     <button
@@ -823,6 +897,153 @@ export default function Home() {
           </button>
         </div>
       </div>
+
+      {/* Welcome Popup */}
+      {showWelcome && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{
+            backgroundColor: welcomeAnimating ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0)',
+            transition: 'background-color 0.3s ease-out',
+          }}
+          onClick={dismissWelcome}
+        >
+          <div
+            className="bg-white rounded-2xl w-full max-w-sm overflow-hidden"
+            style={{
+              transform: welcomeAnimating ? 'scale(1) translateY(0)' : 'scale(0.95) translateY(20px)',
+              opacity: welcomeAnimating ? 1 : 0,
+              transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-out',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header with icon */}
+            <div
+              className="text-center"
+              style={{ padding: '32px 24px 24px 24px' }}
+            >
+              {/* Animated checkmark icon */}
+              <div
+                className="mx-auto flex items-center justify-center rounded-full"
+                style={{
+                  width: '64px',
+                  height: '64px',
+                  backgroundColor: 'var(--primary-pale)',
+                  marginBottom: '20px',
+                }}
+              >
+                <svg
+                  className="w-8 h-8"
+                  style={{ color: 'var(--primary)' }}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M5 13l4 4L19 7"
+                    style={{
+                      strokeDasharray: 24,
+                      strokeDashoffset: welcomeAnimating ? 0 : 24,
+                      transition: 'stroke-dashoffset 0.5s ease-out 0.2s',
+                    }}
+                  />
+                </svg>
+              </div>
+
+              <h2
+                className="text-xl font-bold"
+                style={{ color: 'var(--text-primary)', marginBottom: '8px' }}
+              >
+                Welcome to Listo!
+              </h2>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                The simplest way to create and share lists
+              </p>
+            </div>
+
+            {/* Content */}
+            <div style={{ padding: '0 24px 24px 24px' }}>
+              {/* Tip 1 */}
+              <div
+                className="rounded-xl"
+                style={{
+                  padding: '16px',
+                  backgroundColor: 'var(--primary-pale)',
+                  marginBottom: '12px',
+                }}
+              >
+                <div className="flex items-start gap-3">
+                  <div
+                    className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm"
+                    style={{ backgroundColor: 'var(--primary)', color: 'white' }}
+                  >
+                    ...
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm" style={{ color: 'var(--text-primary)', marginBottom: '4px' }}>
+                      AI-Powered Lists
+                    </div>
+                    <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                      Start with <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'white', color: 'var(--primary)' }}>...</code> and describe what you need.
+                      <span style={{ color: 'var(--text-muted)', display: 'block', marginTop: '4px' }}>
+                        Try: ...packing list for beach vacation
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tip 2 */}
+              <div
+                className="rounded-xl"
+                style={{
+                  padding: '16px',
+                  backgroundColor: '#F8FAFC',
+                  marginBottom: '20px',
+                }}
+              >
+                <div className="flex items-start gap-3">
+                  <div
+                    className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: '#E2E8F0' }}
+                  >
+                    <svg className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm" style={{ color: 'var(--text-primary)', marginBottom: '4px' }}>
+                      Instant Sharing
+                    </div>
+                    <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                      Every list has a unique URL. Share it with anyone on mobile or desktop — they can view and edit in real-time. No signup needed.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* CTA Button */}
+              <button
+                onClick={dismissWelcome}
+                className="w-full font-semibold text-white rounded-xl transition-all duration-200 active:scale-[0.98]"
+                style={{
+                  backgroundColor: 'var(--primary)',
+                  padding: '14px 24px',
+                  fontSize: '15px',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-dark)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
+              >
+                Got it, let&apos;s go!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Privacy Policy Modal */}
       {showPrivacyModal && (
