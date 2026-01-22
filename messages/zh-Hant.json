@@ -1,0 +1,323 @@
+{
+  "metadata": {
+    "title": "Listo - 即時共享清單 | 無需註冊",
+    "description": "秒速建立和分享清單。無需註冊，無需應用程式。即時協作，AI 生成內容，自訂主題。只需分享連結。",
+    "ogTitle": "Listo - 即時共享清單",
+    "ogDescription": "秒速建立和分享清單。無需註冊。與任何人即時協作。"
+  },
+  "home": {
+    "title": "Listo",
+    "tagline": "建立清單。分享連結。即時協作。",
+    "benefits": {
+      "noSignup": "無需註冊",
+      "realtime": "即時同步",
+      "aiPowered": "AI 驅動"
+    },
+    "buttons": {
+      "create": "建立",
+      "restore": "恢復",
+      "archived": "已封存"
+    },
+    "placeholders": [
+      "墨西哥捲餅購物清單",
+      "海灘度假行李清單",
+      "看醫生要問的問題",
+      "這週末要看的電影",
+      "搬家前要做的事",
+      "給媽媽的禮物點子",
+      "今年要讀的書",
+      "居家改造專案",
+      "每週餐食計畫",
+      "夢想旅行清單"
+    ],
+    "recentLists": "你的清單",
+    "noRecentLists": "沒有最近的清單",
+    "untitledList": "無標題清單",
+    "customStyles": {
+      "title": "無限自訂風格",
+      "description": "描述任何風格，系統會自動為你設計",
+      "instruction": "在清單中輸入 <code>風格: 海邊日落</code> 來自訂外觀"
+    },
+    "tips": {
+      "title": "小提示",
+      "items": [
+        "輸入 ... 用 AI 生成項目",
+        "輸入 ! 轉換你的清單",
+        "輸入 風格: 建立自訂顏色",
+        "輸入 # 建立分類"
+      ]
+    },
+    "privacy": {
+      "title": "隱私權政策",
+      "lastUpdated": "最後更新：2025年1月",
+      "content": "Listo 以隱私為設計理念。你的清單安全儲存，只能透過其唯一 URL 存取。我們不會出售你的資料或用於廣告目的。",
+      "note": "注意：所有清單都是公開 URL。請勿在清單中分享個人資訊。",
+      "readPolicy": "閱讀我們的隱私權政策",
+      "sections": {
+        "publicUse": {
+          "title": "公開使用和分享",
+          "content": "LISTO 清單本質上是公開的。一旦你建立清單並分享連結，任何擁有該連結的人都可以檢視和編輯清單。由於清單設計為自由分享，我們建議不要使用 LISTO 儲存或傳輸敏感、機密或任何你不希望公開的個人資訊。"
+        },
+        "dataCollection": {
+          "title": "資料收集和使用",
+          "content": "目前，LISTO 不需要用戶註冊，這意味著我們不會收集姓名、電子郵件地址或其他聯絡資訊等個人資料。所有清單都是匿名建立的。"
+        },
+        "analytics": {
+          "title": "分析",
+          "content": "我們使用 Google Analytics 來分析 LISTO 的效能，這有助於我們匿名瞭解流量模式和用戶互動。Google Analytics 可能會收集非個人身份資訊，如裝置類型、瀏覽器類型以及你與 LISTO 的互動方式。這些資料僅用於改善用戶體驗和我們的服務。"
+        },
+        "contact": {
+          "title": "聯絡資訊",
+          "content": "如果你對本隱私權政策或 LISTO 的做法有任何疑問，請隨時透過以下方式聯絡我們"
+        },
+        "changes": "請注意，我們的隱私權政策可能會不時更改。我們不會在未通知的情況下減少你在本隱私權政策下的權利，並且預計大多數更改將是次要的。"
+      }
+    }
+  },
+  "list": {
+    "untitled": "無標題清單",
+    "share": {
+      "title": "分享",
+      "copyLink": "複製連結",
+      "copyMarkdown": "複製為 Markdown",
+      "linkCopied": "連結已複製！",
+      "markdownCopied": "Markdown 已複製！",
+      "sendEmail": "傳送郵件",
+      "exportTodoist": "匯出到 Todoist",
+      "csvSubtitle": "可匯入任何 Todoist 專案的 CSV 檔案",
+      "instruction": "任何擁有此連結的人都可以即時檢視和編輯清單。"
+    },
+    "footer": {
+      "createdWith": "由 Listo 建立",
+      "home": "首頁",
+      "newList": "新建清單"
+    },
+    "backToList": "返回清單"
+  },
+  "input": {
+    "placeholder": "新增項目...",
+    "notePlaceholder": "備註: 在這裡輸入備註... (Shift+Enter 換行)",
+    "modes": {
+      "generate": "AI 將生成項目",
+      "transform": "AI 將轉換清單",
+      "theme": "AI 將生成主題",
+      "addingItems": "正在新增 {count} 個項目",
+      "emoji": "啟用表情符號模式",
+      "title": "生成清單標題",
+      "newList": "在新分頁建立新清單",
+      "removeTheme": "移除自訂主題",
+      "note": "輸入你的備註...",
+      "addingNote": "正在新增備註",
+      "category": "建立分類標題"
+    },
+    "commandPreview": {
+      "completeAll": "完成所有項目",
+      "resetAll": "重設所有項目",
+      "enableLarge": "啟用大字模式",
+      "disableLarge": "停用大字模式",
+      "clearCompleted": "刪除所有已完成項目",
+      "sort": "按字母順序排序",
+      "sortAll": "全部按字母順序排序",
+      "removeCategories": "移除所有分類",
+      "toggleEmoji": "切換表情符號模式",
+      "nukeAll": "刪除所有項目",
+      "generateTitle": "生成清單標題",
+      "newList": "在新分頁建立新清單",
+      "resetTheme": "移除自訂主題"
+    },
+    "processing": {
+      "thinking": "AI 思考中...",
+      "generatingTheme": "正在生成主題...",
+      "reorganizing": "正在重組清單...",
+      "unknownCommand": "未知指令"
+    },
+    "hints": {
+      "generate": "生成",
+      "transform": "轉換",
+      "theme": "主題",
+      "category": "分類",
+      "multi": "多個"
+    }
+  },
+  "commands": {
+    "title": "指令",
+    "done": "完成",
+    "sections": {
+      "aiFeatures": "AI 功能",
+      "quickActions": "快速操作",
+      "modes": "模式"
+    },
+    "items": {
+      "generate": {
+        "label": "生成項目",
+        "description": "AI 根據你的描述建立項目"
+      },
+      "transform": {
+        "label": "AI 轉換",
+        "description": "按你的方式轉換清單"
+      },
+      "theme": {
+        "label": "自訂主題",
+        "description": "從描述生成顏色"
+      },
+      "generateTitle": {
+        "label": "生成標題",
+        "description": "AI 根據項目建立標題"
+      },
+      "addCategory": {
+        "label": "新增分類",
+        "description": "建立分組標題"
+      },
+      "completeAll": {
+        "label": "全部完成",
+        "description": "將所有項目標記為已完成"
+      },
+      "resetAll": {
+        "label": "全部重設",
+        "description": "取消所有項目的完成狀態"
+      },
+      "clearCompleted": {
+        "label": "清除已完成",
+        "description": "刪除所有已標記的項目"
+      },
+      "sortItems": {
+        "label": "排序項目",
+        "description": "按字母順序排列所有項目"
+      },
+      "removeCategories": {
+        "label": "移除分類",
+        "description": "展開所有分組"
+      },
+      "largeMode": {
+        "label": "大字模式",
+        "description": "將所有內容放大 2 倍"
+      },
+      "normalMode": {
+        "label": "正常模式",
+        "description": "恢復正常大小"
+      },
+      "emojifyOn": {
+        "label": "表情符號模式",
+        "description": "自動為新項目新增表情符號"
+      },
+      "emojifyOff": {
+        "label": "關閉表情符號",
+        "description": "停止自動新增表情符號"
+      },
+      "resetTheme": {
+        "label": "重設主題",
+        "description": "移除自訂顏色"
+      }
+    }
+  },
+  "dictation": {
+    "listening": "正在聆聽...",
+    "tapToStop": "點擊任意處停止",
+    "cancel": "取消",
+    "timeRemaining": "剩餘 {time}",
+    "microphoneDenied": "麥克風權限被拒絕"
+  },
+  "errors": {
+    "promptRequired": "需要輸入文字",
+    "itemsRequired": "需要項目陣列",
+    "instructionRequired": "需要指令",
+    "invalidAction": "無效操作",
+    "aiProcessingFailed": "AI 處理失敗",
+    "themeGenerationFailed": "主題生成失敗",
+    "textRequired": "需要文字",
+    "emojifyFailed": "新增表情符號失敗",
+    "titleGenerationFailed": "標題生成失敗",
+    "noAudioFile": "未提供音訊檔案",
+    "transcriptionFailed": "轉錄失敗",
+    "transcriptionTimeout": "轉錄逾時",
+    "noItemsToReorganize": "沒有可重組的項目",
+    "listManipulationNotAvailable": "清單操作不可用",
+    "failedToGenerateItems": "生成項目失敗",
+    "failedToGenerateList": "生成清單失敗"
+  },
+  "tutorial": {
+    "listTitle": "歡迎使用 Listo！✨",
+    "gettingStarted": {
+      "title": "#開始使用",
+      "items": [
+        "點擊任意項目標記完成 — 現在就試試！",
+        "長按並拖動任意項目重新排序",
+        "點擊上方的分享按鈕分享此清單 — 任何有連結的人都可以協作！"
+      ]
+    },
+    "aiMagic": {
+      "title": "#AI 魔法 ✨",
+      "items": [
+        "輸入 ...墨西哥捲購物清單，AI 會立即生成項目",
+        "輸入 !按通道排序 用 AI 重組你的清單",
+        "輸入 !按類別分組 將項目組織成分類",
+        "點擊麥克風按鈕語音新增項目，解放雙手"
+      ]
+    },
+    "proTips": {
+      "title": "#專業技巧 🚀",
+      "items": [
+        "輸入 牛奶, 雞蛋, 麵包 一次新增多個項目",
+        "以 # 開頭建立新分類",
+        "輸入 風格: 海洋日落 給清單自訂主題",
+        "點擊 ⚡ 圖示查看所有可用指令"
+      ]
+    },
+    "ready": {
+      "title": "#準備好了！🎉",
+      "items": [
+        "刪除此清單並建立你的第一個真實清單",
+        "或繼續勾選這些項目來學習 — 現在這是你的清單了！"
+      ]
+    }
+  },
+  "commandTriggers": {
+    "theme": ["風格:", "主題:", "style:", "theme:"],
+    "note": ["備註:", "note:"]
+  },
+  "themes": {
+    "sunset": "日落",
+    "ocean": "海洋",
+    "forest": "森林",
+    "neon": "霓虹",
+    "midnight": "午夜",
+    "rose": "玫瑰",
+    "matrix": "矩陣",
+    "birthday": "生日"
+  },
+  "welcome": {
+    "title": "歡迎使用 Listo！",
+    "subtitle": "建立和分享清單的最簡單方式",
+    "tips": [
+      "輸入任何內容並按 Enter 新增項目",
+      "點擊項目標記為已完成",
+      "輸入 ... 用 AI 生成項目",
+      "分享 URL - 任何人都可以協作！"
+    ],
+    "gotIt": "明白了，開始吧！",
+    "aiPowered": {
+      "title": "AI 驅動的清單",
+      "description": "以 <code>...</code> 開頭並描述你需要什麼。",
+      "example": "試試：...海灘度假行李清單"
+    },
+    "instantSharing": {
+      "title": "即時分享",
+      "description": "每個清單都有唯一的 URL。分享給手機或電腦上的任何人 — 他們可以即時檢視和編輯。無需註冊。"
+    }
+  },
+  "common": {
+    "loading": "載入中...",
+    "save": "儲存",
+    "cancel": "取消",
+    "delete": "刪除",
+    "edit": "編輯",
+    "close": "關閉",
+    "link": "連結"
+  },
+  "appBanner": {
+    "appName": "Listo",
+    "openWithTitle": "在應用程式中開啟「{title}」",
+    "openGeneric": "在 Listo 應用程式中開啟此清單",
+    "open": "開啟"
+  }
+}

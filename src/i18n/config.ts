@@ -1,5 +1,5 @@
 // Supported locales
-export const locales = ['en', 'es', 'fr', 'de', 'pt', 'ja', 'zh', 'ko'] as const;
+export const locales = ['en', 'es', 'fr', 'de', 'pt', 'ja', 'zh-Hans', 'zh-Hant', 'ko'] as const;
 export type Locale = (typeof locales)[number];
 
 // Default locale (fallback)
@@ -16,7 +16,8 @@ export const localeNames: Record<Locale, { name: string; nativeName: string; fla
   de: { name: 'German', nativeName: 'Deutsch', flag: '🇩🇪' },
   pt: { name: 'Portuguese', nativeName: 'Português', flag: '🇧🇷' },
   ja: { name: 'Japanese', nativeName: '日本語', flag: '🇯🇵' },
-  zh: { name: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
+  'zh-Hans': { name: 'Chinese (Simplified)', nativeName: '简体中文', flag: '🇨🇳' },
+  'zh-Hant': { name: 'Chinese (Traditional)', nativeName: '繁體中文', flag: '🇹🇼' },
   ko: { name: 'Korean', nativeName: '한국어', flag: '🇰🇷' },
 };
 
