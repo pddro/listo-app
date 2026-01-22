@@ -7,6 +7,9 @@ import ListPage from './mobile/pages/List';
 import { SwipeBackLayout } from './mobile/components/SwipeBackLayout';
 import { ThemeColors } from '@/lib/gemini';
 
+// Initialize i18n for mobile
+import './mobile/i18n';
+
 // Apply theme to CSS variables
 function applyThemeToRoot(theme: ThemeColors | null) {
   const root = document.documentElement;

@@ -319,5 +319,56 @@
     "openWithTitle": "在應用程式中開啟「{title}」",
     "openGeneric": "在 Listo 應用程式中開啟此清單",
     "open": "開啟"
+  },
+  "mobile": {
+    "taglineShort": "建立清單。分享連結。",
+    "placeholders": [
+      "...本週購物清單",
+      "護照、機票、充電器",
+      "...露營要帶的東西",
+      "生菜、番茄、培根",
+      "...墨西哥捲餅之夜的食材",
+      "防曬乳、毛巾、書",
+      "...給媽媽的禮物點子",
+      "雞蛋、牛奶、奶油",
+      "...聚餐要帶什麼",
+      "...健行清單"
+    ],
+    "deleteList": {
+      "title": "刪除清單？",
+      "message": "「{title}」將從你的清單中移除。"
+    },
+    "duplicateList": {
+      "title": "複製清單？",
+      "message": "將建立並開啟「{title}」的副本。"
+    },
+    "duplicate": "複製",
+    "tips": {
+      "title": "小技巧",
+      "aiGenerate": {
+        "title": "AI 生成",
+        "description": "以 <code>...</code> 開頭，從描述中生成項目"
+      },
+      "multipleItems": {
+        "title": "多個項目",
+        "description": "使用逗號一次新增多個項目"
+      },
+      "customThemes": {
+        "title": "自訂主題",
+        "description": "在清單中輸入 <code>風格: 海洋</code> 來更改主題"
+      },
+      "aiTransform": {
+        "title": "AI 轉換",
+        "description": "使用 <code>!</code> 來重組或轉換你的清單"
+      }
+    },
+    "done": "完成",
+    "gotIt": "知道了",
+    "privacyNote": "所有清單都是公開 URL。",
+    "lists": "清單",
+    "listTitle": "清單標題",
+    "goHome": "返回首頁",
+    "addToMyLists": "新增到我的清單",
+    "addedToLists": "已新增到你的清單！"
   }
 }

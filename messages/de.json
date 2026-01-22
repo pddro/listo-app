@@ -319,5 +319,56 @@
     "openWithTitle": "\"{title}\" in der App öffnen",
     "openGeneric": "Diese Liste in der Listo-App öffnen",
     "open": "ÖFFNEN"
+  },
+  "mobile": {
+    "taglineShort": "Liste erstellen. Link teilen.",
+    "placeholders": [
+      "...Einkäufe für die Woche",
+      "Reisepass, Tickets, Ladegerät",
+      "...Packliste für Camping",
+      "Salat, Tomate, Speck",
+      "...Zutaten für Taco-Abend",
+      "Sonnencreme, Handtuch, Buch",
+      "...Geschenkideen für Mama",
+      "Eier, Milch, Butter",
+      "...was zum Potluck mitbringen",
+      "...Packliste für Wanderung"
+    ],
+    "deleteList": {
+      "title": "Liste löschen?",
+      "message": "\"{title}\" wird aus deinen Listen entfernt."
+    },
+    "duplicateList": {
+      "title": "Liste duplizieren?",
+      "message": "Eine Kopie von \"{title}\" wird erstellt und geöffnet."
+    },
+    "duplicate": "Duplizieren",
+    "tips": {
+      "title": "Tipps",
+      "aiGenerate": {
+        "title": "KI-Generierung",
+        "description": "Beginne mit <code>...</code> um Einträge aus einer Beschreibung zu generieren"
+      },
+      "multipleItems": {
+        "title": "Mehrere Einträge",
+        "description": "Verwende Kommas, um mehrere Einträge auf einmal hinzuzufügen"
+      },
+      "customThemes": {
+        "title": "Individuelle Designs",
+        "description": "Tippe <code>stil: ozean</code> in einer Liste für ein individuelles Design"
+      },
+      "aiTransform": {
+        "title": "KI-Transformation",
+        "description": "Verwende <code>!</code> um deine Liste zu reorganisieren oder umzuwandeln"
+      }
+    },
+    "done": "Fertig",
+    "gotIt": "Verstanden",
+    "privacyNote": "Alle Listen sind öffentliche URLs.",
+    "lists": "Listen",
+    "listTitle": "Listentitel",
+    "goHome": "Zur Startseite",
+    "addToMyLists": "Zu meinen Listen hinzufügen",
+    "addedToLists": "Zu deinen Listen hinzugefügt!"
   }
 }

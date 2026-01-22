@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useList } from '@/lib/hooks/useList';
 import { useAI, ManipulatedItem } from '@/lib/hooks/useAI';
 import { useRecentLists } from '@/lib/hooks/useRecentLists';
@@ -11,6 +12,7 @@ import { ThemeColors } from '@/lib/gemini';
 import { API } from '@/lib/api';
 
 export default function ListPage() {
+  const { t } = useTranslation();
   const { listId } = useParams<{ listId: string }>();
   const navigate = useNavigate();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -563,13 +565,13 @@ export default function ListPage() {
           className="px-4 py-2 rounded-lg"
           style={{ backgroundColor: 'var(--primary)', color: 'white' }}
         >
-          Go Home
+          {t('mobile.goHome')}
         </button>
       </div>
     );
   }
 
-  const displayTitle = list?.title || 'Untitled List';
+  const displayTitle = list?.title || t('home.untitledList');
 
   return (
     <div
@@ -631,7 +633,7 @@ export default function ListPage() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
-            <span>Lists</span>
+            <span>{t('mobile.lists')}</span>
           </button>
 
           {/* Title (tappable to edit) */}
@@ -653,7 +655,7 @@ export default function ListPage() {
                   fontWeight: 600,
                   color: 'var(--text-primary)',
                 }}
-                placeholder="List Title"
+                placeholder={t('mobile.listTitle')}
               />
             ) : (
               <button
@@ -749,7 +751,7 @@ export default function ListPage() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            Add to My Lists
+            {t('mobile.addToMyLists')}
           </button>
         </div>
       )}
@@ -763,7 +765,7 @@ export default function ListPage() {
           <svg className="w-5 h-5" style={{ color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
-          <span style={{ color: 'var(--primary)', fontWeight: 500 }}>Added to your lists!</span>
+          <span style={{ color: 'var(--primary)', fontWeight: 500 }}>{t('mobile.addedToLists')}</span>
         </div>
       )}
 

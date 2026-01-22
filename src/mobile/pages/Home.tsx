@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/lib/supabase';
 import { generateListId } from '@/lib/utils/generateId';
 import { useAI, isCategorizedResult, ManipulatedItem } from '@/lib/hooks/useAI';
@@ -17,9 +18,10 @@ interface SwipeableListRowProps {
   onDelete: () => void;
   onShare: () => void;
   onDuplicate: () => void;
+  untitledLabel: string;
 }
 
-function SwipeableListRow({ list, onNavigate, onDelete, onShare, onDuplicate }: SwipeableListRowProps) {
+function SwipeableListRow({ list, onNavigate, onDelete, onShare, onDuplicate, untitledLabel }: SwipeableListRowProps) {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwipeActive, setIsSwipeActive] = useState(false);
   const touchStartX = useRef(0);
@@ -174,7 +176,7 @@ function SwipeableListRow({ list, onNavigate, onDelete, onShare, onDuplicate }: 
             className="font-medium truncate"
             style={{ color: 'var(--text-primary)', fontSize: '17px' }}
           >
-            {list.title || 'Untitled List'}
+            {list.title || untitledLabel}
           </div>
         </div>
         <svg
@@ -201,19 +203,6 @@ function normalizeInput(text: string): string {
     .replace(/—/g, '--'); // iOS em-dash → two dashes
 }
 
-const PLACEHOLDERS = [
-  '...groceries for the week',
-  'passport, tickets, charger',
-  '...things to pack for camping',
-  'lettuce, tomato, bacon',
-  '...ingredients for taco night',
-  'sunscreen, towel, book',
-  '...gift ideas for mom',
-  'eggs, milk, butter',
-  '...what to bring to the potluck',
-  '...packing list for a hike',
-];
-
 // Sparkles icon component
 const SparklesIcon = () => (
   <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
@@ -224,6 +213,7 @@ const SparklesIcon = () => (
 );
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const [value, setValue] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -239,6 +229,9 @@ export default function HomePage() {
   const { lists: recentLists, archivedLists, addList, archiveList, restoreList, deleteList } = useRecentLists();
   const [showArchived, setShowArchived] = useState(false);
   const { theme: homeTheme, description: homeThemeDescription, setHomeTheme, clearHomeTheme } = useHomeTheme();
+
+  // Get translated placeholders
+  const placeholders = t('mobile.placeholders', { returnObjects: true }) as string[];
 
   // Apply theme to CSS variables
   const applyThemeToRoot = useCallback((theme: ThemeColors | null) => {
@@ -403,16 +396,17 @@ export default function HomePage() {
 
   // Rotate placeholders every 2.5 seconds
   useEffect(() => {
+    if (!placeholders || placeholders.length === 0) return;
     const interval = setInterval(() => {
       setIsPlaceholderFading(true);
       setTimeout(() => {
-        setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDERS.length);
+        setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
         setIsPlaceholderFading(false);
       }, 200);
     }, 2500);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [placeholders]);
 
   // Detect input mode based on content
   const { mode, displayText } = useMemo(() => {
@@ -423,7 +417,7 @@ export default function HomePage() {
       const prompt = trimmed.slice(3).trim();
       return {
         mode: 'ai' as InputMode,
-        displayText: prompt ? 'AI will generate items' : ''
+        displayText: prompt ? t('input.modes.generate') : ''
       };
     }
 
@@ -431,12 +425,12 @@ export default function HomePage() {
       const items = trimmed.split(',').map(s => s.trim()).filter(Boolean);
       return {
         mode: 'multiple' as InputMode,
-        displayText: `Adding ${items.length} items`
+        displayText: t('input.modes.addingItems', { count: items.length })
       };
     }
 
     return { mode: 'single' as InputMode, displayText: '' };
-  }, [value]);
+  }, [value, t]);
 
   const parseThemeFromInput = (input: string): { content: string; themeDescription: string | null } => {
     const themePatterns = [
@@ -674,10 +668,10 @@ export default function HomePage() {
         <div className="flex items-center justify-between" style={{ padding: '16px 20px 0 20px' }}>
           <div className="flex items-baseline gap-2">
             <h1 className="text-xl font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--text-primary)' }}>
-              Listo
+              {t('home.title')}
             </h1>
             <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-              Create a list. Share the link.
+              {t('mobile.taglineShort')}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -695,7 +689,7 @@ export default function HomePage() {
               className="font-medium"
               style={{ color: 'var(--primary)', fontSize: '15px' }}
             >
-              Tips
+              {t('mobile.tips.title')}
             </button>
           </div>
         </div>
@@ -742,7 +736,7 @@ export default function HomePage() {
                   `}
                   style={{ fontSize: '17px' }}
                 >
-                  {PLACEHOLDERS[placeholderIndex]}
+                  {placeholders[placeholderIndex] || '...'}
                 </div>
               )}
             </div>
@@ -760,7 +754,7 @@ export default function HomePage() {
               {isCreating ? (
                 <span className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                'Create'
+                t('home.buttons.create')
               )}
             </button>
           </div>
@@ -781,7 +775,7 @@ export default function HomePage() {
               style={{ top: 'calc(100% + 4px)' }}
             >
               <span className="inline-block w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              AI is thinking...
+              {t('input.processing.thinking')}
             </div>
           )}
 
@@ -810,7 +804,7 @@ export default function HomePage() {
             className="font-semibold uppercase tracking-wide text-left"
             style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '24px', marginBottom: '8px' }}
           >
-            Your Lists
+            {t('home.recentLists')}
           </div>
         )}
         </div>
@@ -832,6 +826,7 @@ export default function HomePage() {
                 onDelete={() => setDeleteConfirmList(list)}
                 onShare={() => handleShare(list.id, list.title)}
                 onDuplicate={() => setDuplicateConfirmList(list)}
+                untitledLabel={t('home.untitledList')}
               />
             ))}
           </div>
@@ -853,7 +848,7 @@ export default function HomePage() {
               >
                 <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
               </svg>
-              Archived ({archivedLists.length})
+              {t('home.buttons.archived')} ({archivedLists.length})
             </button>
             {showArchived && (
               <div style={{ marginTop: '8px' }}>
@@ -891,7 +886,7 @@ export default function HomePage() {
                         className="font-medium truncate"
                         style={{ color: 'var(--text-primary)', fontSize: '17px', opacity: 0.5 }}
                       >
-                        {list.title || 'Untitled List'}
+                        {list.title || t('home.untitledList')}
                       </div>
                     </div>
                     <button
@@ -902,7 +897,7 @@ export default function HomePage() {
                       className="text-sm font-medium"
                       style={{ color: 'var(--primary)', marginLeft: '8px' }}
                     >
-                      Restore
+                      {t('home.buttons.restore')}
                     </button>
                   </div>
                 ))}
@@ -914,13 +909,13 @@ export default function HomePage() {
         {/* Privacy note - at the bottom, pushed by content */}
         <div className="text-center" style={{ marginTop: '48px', paddingBottom: '20px' }}>
           <p style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: '1.4' }}>
-            All lists are public URLs.{' '}
+            {t('mobile.privacyNote')}{' '}
             <button
               onClick={() => setShowPrivacyModal(true)}
               className="underline"
               style={{ color: 'var(--text-muted)' }}
             >
-              Privacy Policy
+              {t('home.privacy.title')}
             </button>
           </p>
         </div>
@@ -948,28 +943,28 @@ export default function HomePage() {
             </div>
 
             <h2 className="text-lg font-bold text-center" style={{ color: 'var(--text-primary)', marginBottom: '20px' }}>
-              Privacy Policy
+              {t('home.privacy.title')}
             </h2>
 
             <div className="space-y-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
               <section>
-                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Public Use and Sharing</h3>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{t('home.privacy.sections.publicUse.title')}</h3>
                 <p>
-                  LISTO checklists are inherently public. Once you create a list and share its link, anyone with access to that link can view and edit the list.
+                  {t('home.privacy.sections.publicUse.content')}
                 </p>
               </section>
 
               <section>
-                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Data Collection and Use</h3>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{t('home.privacy.sections.dataCollection.title')}</h3>
                 <p>
-                  LISTO does not require user registration. All lists are created anonymously.
+                  {t('home.privacy.sections.dataCollection.content')}
                 </p>
               </section>
 
               <section>
-                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Contact Information</h3>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{t('home.privacy.sections.contact.title')}</h3>
                 <p>
-                  Questions? Reach out at{' '}
+                  {t('home.privacy.sections.contact.content')}{' '}
                   <a href="mailto:hello@listo.to" className="underline" style={{ color: 'var(--primary)' }}>hello@listo.to</a>.
                 </p>
               </section>
@@ -980,7 +975,7 @@ export default function HomePage() {
               className="w-full text-white rounded-xl font-semibold"
               style={{ backgroundColor: 'var(--primary)', padding: '16px', marginTop: '24px', fontSize: '17px' }}
             >
-              Done
+              {t('mobile.done')}
             </button>
           </div>
         </div>
@@ -1008,7 +1003,7 @@ export default function HomePage() {
             </div>
 
             <h2 className="text-lg font-bold text-center" style={{ color: 'var(--text-primary)', marginBottom: '20px' }}>
-              Tips
+              {t('mobile.tips.title')}
             </h2>
 
             <div className="space-y-4" style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>
@@ -1020,10 +1015,8 @@ export default function HomePage() {
                   <SparklesIcon />
                 </div>
                 <div>
-                  <div className="font-medium" style={{ color: 'var(--text-primary)' }}>AI Generate</div>
-                  <div className="text-sm" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
-                    Start with <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--primary-pale)', color: 'var(--primary)' }}>...</code> to generate items from a prompt
-                  </div>
+                  <div className="font-medium" style={{ color: 'var(--text-primary)' }}>{t('mobile.tips.aiGenerate.title')}</div>
+                  <div className="text-sm" style={{ color: 'var(--text-muted)', marginTop: '2px' }} dangerouslySetInnerHTML={{ __html: t('mobile.tips.aiGenerate.description').replace('<code>', '<code class="font-semibold px-1 py-0.5 rounded" style="background-color: var(--primary-pale); color: var(--primary)">') }} />
                 </div>
               </div>
 
@@ -1037,9 +1030,9 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <div>
-                  <div className="font-medium" style={{ color: 'var(--text-primary)' }}>Multiple Items</div>
+                  <div className="font-medium" style={{ color: 'var(--text-primary)' }}>{t('mobile.tips.multipleItems.title')}</div>
                   <div className="text-sm" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
-                    Use commas to add several items at once
+                    {t('mobile.tips.multipleItems.description')}
                   </div>
                 </div>
               </div>
@@ -1054,10 +1047,8 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <div>
-                  <div className="font-medium" style={{ color: 'var(--text-primary)' }}>Custom Themes</div>
-                  <div className="text-sm" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
-                    Type <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--primary-pale)', color: 'var(--primary)' }}>style: ocean</code> in a list to theme it
-                  </div>
+                  <div className="font-medium" style={{ color: 'var(--text-primary)' }}>{t('mobile.tips.customThemes.title')}</div>
+                  <div className="text-sm" style={{ color: 'var(--text-muted)', marginTop: '2px' }} dangerouslySetInnerHTML={{ __html: t('mobile.tips.customThemes.description').replace('<code>', '<code class="font-semibold px-1 py-0.5 rounded" style="background-color: var(--primary-pale); color: var(--primary)">') }} />
                 </div>
               </div>
 
@@ -1071,10 +1062,8 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <div>
-                  <div className="font-medium" style={{ color: 'var(--text-primary)' }}>AI Transform</div>
-                  <div className="text-sm" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
-                    Use <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--primary-pale)', color: 'var(--primary)' }}>!</code> to reorganize or transform your list
-                  </div>
+                  <div className="font-medium" style={{ color: 'var(--text-primary)' }}>{t('mobile.tips.aiTransform.title')}</div>
+                  <div className="text-sm" style={{ color: 'var(--text-muted)', marginTop: '2px' }} dangerouslySetInnerHTML={{ __html: t('mobile.tips.aiTransform.description').replace('<code>', '<code class="font-semibold px-1 py-0.5 rounded" style="background-color: var(--primary-pale); color: var(--primary)">') }} />
                 </div>
               </div>
             </div>
@@ -1084,7 +1073,7 @@ export default function HomePage() {
               className="w-full text-white rounded-xl font-semibold"
               style={{ backgroundColor: 'var(--primary)', padding: '16px', marginTop: '24px', fontSize: '17px' }}
             >
-              Got it
+              {t('mobile.gotIt')}
             </button>
           </div>
         </div>
@@ -1113,10 +1102,10 @@ export default function HomePage() {
           >
             <div style={{ padding: '24px 24px 20px' }}>
               <h3 className="text-lg font-semibold text-center" style={{ color: 'var(--text-primary)' }}>
-                Delete List?
+                {t('mobile.deleteList.title')}
               </h3>
               <p className="text-center" style={{ color: 'var(--text-muted)', fontSize: '14px', marginTop: '8px' }}>
-                "{deleteConfirmList.title || 'Untitled List'}" will be removed from your lists.
+                {t('mobile.deleteList.message', { title: deleteConfirmList.title || t('home.untitledList') })}
               </p>
             </div>
             <div style={{ borderTop: '1px solid var(--border-light)' }} className="flex">
@@ -1125,7 +1114,7 @@ export default function HomePage() {
                 className="flex-1 font-medium active:opacity-60"
                 style={{ color: 'var(--primary)', borderRight: '1px solid var(--border-light)', padding: '16px' }}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={() => {
@@ -1135,7 +1124,7 @@ export default function HomePage() {
                 className="flex-1 font-medium active:opacity-60"
                 style={{ color: '#FF3B30', padding: '16px' }}
               >
-                Delete
+                {t('common.delete')}
               </button>
             </div>
           </div>
@@ -1156,10 +1145,10 @@ export default function HomePage() {
           >
             <div style={{ padding: '24px 24px 20px' }}>
               <h3 className="text-lg font-semibold text-center" style={{ color: 'var(--text-primary)' }}>
-                Duplicate List?
+                {t('mobile.duplicateList.title')}
               </h3>
               <p className="text-center" style={{ color: 'var(--text-muted)', fontSize: '14px', marginTop: '8px' }}>
-                A copy of "{duplicateConfirmList.title || 'Untitled List'}" will be created and opened.
+                {t('mobile.duplicateList.message', { title: duplicateConfirmList.title || t('home.untitledList') })}
               </p>
             </div>
             <div style={{ borderTop: '1px solid var(--border-light)' }} className="flex">
@@ -1168,7 +1157,7 @@ export default function HomePage() {
                 className="flex-1 font-medium active:opacity-60"
                 style={{ color: 'var(--text-muted)', borderRight: '1px solid var(--border-light)', padding: '16px' }}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={() => {
@@ -1178,7 +1167,7 @@ export default function HomePage() {
                 className="flex-1 font-medium active:opacity-60"
                 style={{ color: 'var(--primary)', padding: '16px' }}
               >
-                Duplicate
+                {t('mobile.duplicate')}
               </button>
             </div>
           </div>

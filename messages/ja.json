@@ -319,5 +319,56 @@
     "openWithTitle": "アプリで「{title}」を開く",
     "openGeneric": "Listoアプリでこのリストを開く",
     "open": "開く"
+  },
+  "mobile": {
+    "taglineShort": "リストを作成。リンクを共有。",
+    "placeholders": [
+      "...今週の買い物リスト",
+      "パスポート、チケット、充電器",
+      "...キャンプの持ち物",
+      "レタス、トマト、ベーコン",
+      "...タコパの材料",
+      "日焼け止め、タオル、本",
+      "...お母さんへのプレゼント案",
+      "卵、牛乳、バター",
+      "...持ち寄りパーティーに持っていくもの",
+      "...ハイキングの持ち物リスト"
+    ],
+    "deleteList": {
+      "title": "リストを削除しますか？",
+      "message": "「{title}」がリストから削除されます。"
+    },
+    "duplicateList": {
+      "title": "リストを複製しますか？",
+      "message": "「{title}」のコピーが作成され、開きます。"
+    },
+    "duplicate": "複製",
+    "tips": {
+      "title": "ヒント",
+      "aiGenerate": {
+        "title": "AI生成",
+        "description": "<code>...</code> で始めると、説明からアイテムを生成します"
+      },
+      "multipleItems": {
+        "title": "複数アイテム",
+        "description": "カンマを使って一度に複数のアイテムを追加"
+      },
+      "customThemes": {
+        "title": "カスタムテーマ",
+        "description": "リストで <code>スタイル: 海</code> と入力してテーマを変更"
+      },
+      "aiTransform": {
+        "title": "AI変換",
+        "description": "<code>!</code> を使ってリストを再編成・変換"
+      }
+    },
+    "done": "完了",
+    "gotIt": "わかりました",
+    "privacyNote": "すべてのリストは公開URLです。",
+    "lists": "リスト",
+    "listTitle": "リストのタイトル",
+    "goHome": "ホームへ",
+    "addToMyLists": "マイリストに追加",
+    "addedToLists": "リストに追加しました！"
   }
 }

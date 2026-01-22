@@ -319,5 +319,56 @@
     "openWithTitle": "Open \"{title}\" in the app",
     "openGeneric": "Open this list in the Listo app",
     "open": "OPEN"
+  },
+  "mobile": {
+    "taglineShort": "Create a list. Share the link.",
+    "placeholders": [
+      "...groceries for the week",
+      "passport, tickets, charger",
+      "...things to pack for camping",
+      "lettuce, tomato, bacon",
+      "...ingredients for taco night",
+      "sunscreen, towel, book",
+      "...gift ideas for mom",
+      "eggs, milk, butter",
+      "...what to bring to the potluck",
+      "...packing list for a hike"
+    ],
+    "deleteList": {
+      "title": "Delete List?",
+      "message": "\"{title}\" will be removed from your lists."
+    },
+    "duplicateList": {
+      "title": "Duplicate List?",
+      "message": "A copy of \"{title}\" will be created and opened."
+    },
+    "duplicate": "Duplicate",
+    "tips": {
+      "title": "Tips",
+      "aiGenerate": {
+        "title": "AI Generate",
+        "description": "Start with <code>...</code> to generate items from a prompt"
+      },
+      "multipleItems": {
+        "title": "Multiple Items",
+        "description": "Use commas to add several items at once"
+      },
+      "customThemes": {
+        "title": "Custom Themes",
+        "description": "Type <code>style: ocean</code> in a list to theme it"
+      },
+      "aiTransform": {
+        "title": "AI Transform",
+        "description": "Use <code>!</code> to reorganize or transform your list"
+      }
+    },
+    "done": "Done",
+    "gotIt": "Got it",
+    "privacyNote": "All lists are public URLs.",
+    "lists": "Lists",
+    "listTitle": "List Title",
+    "goHome": "Go Home",
+    "addToMyLists": "Add to My Lists",
+    "addedToLists": "Added to your lists!"
   }
 }

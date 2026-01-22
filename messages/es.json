@@ -319,5 +319,56 @@
     "openWithTitle": "Abrir \"{title}\" en la app",
     "openGeneric": "Abrir esta lista en la app de Listo",
     "open": "ABRIR"
+  },
+  "mobile": {
+    "taglineShort": "Crea una lista. Comparte el enlace.",
+    "placeholders": [
+      "...compras para la semana",
+      "pasaporte, boletos, cargador",
+      "...cosas para acampar",
+      "lechuga, tomate, tocino",
+      "...ingredientes para tacos",
+      "protector solar, toalla, libro",
+      "...ideas de regalo para mamá",
+      "huevos, leche, mantequilla",
+      "...qué llevar a la fiesta",
+      "...lista para una caminata"
+    ],
+    "deleteList": {
+      "title": "¿Eliminar lista?",
+      "message": "\"{title}\" se eliminará de tus listas."
+    },
+    "duplicateList": {
+      "title": "¿Duplicar lista?",
+      "message": "Se creará y abrirá una copia de \"{title}\"."
+    },
+    "duplicate": "Duplicar",
+    "tips": {
+      "title": "Consejos",
+      "aiGenerate": {
+        "title": "Generar con IA",
+        "description": "Comienza con <code>...</code> para generar elementos desde un texto"
+      },
+      "multipleItems": {
+        "title": "Varios Elementos",
+        "description": "Usa comas para añadir varios elementos a la vez"
+      },
+      "customThemes": {
+        "title": "Temas Personalizados",
+        "description": "Escribe <code>estilo: océano</code> en una lista para aplicar un tema"
+      },
+      "aiTransform": {
+        "title": "Transformar con IA",
+        "description": "Usa <code>!</code> para reorganizar o transformar tu lista"
+      }
+    },
+    "done": "Listo",
+    "gotIt": "Entendido",
+    "privacyNote": "Todas las listas son URLs públicas.",
+    "lists": "Listas",
+    "listTitle": "Título de lista",
+    "goHome": "Ir al inicio",
+    "addToMyLists": "Añadir a mis listas",
+    "addedToLists": "¡Añadido a tus listas!"
   }
 }

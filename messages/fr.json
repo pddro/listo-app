@@ -319,5 +319,56 @@
     "openWithTitle": "Ouvrir \"{title}\" dans l'app",
     "openGeneric": "Ouvrir cette liste dans l'app Listo",
     "open": "OUVRIR"
+  },
+  "mobile": {
+    "taglineShort": "Créez une liste. Partagez le lien.",
+    "placeholders": [
+      "...courses de la semaine",
+      "passeport, billets, chargeur",
+      "...choses à emporter pour le camping",
+      "salade, tomate, bacon",
+      "...ingrédients pour soirée tacos",
+      "crème solaire, serviette, livre",
+      "...idées cadeaux pour maman",
+      "œufs, lait, beurre",
+      "...quoi apporter au repas partagé",
+      "...liste de randonnée"
+    ],
+    "deleteList": {
+      "title": "Supprimer la liste ?",
+      "message": "« {title} » sera supprimée de vos listes."
+    },
+    "duplicateList": {
+      "title": "Dupliquer la liste ?",
+      "message": "Une copie de « {title} » sera créée et ouverte."
+    },
+    "duplicate": "Dupliquer",
+    "tips": {
+      "title": "Astuces",
+      "aiGenerate": {
+        "title": "Génération IA",
+        "description": "Commencez par <code>...</code> pour générer des éléments à partir d'une description"
+      },
+      "multipleItems": {
+        "title": "Plusieurs éléments",
+        "description": "Utilisez des virgules pour ajouter plusieurs éléments à la fois"
+      },
+      "customThemes": {
+        "title": "Thèmes personnalisés",
+        "description": "Tapez <code>style: océan</code> dans une liste pour la personnaliser"
+      },
+      "aiTransform": {
+        "title": "Transformation IA",
+        "description": "Utilisez <code>!</code> pour réorganiser ou transformer votre liste"
+      }
+    },
+    "done": "Terminé",
+    "gotIt": "Compris",
+    "privacyNote": "Toutes les listes sont des URLs publiques.",
+    "lists": "Listes",
+    "listTitle": "Titre de la liste",
+    "goHome": "Retour",
+    "addToMyLists": "Ajouter à mes listes",
+    "addedToLists": "Ajouté à vos listes !"
   }
 }

@@ -319,5 +319,56 @@
     "openWithTitle": "在应用中打开「{title}」",
     "openGeneric": "在 Listo 应用中打开此清单",
     "open": "打开"
+  },
+  "mobile": {
+    "taglineShort": "创建清单。分享链接。",
+    "placeholders": [
+      "...本周购物清单",
+      "护照、机票、充电器",
+      "...露营要带的东西",
+      "生菜、番茄、培根",
+      "...墨西哥卷饼之夜的食材",
+      "防晒霜、毛巾、书",
+      "...给妈妈的礼物创意",
+      "鸡蛋、牛奶、黄油",
+      "...聚餐要带什么",
+      "...徒步旅行清单"
+    ],
+    "deleteList": {
+      "title": "删除清单？",
+      "message": "「{title}」将从你的清单中移除。"
+    },
+    "duplicateList": {
+      "title": "复制清单？",
+      "message": "将创建并打开「{title}」的副本。"
+    },
+    "duplicate": "复制",
+    "tips": {
+      "title": "小技巧",
+      "aiGenerate": {
+        "title": "AI 生成",
+        "description": "以 <code>...</code> 开头，从描述中生成项目"
+      },
+      "multipleItems": {
+        "title": "多个项目",
+        "description": "使用逗号一次添加多个项目"
+      },
+      "customThemes": {
+        "title": "自定义主题",
+        "description": "在清单中输入 <code>风格: 海洋</code> 来更改主题"
+      },
+      "aiTransform": {
+        "title": "AI 转换",
+        "description": "使用 <code>!</code> 来重组或转换你的清单"
+      }
+    },
+    "done": "完成",
+    "gotIt": "知道了",
+    "privacyNote": "所有清单都是公开 URL。",
+    "lists": "清单",
+    "listTitle": "清单标题",
+    "goHome": "返回首页",
+    "addToMyLists": "添加到我的清单",
+    "addedToLists": "已添加到你的清单！"
   }
 }
