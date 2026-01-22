@@ -797,14 +797,387 @@ export async function trackLocale(locale: string) {
 
 ---
 
+## 15. Mobile App Localization (iOS & Android)
+
+The Listo mobile apps use **Capacitor** with a **Vite + React** build, sharing most components with the web app. This creates both opportunities and challenges for localization.
+
+### Architecture Comparison
+
+| Aspect | Web | Mobile (iOS/Android) |
+|--------|-----|----------------------|
+| Framework | Next.js 16 (App Router) | Vite + React 19 |
+| Router | Next.js App Router | React Router v7 |
+| Entry point | `/src/app/layout.tsx` | `/src/main.tsx` |
+| i18n Library | `next-intl` | `i18next` + `react-i18next` |
+| Locale storage | URL path (`/en/`) | Capacitor Preferences |
+| Build output | `.next/` | `dist/` → Capacitor sync |
+
+### Shared Components (Localize Once)
+
+These components are **shared** between web and mobile - localization work benefits both:
+
+```
+/src/components/
+├── ListContainer.tsx    # Core list UI (~700 lines)
+├── ListItem.tsx         # Item rendering (~474 lines)
+├── NewItemInput.tsx     # Input with commands (~678 lines)
+├── CommandPalette.tsx   # Command modal
+├── DictateButton.tsx    # Voice recording
+└── ListTitle.tsx        # Title editor
+```
+
+**~80% of UI strings** are in shared components.
+
+### Mobile-Specific Strings
+
+```
+/src/mobile/
+├── pages/
+│   ├── Home.tsx         # ~50 strings (PLACEHOLDERS, UI labels)
+│   └── List.tsx         # ~30 strings (share options, footer)
+└── components/
+    └── HomeThemeModal.tsx  # ~15 strings (theme examples)
+```
+
+### Platform-Specific Native Strings
+
+#### Android (`/android/app/src/main/res/`)
+
+```xml
+<!-- values/strings.xml (English - default) -->
+<resources>
+    <string name="app_name">Listo</string>
+    <string name="title_activity_main">Listo</string>
+</resources>
+
+<!-- values-es/strings.xml (Spanish) -->
+<resources>
+    <string name="app_name">Listo</string>
+    <string name="title_activity_main">Listo</string>
+</resources>
+
+<!-- values-fr/strings.xml (French) -->
+<!-- ... etc for each language -->
+```
+
+#### iOS (`/ios/App/App/`)
+
+```
+/ios/App/App/
+├── Info.plist                    # App metadata
+├── en.lproj/
+│   └── InfoPlist.strings         # English
+├── es.lproj/
+│   └── InfoPlist.strings         # Spanish
+└── fr.lproj/
+    └── InfoPlist.strings         # French
+```
+
+```strings
+/* en.lproj/InfoPlist.strings */
+"NSMicrophoneUsageDescription" = "Listo needs microphone access for voice dictation to create list items";
+"CFBundleDisplayName" = "Listo";
+
+/* es.lproj/InfoPlist.strings */
+"NSMicrophoneUsageDescription" = "Listo necesita acceso al micrófono para dictado de voz y crear elementos de lista";
+"CFBundleDisplayName" = "Listo";
+```
+
+### Mobile i18n Setup
+
+Since mobile uses Vite (not Next.js), we use `i18next` + `react-i18next`:
+
+```bash
+npm install i18next react-i18next i18next-browser-languagedetector
+```
+
+#### Configuration
+
+```typescript
+// /src/i18n/mobile.ts
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import { Preferences } from '@capacitor/preferences';
+
+// Import all locale files
+import en from '@/messages/en.json';
+import es from '@/messages/es.json';
+import fr from '@/messages/fr.json';
+
+// Custom language detector for Capacitor
+const capacitorLanguageDetector = {
+  type: 'languageDetector' as const,
+  async: true,
+  detect: async (callback: (lng: string) => void) => {
+    // Check stored preference first
+    const { value } = await Preferences.get({ key: 'locale' });
+    if (value) {
+      callback(value);
+      return;
+    }
+    // Fall back to device language
+    const deviceLang = navigator.language.split('-')[0];
+    callback(deviceLang);
+  },
+  init: () => {},
+  cacheUserLanguage: async (lng: string) => {
+    await Preferences.set({ key: 'locale', value: lng });
+  },
+};
+
+i18n
+  .use(capacitorLanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources: {
+      en: { translation: en },
+      es: { translation: es },
+      fr: { translation: fr },
+    },
+    fallbackLng: 'en',
+    interpolation: {
+      escapeValue: false, // React already escapes
+    },
+  });
+
+export default i18n;
+```
+
+#### Mobile Entry Point
+
+```typescript
+// /src/main.tsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './i18n/mobile'; // Initialize i18n
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+```
+
+### Unified Translation Hook
+
+Create a wrapper that works in both environments:
+
+```typescript
+// /src/lib/hooks/useTranslation.ts
+import { useCallback } from 'react';
+
+// Detect environment
+const isNextJS = typeof window !== 'undefined' &&
+                 (window as any).__NEXT_DATA__ !== undefined;
+
+// Web (Next.js) version
+let useNextIntl: any;
+if (isNextJS) {
+  useNextIntl = require('next-intl').useTranslations;
+}
+
+// Mobile (i18next) version
+let useI18next: any;
+if (!isNextJS) {
+  useI18next = require('react-i18next').useTranslation;
+}
+
+export function useT(namespace?: string) {
+  if (isNextJS) {
+    // next-intl
+    return useNextIntl(namespace);
+  } else {
+    // react-i18next
+    const { t } = useI18next();
+
+    // Wrap to support namespace prefix
+    return useCallback((key: string, options?: any) => {
+      const fullKey = namespace ? `${namespace}.${key}` : key;
+      return t(fullKey, options);
+    }, [t, namespace]);
+  }
+}
+```
+
+### Mobile Language Switcher
+
+```typescript
+// /src/mobile/components/LanguageSwitcher.tsx
+import { useTranslation } from 'react-i18next';
+import { Preferences } from '@capacitor/preferences';
+
+const LANGUAGES = [
+  { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+];
+
+export function LanguageSwitcher() {
+  const { i18n } = useTranslation();
+
+  const handleChange = async (locale: string) => {
+    await i18n.changeLanguage(locale);
+    await Preferences.set({ key: 'locale', value: locale });
+  };
+
+  return (
+    <select
+      value={i18n.language}
+      onChange={(e) => handleChange(e.target.value)}
+      className="bg-transparent border rounded px-2 py-1"
+    >
+      {LANGUAGES.map(({ code, name, flag }) => (
+        <option key={code} value={code}>
+          {flag} {name}
+        </option>
+      ))}
+    </select>
+  );
+}
+```
+
+### Build Process Integration
+
+```json
+// package.json
+{
+  "scripts": {
+    "i18n:sync": "node scripts/translate-strings.js",
+    "i18n:sync-native": "node scripts/sync-native-strings.js",
+
+    "mobile:build": "npm run i18n:sync && vite build",
+    "mobile:ios": "npm run mobile:build && npm run i18n:sync-native && cap sync ios && cap open ios",
+    "mobile:android": "npm run mobile:build && npm run i18n:sync-native && cap sync android && cap open android"
+  }
+}
+```
+
+### Native String Sync Script
+
+```typescript
+// /scripts/sync-native-strings.js
+// Syncs translations to native iOS/Android string files
+
+const fs = require('fs');
+const path = require('path');
+
+const LOCALES = ['en', 'es', 'fr', 'de'];
+const NATIVE_STRINGS = {
+  app_name: 'metadata.appName',
+  microphone_permission: 'permissions.microphone',
+};
+
+async function syncAndroidStrings() {
+  for (const locale of LOCALES) {
+    const messages = require(`../messages/${locale}.json`);
+    const dir = locale === 'en' ? 'values' : `values-${locale}`;
+    const filePath = `android/app/src/main/res/${dir}/strings.xml`;
+
+    let xml = '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n';
+    for (const [androidKey, jsonPath] of Object.entries(NATIVE_STRINGS)) {
+      const value = getNestedValue(messages, jsonPath);
+      xml += `    <string name="${androidKey}">${escapeXml(value)}</string>\n`;
+    }
+    xml += '</resources>';
+
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, xml);
+  }
+}
+
+async function syncIOSStrings() {
+  for (const locale of LOCALES) {
+    const messages = require(`../messages/${locale}.json`);
+    const dir = `ios/App/App/${locale}.lproj`;
+    const filePath = `${dir}/InfoPlist.strings`;
+
+    let content = '';
+    content += `"CFBundleDisplayName" = "${messages.metadata.appName}";\n`;
+    content += `"NSMicrophoneUsageDescription" = "${messages.permissions.microphone}";\n`;
+
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(filePath, content);
+  }
+}
+
+syncAndroidStrings();
+syncIOSStrings();
+```
+
+### Mobile Implementation Phases
+
+#### Phase M1: Foundation
+- [ ] Install `i18next` and `react-i18next`
+- [ ] Create `/src/i18n/mobile.ts` configuration
+- [ ] Add Capacitor language detector
+- [ ] Initialize in `/src/main.tsx`
+
+#### Phase M2: Component Migration
+- [ ] Create unified `useT()` hook
+- [ ] Update shared components to use `useT()`
+- [ ] Update mobile-specific pages (`Home.tsx`, `List.tsx`)
+- [ ] Test on iOS simulator and Android emulator
+
+#### Phase M3: Native Strings
+- [ ] Create native string sync script
+- [ ] Add Android `values-{lang}/strings.xml` files
+- [ ] Add iOS `{lang}.lproj/InfoPlist.strings` files
+- [ ] Update build scripts to sync before Capacitor build
+
+#### Phase M4: Testing & Polish
+- [ ] Test language switching persists across app restarts
+- [ ] Verify App Store / Play Store metadata can be localized
+- [ ] Test RTL languages on both platforms
+- [ ] Performance testing (bundle size with all locales)
+
+### App Store Localization
+
+#### iOS App Store Connect
+- Localize app name, subtitle, description, keywords
+- Screenshots for each language
+- What's New text per language
+
+#### Google Play Console
+- Localize store listing (title, short/full description)
+- Screenshots and feature graphics per language
+- Release notes per language
+
+### Mobile-Specific Considerations
+
+1. **Bundle Size**: All locale JSON files are bundled into the app
+   - Consider lazy loading for less common languages
+   - Current estimate: ~5KB per language (minimal impact)
+
+2. **Offline Support**: Translations work offline (bundled, not fetched)
+
+3. **Deep Links**: Keep list URLs language-agnostic (`listo.to/abc123`)
+   - Language is stored in device preferences, not URL
+
+4. **App Updates**: New translations require app update
+   - Consider remote config for critical string updates
+
+---
+
 ## Summary
 
 This strategy provides:
 
 1. **Sustainability**: Automated workflows, CI/CD integration, minimal manual effort
 2. **Expandability**: Easy to add new languages, new strings auto-translated
-3. **SEO Optimization**: Proper hreflang, sitemaps, locale URLs, SSR
+3. **SEO Optimization**: Proper hreflang, sitemaps, locale URLs, SSR (web)
 4. **AI Integration**: Gemini-powered auto-translation, language-aware AI responses
 5. **Developer Experience**: Type-safe translations, pre-commit hooks, clear conventions
+6. **Cross-Platform**: Unified approach for web, iOS, and Android with shared components
 
-The estimated implementation time is 4-5 weeks for full rollout, with ongoing maintenance being largely automated.
+### Platform-Specific Libraries
+
+| Platform | Library | Locale Storage |
+|----------|---------|----------------|
+| Web | `next-intl` | URL path (`/en/`) |
+| iOS/Android | `i18next` | Capacitor Preferences |
+| Native strings | Sync script | Platform-specific files |
+
+The estimated implementation time is 5-6 weeks for full rollout across all platforms, with ongoing maintenance being largely automated.
