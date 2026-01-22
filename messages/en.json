@@ -236,39 +236,44 @@
     "failedToGenerateList": "Failed to generate list"
   },
   "tutorial": {
+    "listTitle": "Welcome to Listo! ✨",
     "gettingStarted": {
-      "title": "Getting Started",
+      "title": "#Getting Started",
       "items": [
-        "Type anything and press enter to add items",
-        "Tap an item to mark it complete",
-        "Swipe left to delete an item",
-        "Share this list - anyone with the link can edit!"
+        "Tap any item to check it off — try it now!",
+        "Hold and drag any item to reorder it anywhere in your list",
+        "Share this list by tapping Share above — anyone with the link can collaborate!"
       ]
     },
     "aiMagic": {
-      "title": "AI Magic",
+      "title": "#AI Magic ✨",
       "items": [
-        "Type ... followed by a description to generate items",
-        "Type ! followed by instructions to transform your list",
-        "Type theme: followed by a style to customize colors"
+        "Type ...grocery list for tacos and AI generates items instantly",
+        "Type !sort by aisle to reorganize your entire list with AI",
+        "Type !group by category to auto-organize items into sections",
+        "Tap the microphone button and speak to add items hands-free"
       ]
     },
     "proTips": {
-      "title": "Pro Tips",
+      "title": "#Pro Tips 🚀",
       "items": [
-        "Type # to create category headers",
-        "Drag items to reorder them",
-        "Use --commands to see all options"
+        "Type milk, eggs, bread to add multiple items at once",
+        "Start any item with # to create a new category",
+        "Type style: ocean sunset to give your list a custom theme",
+        "Tap the ⚡ bolt icon to see all available commands"
       ]
     },
     "ready": {
-      "title": "You're Ready!",
+      "title": "#You're Ready! 🎉",
       "items": [
-        "Delete this tutorial list when you're done",
-        "Create your own list from the home page",
-        "Have fun organizing!"
+        "Delete this list and create your first real one",
+        "Or keep checking these off as you learn — it's your list now!"
       ]
     }
+  },
+  "commandTriggers": {
+    "theme": ["theme:", "style:"],
+    "note": ["note:"]
   },
   "themes": {
     "sunset": "sunset",

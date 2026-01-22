@@ -22,53 +22,42 @@ function normalizeInput(text: string): string {
     .replace(/—/g, '--'); // iOS em-dash → two dashes
 }
 
-// Tutorial list for new users
-const TUTORIAL_LIST = {
-  title: "Welcome to Listo! ✨",
-  theme: {
-    primary: "#8B5CF6",
-    primaryDark: "#7C3AED",
-    primaryLight: "#A78BFA",
-    primaryPale: "#EDE9FE",
-    primaryGlow: "rgba(139, 92, 246, 0.3)",
-    textPrimary: "#1F2937",
-    textSecondary: "#4B5563",
-    textMuted: "#9CA3AF",
-    textPlaceholder: "#D1D5DB",
-    bgPrimary: "#FAF5FF",
-    bgSecondary: "#F3E8FF",
-    bgHover: "#EDE9FE",
-    borderLight: "#E9D5FF",
-    borderMedium: "#DDD6FE",
-    error: "#EF4444",
-  },
-  items: [
-    // Getting Started category
-    { content: "#Getting Started", parent: null },
-    { content: "Tap any item to check it off — try it now!", parent: "#Getting Started" },
-    { content: "Hold and drag any item to reorder it anywhere in your list", parent: "#Getting Started" },
-    { content: "Share this list by tapping Share above — anyone with the link can collaborate!", parent: "#Getting Started" },
-
-    // AI Magic category
-    { content: "#AI Magic ✨", parent: null },
-    { content: "Type ...grocery list for tacos and AI generates items instantly", parent: "#AI Magic ✨" },
-    { content: "Type !sort by aisle to reorganize your entire list with AI", parent: "#AI Magic ✨" },
-    { content: "Type !group by category to auto-organize items into sections", parent: "#AI Magic ✨" },
-    { content: "Tap the microphone button and speak to add items hands-free", parent: "#AI Magic ✨" },
-
-    // Pro Tips category
-    { content: "#Pro Tips 🚀", parent: null },
-    { content: "Type milk, eggs, bread to add multiple items at once", parent: "#Pro Tips 🚀" },
-    { content: "Start any item with # to create a new category", parent: "#Pro Tips 🚀" },
-    { content: "Type style: ocean sunset to give your list a custom theme", parent: "#Pro Tips 🚀" },
-    { content: "Tap the ⚡ bolt icon to see all available commands", parent: "#Pro Tips 🚀" },
-
-    // You're Ready category
-    { content: "#You're Ready! 🎉", parent: null },
-    { content: "Delete this list and create your first real one", parent: "#You're Ready! 🎉" },
-    { content: "Or keep checking these off as you learn — it's your list now!", parent: "#You're Ready! 🎉" },
-  ],
+// Tutorial list theme (colors only - not translatable)
+const TUTORIAL_THEME = {
+  primary: "#8B5CF6",
+  primaryDark: "#7C3AED",
+  primaryLight: "#A78BFA",
+  primaryPale: "#EDE9FE",
+  primaryGlow: "rgba(139, 92, 246, 0.3)",
+  textPrimary: "#1F2937",
+  textSecondary: "#4B5563",
+  textMuted: "#9CA3AF",
+  textPlaceholder: "#D1D5DB",
+  bgPrimary: "#FAF5FF",
+  bgSecondary: "#F3E8FF",
+  bgHover: "#EDE9FE",
+  borderLight: "#E9D5FF",
+  borderMedium: "#DDD6FE",
+  error: "#EF4444",
 };
+
+// Build tutorial items from translations
+function buildTutorialItems(tTutorial: ReturnType<typeof useTranslations>) {
+  const sections = ['gettingStarted', 'aiMagic', 'proTips', 'ready'] as const;
+  const items: { content: string; parent: string | null }[] = [];
+
+  for (const section of sections) {
+    const title = tTutorial(`${section}.title`);
+    items.push({ content: title, parent: null });
+
+    const sectionItems = tTutorial.raw(`${section}.items`) as string[];
+    for (const item of sectionItems) {
+      items.push({ content: item, parent: title });
+    }
+  }
+
+  return items;
+}
 
 // Placeholders are now loaded from translations
 
@@ -87,12 +76,20 @@ export default function Home() {
   const tInput = useTranslations('input');
   const tThemes = useTranslations('themes');
   const tWelcome = useTranslations('welcome');
+  const tTutorial = useTranslations('tutorial');
 
   // Get translated placeholders
   const placeholders = useMemo(() => {
     const raw = t.raw('placeholders');
     return Array.isArray(raw) ? raw : [];
   }, [t]);
+
+  // Get translated tutorial list
+  const tutorialList = useMemo(() => ({
+    title: tTutorial('listTitle'),
+    theme: TUTORIAL_THEME,
+    items: buildTutorialItems(tTutorial),
+  }), [tTutorial]);
 
   const [value, setValue] = useState('');
   const [isCreating, setIsCreating] = useState(false);
@@ -144,15 +141,15 @@ export default function Home() {
       // Create the list with theme
       await supabase.from('lists').insert({
         id: listId,
-        title: TUTORIAL_LIST.title,
-        theme: TUTORIAL_LIST.theme,
+        title: tutorialList.title,
+        theme: tutorialList.theme,
       });
 
       // Create items with proper parent relationships
       const idMapping: Record<string, string> = {};
 
       // First pass: create categories (headers)
-      const headers = TUTORIAL_LIST.items.filter(item => item.content.startsWith('#'));
+      const headers = tutorialList.items.filter(item => item.content.startsWith('#'));
       for (let i = 0; i < headers.length; i++) {
         const header = headers[i];
         const { data } = await supabase
@@ -174,7 +171,7 @@ export default function Home() {
 
       // Second pass: create child items
       let position = 0;
-      for (const item of TUTORIAL_LIST.items) {
+      for (const item of tutorialList.items) {
         if (!item.content.startsWith('#')) {
           const parentId = item.parent ? idMapping[item.parent] : null;
           await supabase.from('items').insert({
@@ -188,7 +185,7 @@ export default function Home() {
       }
 
       // Add to recent lists and navigate
-      addList(listId, TUTORIAL_LIST.title, TUTORIAL_LIST.theme.primary);
+      addList(listId, tutorialList.title, tutorialList.theme.primary);
       router.push(`/${listId}`);
     } catch (err) {
       console.error('Failed to create tutorial list:', err);
@@ -720,14 +717,14 @@ export default function Home() {
                   style={{
                     width: '56px',
                     height: '56px',
-                    backgroundColor: TUTORIAL_LIST.theme.primary,
+                    backgroundColor: tutorialList.theme.primary,
                     color: 'white',
                   }}
                 >
-                  0/{TUTORIAL_LIST.items.filter(i => !i.content.startsWith('#')).length}
+                  0/{tutorialList.items.filter(i => !i.content.startsWith('#')).length}
                 </div>
                 <span className="flex-1 text-base text-left truncate font-medium" style={{ color: 'var(--text-primary)' }}>
-                  {TUTORIAL_LIST.title}
+                  {tutorialList.title}
                 </span>
               </div>
             </div>

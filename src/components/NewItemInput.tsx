@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { ManipulatedItem, GenerateResult, isCategorizedResult } from '@/lib/hooks/useAI';
 import { generateListId } from '@/lib/utils/generateId';
@@ -69,6 +69,31 @@ export function NewItemInput({
   emojifyMode = false,
 }: NewItemInputProps) {
   const t = useTranslations('input');
+  const tTriggers = useTranslations('commandTriggers');
+
+  // Get localized command triggers
+  const themeTriggers = useMemo(() => {
+    const raw = tTriggers.raw('theme');
+    return Array.isArray(raw) ? raw.map((s: string) => s.toLowerCase()) : ['theme:', 'style:'];
+  }, [tTriggers]);
+
+  const noteTriggers = useMemo(() => {
+    const raw = tTriggers.raw('note');
+    return Array.isArray(raw) ? raw.map((s: string) => s.toLowerCase()) : ['note:'];
+  }, [tTriggers]);
+
+  // Helper to check if input starts with any trigger
+  const startsWithTrigger = useCallback((input: string, triggers: string[]) => {
+    const lower = input.toLowerCase();
+    return triggers.find(trigger => lower.startsWith(trigger));
+  }, []);
+
+  // Helper to get content after trigger
+  const getContentAfterTrigger = useCallback((input: string, triggers: string[]) => {
+    const lower = input.toLowerCase();
+    const trigger = triggers.find(t => lower.startsWith(t));
+    return trigger ? input.slice(trigger.length).trim() : input;
+  }, []);
 
   const [value, setValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -91,7 +116,9 @@ export function NewItemInput({
       setValue(prefillValue);
       // Focus the appropriate input element
       setTimeout(() => {
-        if (prefillValue.toLowerCase().startsWith('note:')) {
+        const lower = prefillValue.toLowerCase();
+        const isNote = noteTriggers.some(trigger => lower.startsWith(trigger));
+        if (isNote) {
           textareaRef.current?.focus();
         } else {
           inputRef.current?.focus();
@@ -99,7 +126,7 @@ export function NewItemInput({
       }, 0);
       onPrefillConsumed?.();
     }
-  }, [prefillValue, onPrefillConsumed]);
+  }, [prefillValue, onPrefillConsumed, noteTriggers]);
 
   // Detect input mode based on content
   const { mode, displayText } = useMemo(() => {
@@ -146,8 +173,8 @@ export function NewItemInput({
       };
     }
 
-    // Theme mode: starts with theme: or style:
-    if (lowerTrimmed.startsWith('theme:') || lowerTrimmed.startsWith('style:')) {
+    // Theme mode: starts with theme:/style:/tema:/estilo: etc.
+    if (startsWithTrigger(lowerTrimmed, themeTriggers)) {
       return {
         mode: 'theme' as InputMode,
         displayText: t('modes.theme')
@@ -170,9 +197,9 @@ export function NewItemInput({
       };
     }
 
-    // Note mode: starts with note:
-    if (lowerTrimmed.startsWith('note:')) {
-      const noteContent = trimmed.slice(5).trim();
+    // Note mode: starts with note:/nota: etc.
+    if (startsWithTrigger(lowerTrimmed, noteTriggers)) {
+      const noteContent = getContentAfterTrigger(trimmed, noteTriggers);
       return {
         mode: 'note' as InputMode,
         displayText: noteContent ? t('modes.addingNote') : t('modes.note')
@@ -190,7 +217,7 @@ export function NewItemInput({
 
     // Single mode
     return { mode: 'single' as InputMode, displayText: '' };
-  }, [value, t]);
+  }, [value, t, themeTriggers, noteTriggers, startsWithTrigger, getContentAfterTrigger]);
 
   // Track previous mode to detect switch to note mode
   const prevModeRef = useRef<InputMode>('single');
@@ -335,10 +362,10 @@ export function NewItemInput({
         return;
       }
 
-      // Theme mode: theme: or style: prefix
-      if (lowerTrimmed.startsWith('theme:') || lowerTrimmed.startsWith('style:')) {
-        const prefix = lowerTrimmed.startsWith('theme:') ? 'theme:' : 'style:';
-        const description = trimmed.slice(prefix.length).trim();
+      // Theme mode: theme:/style:/tema:/estilo: prefix
+      const themeTrigger = startsWithTrigger(lowerTrimmed, themeTriggers);
+      if (themeTrigger) {
+        const description = getContentAfterTrigger(trimmed, themeTriggers);
         if (!description) {
           setValue(currentValue);
           return;
@@ -434,8 +461,8 @@ export function NewItemInput({
         return;
       }
 
-      // Note mode: add with note: prefix intact (skip comma splitting)
-      if (lowerTrimmed.startsWith('note:')) {
+      // Note mode: add with note:/nota: prefix intact (skip comma splitting)
+      if (startsWithTrigger(lowerTrimmed, noteTriggers)) {
         await onAdd(trimmed);
         return;
       }

@@ -236,39 +236,44 @@
     "failedToGenerateList": "Error al generar lista"
   },
   "tutorial": {
+    "listTitle": "¡Bienvenido a Listo! ✨",
     "gettingStarted": {
-      "title": "Comenzar",
+      "title": "#Comenzar",
       "items": [
-        "Escribe cualquier cosa y presiona enter para añadir elementos",
-        "Toca un elemento para marcarlo como completado",
-        "Desliza hacia la izquierda para eliminar un elemento",
-        "¡Comparte esta lista - cualquiera con el enlace puede editarla!"
+        "Toca cualquier elemento para marcarlo — ¡pruébalo ahora!",
+        "Mantén presionado y arrastra cualquier elemento para reordenarlo",
+        "Comparte esta lista tocando Compartir arriba — ¡cualquiera con el enlace puede colaborar!"
       ]
     },
     "aiMagic": {
-      "title": "Magia de IA",
+      "title": "#Magia de IA ✨",
       "items": [
-        "Escribe ... seguido de una descripción para generar elementos",
-        "Escribe ! seguido de instrucciones para transformar tu lista",
-        "Escribe theme: seguido de un estilo para personalizar colores"
+        "Escribe ...lista de compras para tacos y la IA genera elementos al instante",
+        "Escribe !ordenar por pasillo para reorganizar tu lista con IA",
+        "Escribe !agrupar por categoría para organizar elementos en secciones",
+        "Toca el botón del micrófono y habla para añadir elementos sin manos"
       ]
     },
     "proTips": {
-      "title": "Consejos Pro",
+      "title": "#Consejos Pro 🚀",
       "items": [
-        "Escribe # para crear encabezados de categoría",
-        "Arrastra elementos para reordenarlos",
-        "Usa --commands para ver todas las opciones"
+        "Escribe leche, huevos, pan para añadir varios elementos a la vez",
+        "Comienza cualquier elemento con # para crear una nueva categoría",
+        "Escribe estilo: atardecer oceánico para darle un tema personalizado a tu lista",
+        "Toca el icono ⚡ para ver todos los comandos disponibles"
       ]
     },
     "ready": {
-      "title": "¡Estás Listo!",
+      "title": "#¡Listo! 🎉",
       "items": [
-        "Elimina esta lista tutorial cuando termines",
-        "Crea tu propia lista desde la página de inicio",
-        "¡Diviértete organizando!"
+        "Elimina esta lista y crea tu primera lista real",
+        "O sigue marcando estos elementos mientras aprendes — ¡ahora es tu lista!"
       ]
     }
+  },
+  "commandTriggers": {
+    "theme": ["tema:", "estilo:", "theme:", "style:"],
+    "note": ["nota:", "note:"]
   },
   "themes": {
     "sunset": "atardecer",
