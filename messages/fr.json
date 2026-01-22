@@ -1,317 +1,323 @@
 {
   "metadata": {
-    "title": "Listo - Instant Shareable Lists | No Signup Required",
-    "description": "Create and share lists in seconds. No signup, no app needed. Real-time collaboration, AI-powered item generation, and custom themes. Just share the link.",
-    "ogTitle": "Listo - Instant Shareable Lists",
-    "ogDescription": "Create and share lists in seconds. No signup needed. Real-time collaboration with anyone."
+    "title": "Listo - Listes Partageables Instantanément | Sans Inscription",
+    "description": "Créez et partagez des listes en quelques secondes. Sans inscription, sans application. Collaboration en temps réel, génération par IA et thèmes personnalisés. Partagez simplement le lien.",
+    "ogTitle": "Listo - Listes Partageables Instantanément",
+    "ogDescription": "Créez et partagez des listes en quelques secondes. Sans inscription. Collaboration en temps réel avec n'importe qui."
   },
   "home": {
     "title": "Listo",
-    "tagline": "Create a list. Share the link. Collaborate in real-time.",
+    "tagline": "Créez une liste. Partagez le lien. Collaborez en temps réel.",
     "benefits": {
-      "noSignup": "No signup",
-      "realtime": "Real-time sharing",
-      "aiPowered": "AI-powered"
+      "noSignup": "Sans inscription",
+      "realtime": "Temps réel",
+      "aiPowered": "Propulsé par IA"
     },
     "buttons": {
-      "create": "Create",
-      "restore": "Restore",
-      "archived": "Archived"
+      "create": "Créer",
+      "restore": "Restaurer",
+      "archived": "Archivées"
     },
     "placeholders": [
-      "groceries for tacos",
-      "packing for beach vacation",
-      "questions for doctor visit",
-      "movies to watch this weekend",
-      "things to do before moving",
-      "gift ideas for mom",
-      "books to read this year",
-      "home improvement projects",
-      "weekly meal prep ideas",
-      "travel bucket list"
+      "ingrédients pour tacos",
+      "valise pour vacances à la plage",
+      "questions pour le médecin",
+      "films à voir ce week-end",
+      "choses à faire avant de déménager",
+      "idées cadeaux pour maman",
+      "livres à lire cette année",
+      "projets de bricolage",
+      "idées de repas de la semaine",
+      "liste de voyages de rêve"
     ],
-    "recentLists": "Your Lists",
-    "noRecentLists": "No recent lists",
-    "untitledList": "Untitled List",
+    "recentLists": "Vos Listes",
+    "noRecentLists": "Aucune liste récente",
+    "untitledList": "Liste sans titre",
     "customStyles": {
-      "title": "Infinite custom styles",
-      "description": "Describe any style and it will be designed for you automatically",
-      "instruction": "Type <code>style: ocean sunset</code> in your list to style it"
+      "title": "Styles personnalisés infinis",
+      "description": "Décrivez n'importe quel style et il sera créé automatiquement",
+      "instruction": "Tapez <code>style: coucher de soleil à la plage</code> dans votre liste pour personnaliser"
     },
     "tips": {
-      "title": "Tips",
+      "title": "Conseils",
       "items": [
-        "Type ... to generate items with AI",
-        "Type ! to transform your list",
-        "Type theme: to create custom colors",
-        "Type # to create a category"
+        "Tapez ... pour générer des éléments avec l'IA",
+        "Tapez ! pour transformer votre liste",
+        "Tapez style: pour créer des couleurs personnalisées",
+        "Tapez # pour créer une catégorie"
       ]
     },
     "privacy": {
-      "title": "Privacy Policy",
-      "lastUpdated": "Last updated: January 2025",
-      "content": "Listo is designed with privacy in mind. Your lists are stored securely and are only accessible via their unique URLs. We do not sell your data or use it for advertising purposes.",
-      "note": "Note: All listos are public URLs. Never share personal information in a list.",
-      "readPolicy": "Read our privacy policy",
+      "title": "Politique de Confidentialité",
+      "lastUpdated": "Dernière mise à jour : Janvier 2025",
+      "content": "Listo a été conçu avec la confidentialité à l'esprit. Vos listes sont stockées en toute sécurité et ne sont accessibles que via leurs URLs uniques. Nous ne vendons pas vos données et ne les utilisons pas à des fins publicitaires.",
+      "note": "Note : Toutes les listes sont des URLs publiques. Ne partagez jamais d'informations personnelles dans une liste.",
+      "readPolicy": "Lire notre politique de confidentialité",
       "sections": {
         "publicUse": {
-          "title": "Public Use and Sharing",
-          "content": "LISTO checklists (hereafter referred to as \"listos\") are inherently public. Once you create a listo and share its link, anyone with access to that link can view and edit the listo. Since listos are designed to be shared freely, we strongly advise against using LISTO to store or transmit sensitive, confidential, or any personal information that you do not wish to make public."
+          "title": "Utilisation Publique et Partage",
+          "content": "Les listes LISTO (ci-après \"listes\") sont intrinsèquement publiques. Une fois que vous créez une liste et partagez son lien, toute personne ayant accès à ce lien peut voir et modifier la liste. Comme les listes sont conçues pour être partagées librement, nous recommandons de ne pas utiliser LISTO pour stocker ou transmettre des informations sensibles, confidentielles ou personnelles que vous ne souhaitez pas rendre publiques."
         },
         "dataCollection": {
-          "title": "Data Collection and Use",
-          "content": "As of now, LISTO does not require user registration, which means we do not collect personal data such as names, email addresses, or any other contact information. All listos are created anonymously."
+          "title": "Collecte et Utilisation des Données",
+          "content": "Actuellement, LISTO ne nécessite pas d'inscription, ce qui signifie que nous ne collectons pas de données personnelles comme les noms, adresses e-mail ou autres informations de contact. Toutes les listes sont créées anonymement."
         },
         "analytics": {
-          "title": "Analytics",
-          "content": "We utilize Google Analytics to analyze the performance of LISTO, which helps us understand traffic patterns and user engagement in an anonymous form. Google Analytics may collect non-personally identifiable information such as your device type, browser type, and the way you interact with LISTO. This data is used strictly for the purpose of enhancing user experience and improving our service."
+          "title": "Analyses",
+          "content": "Nous utilisons Google Analytics pour analyser les performances de LISTO, ce qui nous aide à comprendre les modèles de trafic et l'interaction des utilisateurs de manière anonyme. Google Analytics peut collecter des informations non identifiables personnellement, comme le type d'appareil, le type de navigateur et la façon dont vous interagissez avec LISTO. Ces données sont utilisées strictement pour améliorer l'expérience utilisateur et notre service."
         },
         "contact": {
-          "title": "Contact Information",
-          "content": "Should you have any questions about this privacy policy or LISTO's practices, please feel free to reach out to us at"
+          "title": "Informations de Contact",
+          "content": "Si vous avez des questions concernant cette politique de confidentialité ou les pratiques de LISTO, n'hésitez pas à nous contacter à"
         },
-        "changes": "Please be aware that our Privacy Policy may change from time to time. We will not reduce your rights under this Privacy Policy without providing notice, and we expect most such changes will be minor."
+        "changes": "Veuillez noter que notre Politique de Confidentialité peut changer de temps à autre. Nous ne réduirons pas vos droits en vertu de cette Politique de Confidentialité sans préavis, et nous prévoyons que la plupart des changements seront mineurs."
       }
     }
   },
   "list": {
-    "untitled": "Untitled List",
+    "untitled": "Liste sans titre",
     "share": {
-      "title": "Share",
-      "copyLink": "Copy link",
-      "copyMarkdown": "Copy as Markdown",
-      "linkCopied": "Link copied!",
-      "markdownCopied": "Markdown copied!",
-      "sendEmail": "Send via email",
-      "exportTodoist": "Export for Todoist",
-      "csvSubtitle": "CSV file you can import into any Todoist project",
-      "instruction": "Anyone with this link can view and edit the list in real-time."
+      "title": "Partager",
+      "copyLink": "Copier le lien",
+      "copyMarkdown": "Copier en Markdown",
+      "linkCopied": "Lien copié !",
+      "markdownCopied": "Markdown copié !",
+      "sendEmail": "Envoyer par e-mail",
+      "exportTodoist": "Exporter vers Todoist",
+      "csvSubtitle": "Fichier CSV à importer dans n'importe quel projet Todoist",
+      "instruction": "Toute personne avec ce lien peut voir et modifier la liste en temps réel."
     },
     "footer": {
-      "createdWith": "Created with Listo",
-      "home": "Home",
-      "newList": "New List"
+      "createdWith": "Créé avec Listo",
+      "home": "Accueil",
+      "newList": "Nouvelle Liste"
     },
-    "backToList": "Back to list"
+    "backToList": "Retour à la liste"
   },
   "input": {
-    "placeholder": "Add items...",
-    "notePlaceholder": "note: Write your note here... (Shift+Enter for new line)",
+    "placeholder": "Ajouter des éléments...",
+    "notePlaceholder": "note: Tapez votre note ici... (Shift+Entrée pour nouvelle ligne)",
     "modes": {
-      "generate": "AI will generate items",
-      "transform": "AI will transform list",
-      "theme": "AI will generate theme",
-      "addingItems": "Adding {count} items",
-      "emoji": "Trigger emoji mode",
-      "title": "Generate list title",
-      "newList": "Create new list in new tab",
-      "removeTheme": "Remove custom theme",
-      "note": "Type your note...",
-      "addingNote": "Adding note",
-      "category": "Create category header"
+      "generate": "L'IA va générer des éléments",
+      "transform": "L'IA va transformer la liste",
+      "theme": "L'IA va générer un thème",
+      "addingItems": "Ajout de {count} éléments",
+      "emoji": "Activer le mode emoji",
+      "title": "Générer le titre de la liste",
+      "newList": "Créer une nouvelle liste dans un nouvel onglet",
+      "removeTheme": "Supprimer le thème personnalisé",
+      "note": "Tapez votre note...",
+      "addingNote": "Ajout de la note",
+      "category": "Créer un en-tête de catégorie"
     },
     "commandPreview": {
-      "completeAll": "Complete all items",
-      "resetAll": "Reset all items",
-      "enableLarge": "Enable large mode",
-      "disableLarge": "Disable large mode",
-      "clearCompleted": "Delete all completed items",
-      "sort": "Sort items alphabetically",
-      "sortAll": "Sort everything alphabetically",
-      "removeCategories": "Remove all categories",
-      "toggleEmoji": "Toggle emoji mode",
-      "nukeAll": "Delete ALL items",
-      "generateTitle": "Generate list title",
-      "newList": "Create new list in new tab",
-      "resetTheme": "Remove custom theme"
+      "completeAll": "Compléter tous les éléments",
+      "resetAll": "Réinitialiser tous les éléments",
+      "enableLarge": "Activer le mode grand",
+      "disableLarge": "Désactiver le mode grand",
+      "clearCompleted": "Supprimer tous les complétés",
+      "sort": "Trier les éléments alphabétiquement",
+      "sortAll": "Tout trier alphabétiquement",
+      "removeCategories": "Supprimer toutes les catégories",
+      "toggleEmoji": "Basculer le mode emoji",
+      "nukeAll": "Supprimer TOUS les éléments",
+      "generateTitle": "Générer le titre de la liste",
+      "newList": "Créer une nouvelle liste dans un nouvel onglet",
+      "resetTheme": "Supprimer le thème personnalisé"
     },
     "processing": {
-      "thinking": "AI is thinking...",
-      "generatingTheme": "Generating theme...",
-      "reorganizing": "Reorganizing list...",
-      "unknownCommand": "Unknown command"
+      "thinking": "L'IA réfléchit...",
+      "generatingTheme": "Génération du thème...",
+      "reorganizing": "Réorganisation de la liste...",
+      "unknownCommand": "Commande inconnue"
     },
     "hints": {
-      "generate": "generate",
-      "transform": "transform",
-      "theme": "theme",
-      "category": "category",
-      "multi": "multi"
+      "generate": "générer",
+      "transform": "transformer",
+      "theme": "thème",
+      "category": "catégorie",
+      "multi": "multiple"
     }
   },
   "commands": {
-    "title": "Commands",
-    "done": "Done",
+    "title": "Commandes",
+    "done": "Terminé",
     "sections": {
-      "aiFeatures": "AI Features",
-      "quickActions": "Quick Actions",
+      "aiFeatures": "Fonctionnalités IA",
+      "quickActions": "Actions Rapides",
       "modes": "Modes"
     },
     "items": {
       "generate": {
-        "label": "Generate Items",
-        "description": "AI creates items from your description"
+        "label": "Générer des Éléments",
+        "description": "L'IA crée des éléments à partir de votre description"
       },
       "transform": {
-        "label": "AI Transform",
-        "description": "Transform your list any way you want"
+        "label": "Transformer avec l'IA",
+        "description": "Transformez votre liste comme vous voulez"
       },
       "theme": {
-        "label": "Custom Theme",
-        "description": "Generate colors from a description"
+        "label": "Thème Personnalisé",
+        "description": "Générez des couleurs à partir d'une description"
       },
       "generateTitle": {
-        "label": "Generate Title",
-        "description": "AI creates a title from your items"
+        "label": "Générer un Titre",
+        "description": "L'IA crée un titre à partir de vos éléments"
       },
       "addCategory": {
-        "label": "Add Category",
-        "description": "Create a section header"
+        "label": "Ajouter une Catégorie",
+        "description": "Créer un en-tête de section"
       },
       "completeAll": {
-        "label": "Complete All",
-        "description": "Mark all items as done"
+        "label": "Tout Compléter",
+        "description": "Marquer tous les éléments comme complétés"
       },
       "resetAll": {
-        "label": "Reset All",
-        "description": "Uncheck all items"
+        "label": "Tout Réinitialiser",
+        "description": "Décocher tous les éléments"
       },
       "clearCompleted": {
-        "label": "Clear Completed",
-        "description": "Delete all checked items"
+        "label": "Effacer les Complétés",
+        "description": "Supprimer tous les éléments cochés"
       },
       "sortItems": {
-        "label": "Sort Items",
-        "description": "Alphabetically sort all items"
+        "label": "Trier les Éléments",
+        "description": "Trier tous les éléments alphabétiquement"
       },
       "removeCategories": {
-        "label": "Remove Categories",
-        "description": "Flatten all groups"
+        "label": "Supprimer les Catégories",
+        "description": "Aplatir tous les groupes"
       },
       "largeMode": {
-        "label": "Large Mode",
-        "description": "Make everything 2x bigger"
+        "label": "Mode Grand",
+        "description": "Rendre tout 2x plus grand"
       },
       "normalMode": {
-        "label": "Normal Mode",
-        "description": "Return to normal size"
+        "label": "Mode Normal",
+        "description": "Revenir à la taille normale"
       },
       "emojifyOn": {
-        "label": "Emojify Mode",
-        "description": "Auto-add emojis to new items"
+        "label": "Mode Emoji",
+        "description": "Ajouter automatiquement des emojis aux nouveaux éléments"
       },
       "emojifyOff": {
-        "label": "Turn Off Emojify",
-        "description": "Stop auto-adding emojis"
+        "label": "Désactiver les Emojis",
+        "description": "Arrêter d'ajouter automatiquement des emojis"
       },
       "resetTheme": {
-        "label": "Reset Theme",
-        "description": "Remove custom colors"
+        "label": "Réinitialiser le Thème",
+        "description": "Supprimer les couleurs personnalisées"
       }
     }
   },
   "dictation": {
-    "listening": "Listening...",
-    "tapToStop": "Tap anywhere to stop",
-    "cancel": "Cancel",
-    "timeRemaining": "{time} remaining",
-    "microphoneDenied": "Microphone access denied"
+    "listening": "Écoute...",
+    "tapToStop": "Touchez n'importe où pour arrêter",
+    "cancel": "Annuler",
+    "timeRemaining": "{time} restant",
+    "microphoneDenied": "Accès au microphone refusé"
   },
   "errors": {
-    "promptRequired": "Prompt is required",
-    "itemsRequired": "Items array is required",
-    "instructionRequired": "Instruction is required",
-    "invalidAction": "Invalid action",
-    "aiProcessingFailed": "AI processing failed",
-    "themeGenerationFailed": "Theme generation failed",
-    "textRequired": "Text is required",
-    "emojifyFailed": "Emojify failed",
-    "titleGenerationFailed": "Title generation failed",
-    "noAudioFile": "No audio file provided",
-    "transcriptionFailed": "Transcription failed",
-    "transcriptionTimeout": "Transcription timed out",
-    "noItemsToReorganize": "No items to reorganize",
-    "listManipulationNotAvailable": "List manipulation not available",
-    "failedToGenerateItems": "Failed to generate items",
-    "failedToGenerateList": "Failed to generate list"
+    "promptRequired": "Texte requis",
+    "itemsRequired": "Tableau d'éléments requis",
+    "instructionRequired": "Instruction requise",
+    "invalidAction": "Action invalide",
+    "aiProcessingFailed": "Échec du traitement IA",
+    "themeGenerationFailed": "Échec de la génération du thème",
+    "textRequired": "Texte requis",
+    "emojifyFailed": "Échec de l'ajout d'emoji",
+    "titleGenerationFailed": "Échec de la génération du titre",
+    "noAudioFile": "Aucun fichier audio fourni",
+    "transcriptionFailed": "Échec de la transcription",
+    "transcriptionTimeout": "Délai de transcription dépassé",
+    "noItemsToReorganize": "Aucun élément à réorganiser",
+    "listManipulationNotAvailable": "Manipulation de liste non disponible",
+    "failedToGenerateItems": "Échec de la génération des éléments",
+    "failedToGenerateList": "Échec de la génération de la liste"
   },
   "tutorial": {
-    "listTitle": "Welcome to Listo! ✨",
+    "listTitle": "Bienvenue sur Listo ! ✨",
     "gettingStarted": {
-      "title": "#Getting Started",
+      "title": "#Pour Commencer",
       "items": [
-        "Tap any item to check it off — try it now!",
-        "Hold and drag any item to reorder it anywhere in your list",
-        "Share this list by tapping Share above — anyone with the link can collaborate!"
+        "Touchez un élément pour le marquer comme complété — essayez maintenant !",
+        "Appuyez longuement et faites glisser les éléments pour les réorganiser",
+        "Partagez cette liste en touchant Partager ci-dessus — toute personne avec le lien peut collaborer !"
       ]
     },
     "aiMagic": {
-      "title": "#AI Magic ✨",
+      "title": "#Magie de l'IA ✨",
       "items": [
-        "Type ...grocery list for tacos and AI generates items instantly",
-        "Type !sort by aisle to reorganize your entire list with AI",
-        "Type !group by category to auto-organize items into sections",
-        "Tap the microphone button and speak to add items hands-free"
+        "Tapez ...liste de courses pour tacos et l'IA génère des éléments instantanément",
+        "Tapez !trier par rayon pour réorganiser votre liste avec l'IA",
+        "Tapez !grouper par catégorie pour organiser les éléments en sections",
+        "Touchez le bouton microphone et parlez pour ajouter des éléments sans les mains"
       ]
     },
     "proTips": {
-      "title": "#Pro Tips 🚀",
+      "title": "#Conseils Pro 🚀",
       "items": [
-        "Type milk, eggs, bread to add multiple items at once",
-        "Start any item with # to create a new category",
-        "Type style: ocean sunset to give your list a custom theme",
-        "Tap the ⚡ bolt icon to see all available commands"
+        "Tapez lait, œufs, pain pour ajouter plusieurs éléments à la fois",
+        "Commencez un élément par # pour créer une nouvelle catégorie",
+        "Tapez style: coucher de soleil océanique pour donner un thème personnalisé à votre liste",
+        "Touchez l'icône ⚡ pour voir toutes les commandes disponibles"
       ]
     },
     "ready": {
-      "title": "#You're Ready! 🎉",
+      "title": "#Prêt ! 🎉",
       "items": [
-        "Delete this list and create your first real one",
-        "Or keep checking these off as you learn — it's your list now!"
+        "Supprimez cette liste et créez votre première vraie liste",
+        "Ou continuez à cocher ces éléments pendant que vous apprenez — c'est maintenant votre liste !"
       ]
     }
   },
   "commandTriggers": {
-    "theme": ["theme:", "style:"],
+    "theme": ["style:", "thème:", "theme:"],
     "note": ["note:"]
   },
   "themes": {
-    "sunset": "sunset",
-    "ocean": "ocean",
-    "forest": "forest",
-    "neon": "neon",
-    "midnight": "midnight",
+    "sunset": "coucher de soleil",
+    "ocean": "océan",
+    "forest": "forêt",
+    "neon": "néon",
+    "midnight": "minuit",
     "rose": "rose",
     "matrix": "matrix",
-    "birthday": "birthday"
+    "birthday": "anniversaire"
   },
   "welcome": {
-    "title": "Welcome to Listo!",
-    "subtitle": "The simplest way to create and share lists",
+    "title": "Bienvenue sur Listo !",
+    "subtitle": "La façon la plus simple de créer et partager des listes",
     "tips": [
-      "Type anything and press Enter to add items",
-      "Tap items to mark them complete",
-      "Type ... to generate items with AI",
-      "Share the URL - anyone can collaborate!"
+      "Tapez n'importe quoi et appuyez sur Entrée pour ajouter des éléments",
+      "Touchez les éléments pour les marquer comme complétés",
+      "Tapez ... pour générer des éléments avec l'IA",
+      "Partagez l'URL — tout le monde peut collaborer !"
     ],
-    "gotIt": "Got it, let's go!",
+    "gotIt": "Compris, allons-y !",
     "aiPowered": {
-      "title": "AI-Powered Lists",
-      "description": "Start with <code>...</code> and describe what you need.",
-      "example": "Try: ...packing list for beach vacation"
+      "title": "Listes Propulsées par l'IA",
+      "description": "Commencez par <code>...</code> et décrivez ce dont vous avez besoin.",
+      "example": "Essayez : ...liste de valise pour vacances à la plage"
     },
     "instantSharing": {
-      "title": "Instant Sharing",
-      "description": "Every list has a unique URL. Share it with anyone on mobile or desktop — they can view and edit in real-time. No signup needed."
+      "title": "Partage Instantané",
+      "description": "Chaque liste a une URL unique. Partagez-la avec n'importe qui sur mobile ou ordinateur — ils peuvent voir et modifier en temps réel. Sans inscription."
     }
   },
   "common": {
-    "loading": "Loading...",
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit",
-    "close": "Close",
-    "link": "link"
+    "loading": "Chargement...",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "link": "lien"
+  },
+  "appBanner": {
+    "appName": "Listo",
+    "openWithTitle": "Ouvrir \"{title}\" dans l'app",
+    "openGeneric": "Ouvrir cette liste dans l'app Listo",
+    "open": "OUVRIR"
   }
 }

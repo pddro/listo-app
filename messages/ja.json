@@ -1,317 +1,323 @@
 {
   "metadata": {
-    "title": "Listo - Instant Shareable Lists | No Signup Required",
-    "description": "Create and share lists in seconds. No signup, no app needed. Real-time collaboration, AI-powered item generation, and custom themes. Just share the link.",
-    "ogTitle": "Listo - Instant Shareable Lists",
-    "ogDescription": "Create and share lists in seconds. No signup needed. Real-time collaboration with anyone."
+    "title": "Listo - 即座に共有できるリスト | 登録不要",
+    "description": "数秒でリストを作成・共有。登録不要、アプリ不要。リアルタイム共同編集、AI生成、カスタムテーマ。リンクを共有するだけ。",
+    "ogTitle": "Listo - 即座に共有できるリスト",
+    "ogDescription": "数秒でリストを作成・共有。登録不要。誰とでもリアルタイムで共同編集。"
   },
   "home": {
     "title": "Listo",
-    "tagline": "Create a list. Share the link. Collaborate in real-time.",
+    "tagline": "リストを作成。リンクを共有。リアルタイムで共同編集。",
     "benefits": {
-      "noSignup": "No signup",
-      "realtime": "Real-time sharing",
-      "aiPowered": "AI-powered"
+      "noSignup": "登録不要",
+      "realtime": "リアルタイム",
+      "aiPowered": "AI搭載"
     },
     "buttons": {
-      "create": "Create",
-      "restore": "Restore",
-      "archived": "Archived"
+      "create": "作成",
+      "restore": "復元",
+      "archived": "アーカイブ"
     },
     "placeholders": [
-      "groceries for tacos",
-      "packing for beach vacation",
-      "questions for doctor visit",
-      "movies to watch this weekend",
-      "things to do before moving",
-      "gift ideas for mom",
-      "books to read this year",
-      "home improvement projects",
-      "weekly meal prep ideas",
-      "travel bucket list"
+      "タコスの材料",
+      "ビーチ旅行の持ち物",
+      "医者への質問",
+      "今週末に見る映画",
+      "引っ越し前にやること",
+      "お母さんへのプレゼント案",
+      "今年読む本",
+      "DIYプロジェクト",
+      "週間献立アイデア",
+      "夢の旅行先リスト"
     ],
-    "recentLists": "Your Lists",
-    "noRecentLists": "No recent lists",
-    "untitledList": "Untitled List",
+    "recentLists": "あなたのリスト",
+    "noRecentLists": "最近のリストはありません",
+    "untitledList": "無題のリスト",
     "customStyles": {
-      "title": "Infinite custom styles",
-      "description": "Describe any style and it will be designed for you automatically",
-      "instruction": "Type <code>style: ocean sunset</code> in your list to style it"
+      "title": "無限のカスタムスタイル",
+      "description": "スタイルを説明すると自動でデザインされます",
+      "instruction": "リストで <code>スタイル: 海辺の夕日</code> と入力してカスタマイズ"
     },
     "tips": {
-      "title": "Tips",
+      "title": "ヒント",
       "items": [
-        "Type ... to generate items with AI",
-        "Type ! to transform your list",
-        "Type theme: to create custom colors",
-        "Type # to create a category"
+        "... と入力してAIでアイテムを生成",
+        "! と入力してリストを変換",
+        "スタイル: と入力してカスタムカラーを作成",
+        "# と入力してカテゴリを作成"
       ]
     },
     "privacy": {
-      "title": "Privacy Policy",
-      "lastUpdated": "Last updated: January 2025",
-      "content": "Listo is designed with privacy in mind. Your lists are stored securely and are only accessible via their unique URLs. We do not sell your data or use it for advertising purposes.",
-      "note": "Note: All listos are public URLs. Never share personal information in a list.",
-      "readPolicy": "Read our privacy policy",
+      "title": "プライバシーポリシー",
+      "lastUpdated": "最終更新：2025年1月",
+      "content": "Listoはプライバシーを重視して設計されています。あなたのリストは安全に保存され、固有のURLからのみアクセスできます。データを販売したり広告に使用することはありません。",
+      "note": "注意：すべてのリストは公開URLです。リストに個人情報を共有しないでください。",
+      "readPolicy": "プライバシーポリシーを読む",
       "sections": {
         "publicUse": {
-          "title": "Public Use and Sharing",
-          "content": "LISTO checklists (hereafter referred to as \"listos\") are inherently public. Once you create a listo and share its link, anyone with access to that link can view and edit the listo. Since listos are designed to be shared freely, we strongly advise against using LISTO to store or transmit sensitive, confidential, or any personal information that you do not wish to make public."
+          "title": "公開利用と共有",
+          "content": "LISTOリスト（以下「リスト」）は本質的に公開されています。リストを作成してリンクを共有すると、そのリンクにアクセスできる人は誰でもリストを閲覧・編集できます。リストは自由に共有できるように設計されているため、機密性の高い情報や個人情報の保存・送信にはLISTOを使用しないことをお勧めします。"
         },
         "dataCollection": {
-          "title": "Data Collection and Use",
-          "content": "As of now, LISTO does not require user registration, which means we do not collect personal data such as names, email addresses, or any other contact information. All listos are created anonymously."
+          "title": "データ収集と使用",
+          "content": "現在、LISTOはユーザー登録を必要としません。つまり、名前、メールアドレス、その他の連絡先情報などの個人データは収集しません。すべてのリストは匿名で作成されます。"
         },
         "analytics": {
-          "title": "Analytics",
-          "content": "We utilize Google Analytics to analyze the performance of LISTO, which helps us understand traffic patterns and user engagement in an anonymous form. Google Analytics may collect non-personally identifiable information such as your device type, browser type, and the way you interact with LISTO. This data is used strictly for the purpose of enhancing user experience and improving our service."
+          "title": "分析",
+          "content": "LISTOのパフォーマンスを分析するためにGoogle Analyticsを使用しています。これにより、トラフィックパターンとユーザーの行動を匿名で理解できます。Google Analyticsは、デバイスタイプ、ブラウザタイプ、LISTOとの対話方法など、個人を特定しない情報を収集する場合があります。このデータはユーザー体験とサービスの向上にのみ使用されます。"
         },
         "contact": {
-          "title": "Contact Information",
-          "content": "Should you have any questions about this privacy policy or LISTO's practices, please feel free to reach out to us at"
+          "title": "お問い合わせ",
+          "content": "このプライバシーポリシーやLISTOの運営についてご質問がある場合は、お気軽にお問い合わせください"
         },
-        "changes": "Please be aware that our Privacy Policy may change from time to time. We will not reduce your rights under this Privacy Policy without providing notice, and we expect most such changes will be minor."
+        "changes": "プライバシーポリシーは随時変更される場合があります。事前通知なしにこのプライバシーポリシーに基づくあなたの権利を制限することはなく、ほとんどの変更は軽微なものになると予想されます。"
       }
     }
   },
   "list": {
-    "untitled": "Untitled List",
+    "untitled": "無題のリスト",
     "share": {
-      "title": "Share",
-      "copyLink": "Copy link",
-      "copyMarkdown": "Copy as Markdown",
-      "linkCopied": "Link copied!",
-      "markdownCopied": "Markdown copied!",
-      "sendEmail": "Send via email",
-      "exportTodoist": "Export for Todoist",
-      "csvSubtitle": "CSV file you can import into any Todoist project",
-      "instruction": "Anyone with this link can view and edit the list in real-time."
+      "title": "共有",
+      "copyLink": "リンクをコピー",
+      "copyMarkdown": "Markdownでコピー",
+      "linkCopied": "リンクをコピーしました！",
+      "markdownCopied": "Markdownをコピーしました！",
+      "sendEmail": "メールで送信",
+      "exportTodoist": "Todoistにエクスポート",
+      "csvSubtitle": "任意のTodoistプロジェクトにインポートできるCSVファイル",
+      "instruction": "このリンクを持つ人は誰でもリアルタイムでリストを閲覧・編集できます。"
     },
     "footer": {
-      "createdWith": "Created with Listo",
-      "home": "Home",
-      "newList": "New List"
+      "createdWith": "Listoで作成",
+      "home": "ホーム",
+      "newList": "新規リスト"
     },
-    "backToList": "Back to list"
+    "backToList": "リストに戻る"
   },
   "input": {
-    "placeholder": "Add items...",
-    "notePlaceholder": "note: Write your note here... (Shift+Enter for new line)",
+    "placeholder": "アイテムを追加...",
+    "notePlaceholder": "メモ: ここにメモを入力... (Shift+Enterで改行)",
     "modes": {
-      "generate": "AI will generate items",
-      "transform": "AI will transform list",
-      "theme": "AI will generate theme",
-      "addingItems": "Adding {count} items",
-      "emoji": "Trigger emoji mode",
-      "title": "Generate list title",
-      "newList": "Create new list in new tab",
-      "removeTheme": "Remove custom theme",
-      "note": "Type your note...",
-      "addingNote": "Adding note",
-      "category": "Create category header"
+      "generate": "AIがアイテムを生成します",
+      "transform": "AIがリストを変換します",
+      "theme": "AIがテーマを生成します",
+      "addingItems": "{count}件のアイテムを追加中",
+      "emoji": "絵文字モードをオン",
+      "title": "リストタイトルを生成",
+      "newList": "新しいタブで新規リストを作成",
+      "removeTheme": "カスタムテーマを削除",
+      "note": "メモを入力...",
+      "addingNote": "メモを追加中",
+      "category": "カテゴリ見出しを作成"
     },
     "commandPreview": {
-      "completeAll": "Complete all items",
-      "resetAll": "Reset all items",
-      "enableLarge": "Enable large mode",
-      "disableLarge": "Disable large mode",
-      "clearCompleted": "Delete all completed items",
-      "sort": "Sort items alphabetically",
-      "sortAll": "Sort everything alphabetically",
-      "removeCategories": "Remove all categories",
-      "toggleEmoji": "Toggle emoji mode",
-      "nukeAll": "Delete ALL items",
-      "generateTitle": "Generate list title",
-      "newList": "Create new list in new tab",
-      "resetTheme": "Remove custom theme"
+      "completeAll": "すべてのアイテムを完了",
+      "resetAll": "すべてのアイテムをリセット",
+      "enableLarge": "大きいモードをオン",
+      "disableLarge": "大きいモードをオフ",
+      "clearCompleted": "完了したアイテムを削除",
+      "sort": "アイテムをアルファベット順に並べ替え",
+      "sortAll": "すべてをアルファベット順に並べ替え",
+      "removeCategories": "すべてのカテゴリを削除",
+      "toggleEmoji": "絵文字モードを切り替え",
+      "nukeAll": "すべてのアイテムを削除",
+      "generateTitle": "リストタイトルを生成",
+      "newList": "新しいタブで新規リストを作成",
+      "resetTheme": "カスタムテーマを削除"
     },
     "processing": {
-      "thinking": "AI is thinking...",
-      "generatingTheme": "Generating theme...",
-      "reorganizing": "Reorganizing list...",
-      "unknownCommand": "Unknown command"
+      "thinking": "AIが考え中...",
+      "generatingTheme": "テーマを生成中...",
+      "reorganizing": "リストを再編成中...",
+      "unknownCommand": "不明なコマンド"
     },
     "hints": {
-      "generate": "generate",
-      "transform": "transform",
-      "theme": "theme",
-      "category": "category",
-      "multi": "multi"
+      "generate": "生成",
+      "transform": "変換",
+      "theme": "テーマ",
+      "category": "カテゴリ",
+      "multi": "複数"
     }
   },
   "commands": {
-    "title": "Commands",
-    "done": "Done",
+    "title": "コマンド",
+    "done": "完了",
     "sections": {
-      "aiFeatures": "AI Features",
-      "quickActions": "Quick Actions",
-      "modes": "Modes"
+      "aiFeatures": "AI機能",
+      "quickActions": "クイックアクション",
+      "modes": "モード"
     },
     "items": {
       "generate": {
-        "label": "Generate Items",
-        "description": "AI creates items from your description"
+        "label": "アイテム生成",
+        "description": "AIが説明からアイテムを作成"
       },
       "transform": {
-        "label": "AI Transform",
-        "description": "Transform your list any way you want"
+        "label": "AIで変換",
+        "description": "リストを自由に変換"
       },
       "theme": {
-        "label": "Custom Theme",
-        "description": "Generate colors from a description"
+        "label": "カスタムテーマ",
+        "description": "説明からカラーを生成"
       },
       "generateTitle": {
-        "label": "Generate Title",
-        "description": "AI creates a title from your items"
+        "label": "タイトル生成",
+        "description": "AIがアイテムからタイトルを作成"
       },
       "addCategory": {
-        "label": "Add Category",
-        "description": "Create a section header"
+        "label": "カテゴリ追加",
+        "description": "セクション見出しを作成"
       },
       "completeAll": {
-        "label": "Complete All",
-        "description": "Mark all items as done"
+        "label": "すべて完了",
+        "description": "すべてのアイテムを完了にする"
       },
       "resetAll": {
-        "label": "Reset All",
-        "description": "Uncheck all items"
+        "label": "すべてリセット",
+        "description": "すべてのチェックを外す"
       },
       "clearCompleted": {
-        "label": "Clear Completed",
-        "description": "Delete all checked items"
+        "label": "完了を削除",
+        "description": "チェック済みのアイテムを削除"
       },
       "sortItems": {
-        "label": "Sort Items",
-        "description": "Alphabetically sort all items"
+        "label": "アイテムを並べ替え",
+        "description": "すべてのアイテムをアルファベット順に"
       },
       "removeCategories": {
-        "label": "Remove Categories",
-        "description": "Flatten all groups"
+        "label": "カテゴリを削除",
+        "description": "すべてのグループを解除"
       },
       "largeMode": {
-        "label": "Large Mode",
-        "description": "Make everything 2x bigger"
+        "label": "大きいモード",
+        "description": "すべてを2倍大きく表示"
       },
       "normalMode": {
-        "label": "Normal Mode",
-        "description": "Return to normal size"
+        "label": "通常モード",
+        "description": "通常サイズに戻す"
       },
       "emojifyOn": {
-        "label": "Emojify Mode",
-        "description": "Auto-add emojis to new items"
+        "label": "絵文字モード",
+        "description": "新しいアイテムに自動で絵文字を追加"
       },
       "emojifyOff": {
-        "label": "Turn Off Emojify",
-        "description": "Stop auto-adding emojis"
+        "label": "絵文字オフ",
+        "description": "自動絵文字追加を停止"
       },
       "resetTheme": {
-        "label": "Reset Theme",
-        "description": "Remove custom colors"
+        "label": "テーマをリセット",
+        "description": "カスタムカラーを削除"
       }
     }
   },
   "dictation": {
-    "listening": "Listening...",
-    "tapToStop": "Tap anywhere to stop",
-    "cancel": "Cancel",
-    "timeRemaining": "{time} remaining",
-    "microphoneDenied": "Microphone access denied"
+    "listening": "聞いています...",
+    "tapToStop": "タップして停止",
+    "cancel": "キャンセル",
+    "timeRemaining": "残り{time}",
+    "microphoneDenied": "マイクへのアクセスが拒否されました"
   },
   "errors": {
-    "promptRequired": "Prompt is required",
-    "itemsRequired": "Items array is required",
-    "instructionRequired": "Instruction is required",
-    "invalidAction": "Invalid action",
-    "aiProcessingFailed": "AI processing failed",
-    "themeGenerationFailed": "Theme generation failed",
-    "textRequired": "Text is required",
-    "emojifyFailed": "Emojify failed",
-    "titleGenerationFailed": "Title generation failed",
-    "noAudioFile": "No audio file provided",
-    "transcriptionFailed": "Transcription failed",
-    "transcriptionTimeout": "Transcription timed out",
-    "noItemsToReorganize": "No items to reorganize",
-    "listManipulationNotAvailable": "List manipulation not available",
-    "failedToGenerateItems": "Failed to generate items",
-    "failedToGenerateList": "Failed to generate list"
+    "promptRequired": "テキストが必要です",
+    "itemsRequired": "アイテム配列が必要です",
+    "instructionRequired": "指示が必要です",
+    "invalidAction": "無効なアクション",
+    "aiProcessingFailed": "AI処理に失敗しました",
+    "themeGenerationFailed": "テーマ生成に失敗しました",
+    "textRequired": "テキストが必要です",
+    "emojifyFailed": "絵文字の追加に失敗しました",
+    "titleGenerationFailed": "タイトル生成に失敗しました",
+    "noAudioFile": "音声ファイルがありません",
+    "transcriptionFailed": "文字起こしに失敗しました",
+    "transcriptionTimeout": "文字起こしがタイムアウトしました",
+    "noItemsToReorganize": "再編成するアイテムがありません",
+    "listManipulationNotAvailable": "リスト操作は利用できません",
+    "failedToGenerateItems": "アイテムの生成に失敗しました",
+    "failedToGenerateList": "リストの生成に失敗しました"
   },
   "tutorial": {
-    "listTitle": "Welcome to Listo! ✨",
+    "listTitle": "Listoへようこそ！✨",
     "gettingStarted": {
-      "title": "#Getting Started",
+      "title": "#はじめに",
       "items": [
-        "Tap any item to check it off — try it now!",
-        "Hold and drag any item to reorder it anywhere in your list",
-        "Share this list by tapping Share above — anyone with the link can collaborate!"
+        "アイテムをタップして完了をマーク — 今すぐ試してみて！",
+        "長押しとドラッグでアイテムを並べ替え",
+        "上の共有ボタンでこのリストを共有 — リンクを持つ人は誰でも協力できます！"
       ]
     },
     "aiMagic": {
-      "title": "#AI Magic ✨",
+      "title": "#AIマジック ✨",
       "items": [
-        "Type ...grocery list for tacos and AI generates items instantly",
-        "Type !sort by aisle to reorganize your entire list with AI",
-        "Type !group by category to auto-organize items into sections",
-        "Tap the microphone button and speak to add items hands-free"
+        "...タコスの買い物リスト と入力すると、AIが即座にアイテムを生成",
+        "!通路順に並べ替え と入力して、AIでリストを再編成",
+        "!カテゴリ別にグループ化 と入力して、アイテムをセクションに整理",
+        "マイクボタンをタップして話すと、ハンズフリーでアイテムを追加"
       ]
     },
     "proTips": {
-      "title": "#Pro Tips 🚀",
+      "title": "#プロのコツ 🚀",
       "items": [
-        "Type milk, eggs, bread to add multiple items at once",
-        "Start any item with # to create a new category",
-        "Type style: ocean sunset to give your list a custom theme",
-        "Tap the ⚡ bolt icon to see all available commands"
+        "牛乳, 卵, パン と入力して複数のアイテムを一度に追加",
+        "# で始めると新しいカテゴリを作成",
+        "スタイル: オーシャンサンセット と入力してカスタムテーマを適用",
+        "⚡アイコンをタップして利用可能なすべてのコマンドを表示"
       ]
     },
     "ready": {
-      "title": "#You're Ready! 🎉",
+      "title": "#準備完了！🎉",
       "items": [
-        "Delete this list and create your first real one",
-        "Or keep checking these off as you learn — it's your list now!"
+        "このリストを削除して最初の本当のリストを作成",
+        "またはこれらのアイテムをチェックしながら学習 — これはあなたのリストです！"
       ]
     }
   },
   "commandTriggers": {
-    "theme": ["theme:", "style:"],
-    "note": ["note:"]
+    "theme": ["スタイル:", "テーマ:", "style:", "theme:"],
+    "note": ["メモ:", "note:"]
   },
   "themes": {
-    "sunset": "sunset",
-    "ocean": "ocean",
-    "forest": "forest",
-    "neon": "neon",
-    "midnight": "midnight",
-    "rose": "rose",
-    "matrix": "matrix",
-    "birthday": "birthday"
+    "sunset": "夕日",
+    "ocean": "海",
+    "forest": "森",
+    "neon": "ネオン",
+    "midnight": "ミッドナイト",
+    "rose": "ローズ",
+    "matrix": "マトリックス",
+    "birthday": "バースデー"
   },
   "welcome": {
-    "title": "Welcome to Listo!",
-    "subtitle": "The simplest way to create and share lists",
+    "title": "Listoへようこそ！",
+    "subtitle": "リストを作成・共有する最も簡単な方法",
     "tips": [
-      "Type anything and press Enter to add items",
-      "Tap items to mark them complete",
-      "Type ... to generate items with AI",
-      "Share the URL - anyone can collaborate!"
+      "何でも入力してEnterでアイテムを追加",
+      "アイテムをタップして完了をマーク",
+      "... と入力してAIでアイテムを生成",
+      "URLを共有 — 誰でも協力できます！"
     ],
-    "gotIt": "Got it, let's go!",
+    "gotIt": "わかりました、始めましょう！",
     "aiPowered": {
-      "title": "AI-Powered Lists",
-      "description": "Start with <code>...</code> and describe what you need.",
-      "example": "Try: ...packing list for beach vacation"
+      "title": "AI搭載リスト",
+      "description": "<code>...</code> で始めて、必要なものを説明。",
+      "example": "例：...ビーチ旅行の持ち物リスト"
     },
     "instantSharing": {
-      "title": "Instant Sharing",
-      "description": "Every list has a unique URL. Share it with anyone on mobile or desktop — they can view and edit in real-time. No signup needed."
+      "title": "即座に共有",
+      "description": "すべてのリストには固有のURLがあります。モバイルでもデスクトップでも誰とでも共有 — リアルタイムで閲覧・編集できます。登録不要。"
     }
   },
   "common": {
-    "loading": "Loading...",
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit",
-    "close": "Close",
-    "link": "link"
+    "loading": "読み込み中...",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "close": "閉じる",
+    "link": "リンク"
+  },
+  "appBanner": {
+    "appName": "Listo",
+    "openWithTitle": "アプリで「{title}」を開く",
+    "openGeneric": "Listoアプリでこのリストを開く",
+    "open": "開く"
   }
 }

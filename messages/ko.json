@@ -1,317 +1,323 @@
 {
   "metadata": {
-    "title": "Listo - Instant Shareable Lists | No Signup Required",
-    "description": "Create and share lists in seconds. No signup, no app needed. Real-time collaboration, AI-powered item generation, and custom themes. Just share the link.",
-    "ogTitle": "Listo - Instant Shareable Lists",
-    "ogDescription": "Create and share lists in seconds. No signup needed. Real-time collaboration with anyone."
+    "title": "Listo - 즉시 공유 가능한 리스트 | 가입 불필요",
+    "description": "몇 초 만에 리스트를 만들고 공유하세요. 가입 불필요, 앱 불필요. 실시간 협업, AI 생성, 맞춤 테마. 링크만 공유하세요.",
+    "ogTitle": "Listo - 즉시 공유 가능한 리스트",
+    "ogDescription": "몇 초 만에 리스트를 만들고 공유하세요. 가입 불필요. 누구와도 실시간 협업."
   },
   "home": {
     "title": "Listo",
-    "tagline": "Create a list. Share the link. Collaborate in real-time.",
+    "tagline": "리스트 만들기. 링크 공유. 실시간 협업.",
     "benefits": {
-      "noSignup": "No signup",
-      "realtime": "Real-time sharing",
-      "aiPowered": "AI-powered"
+      "noSignup": "가입 불필요",
+      "realtime": "실시간",
+      "aiPowered": "AI 기반"
     },
     "buttons": {
-      "create": "Create",
-      "restore": "Restore",
-      "archived": "Archived"
+      "create": "만들기",
+      "restore": "복원",
+      "archived": "보관됨"
     },
     "placeholders": [
-      "groceries for tacos",
-      "packing for beach vacation",
-      "questions for doctor visit",
-      "movies to watch this weekend",
-      "things to do before moving",
-      "gift ideas for mom",
-      "books to read this year",
-      "home improvement projects",
-      "weekly meal prep ideas",
-      "travel bucket list"
+      "타코 재료",
+      "해변 휴가 짐 목록",
+      "의사에게 물어볼 질문",
+      "이번 주말에 볼 영화",
+      "이사 전 할 일",
+      "엄마 선물 아이디어",
+      "올해 읽을 책",
+      "DIY 프로젝트",
+      "주간 식단 아이디어",
+      "꿈의 여행지 리스트"
     ],
-    "recentLists": "Your Lists",
-    "noRecentLists": "No recent lists",
-    "untitledList": "Untitled List",
+    "recentLists": "내 리스트",
+    "noRecentLists": "최근 리스트 없음",
+    "untitledList": "제목 없는 리스트",
     "customStyles": {
-      "title": "Infinite custom styles",
-      "description": "Describe any style and it will be designed for you automatically",
-      "instruction": "Type <code>style: ocean sunset</code> in your list to style it"
+      "title": "무한한 맞춤 스타일",
+      "description": "스타일을 설명하면 자동으로 디자인됩니다",
+      "instruction": "리스트에서 <code>스타일: 해변의 석양</code>을 입력하여 커스터마이즈"
     },
     "tips": {
-      "title": "Tips",
+      "title": "팁",
       "items": [
-        "Type ... to generate items with AI",
-        "Type ! to transform your list",
-        "Type theme: to create custom colors",
-        "Type # to create a category"
+        "... 입력으로 AI가 항목 생성",
+        "! 입력으로 리스트 변환",
+        "스타일: 입력으로 맞춤 색상 생성",
+        "# 입력으로 카테고리 생성"
       ]
     },
     "privacy": {
-      "title": "Privacy Policy",
-      "lastUpdated": "Last updated: January 2025",
-      "content": "Listo is designed with privacy in mind. Your lists are stored securely and are only accessible via their unique URLs. We do not sell your data or use it for advertising purposes.",
-      "note": "Note: All listos are public URLs. Never share personal information in a list.",
-      "readPolicy": "Read our privacy policy",
+      "title": "개인정보 보호정책",
+      "lastUpdated": "최종 업데이트: 2025년 1월",
+      "content": "Listo는 개인정보 보호를 염두에 두고 설계되었습니다. 리스트는 안전하게 저장되며 고유 URL을 통해서만 접근할 수 있습니다. 데이터를 판매하거나 광고 목적으로 사용하지 않습니다.",
+      "note": "참고: 모든 리스트는 공개 URL입니다. 리스트에 개인정보를 공유하지 마세요.",
+      "readPolicy": "개인정보 보호정책 읽기",
       "sections": {
         "publicUse": {
-          "title": "Public Use and Sharing",
-          "content": "LISTO checklists (hereafter referred to as \"listos\") are inherently public. Once you create a listo and share its link, anyone with access to that link can view and edit the listo. Since listos are designed to be shared freely, we strongly advise against using LISTO to store or transmit sensitive, confidential, or any personal information that you do not wish to make public."
+          "title": "공개 사용 및 공유",
+          "content": "LISTO 리스트(이하 \"리스트\")는 본질적으로 공개입니다. 리스트를 만들고 링크를 공유하면, 해당 링크에 접근할 수 있는 모든 사람이 리스트를 보고 편집할 수 있습니다. 리스트는 자유롭게 공유하도록 설계되었으므로, LISTO를 민감하거나 기밀 또는 공개하고 싶지 않은 개인정보를 저장하거나 전송하는 데 사용하지 않는 것이 좋습니다."
         },
         "dataCollection": {
-          "title": "Data Collection and Use",
-          "content": "As of now, LISTO does not require user registration, which means we do not collect personal data such as names, email addresses, or any other contact information. All listos are created anonymously."
+          "title": "데이터 수집 및 사용",
+          "content": "현재 LISTO는 사용자 등록이 필요하지 않습니다. 즉, 이름, 이메일 주소 또는 기타 연락처 정보와 같은 개인 데이터를 수집하지 않습니다. 모든 리스트는 익명으로 생성됩니다."
         },
         "analytics": {
-          "title": "Analytics",
-          "content": "We utilize Google Analytics to analyze the performance of LISTO, which helps us understand traffic patterns and user engagement in an anonymous form. Google Analytics may collect non-personally identifiable information such as your device type, browser type, and the way you interact with LISTO. This data is used strictly for the purpose of enhancing user experience and improving our service."
+          "title": "분석",
+          "content": "LISTO 성능 분석을 위해 Google Analytics를 사용합니다. 이를 통해 트래픽 패턴과 사용자 상호작용을 익명으로 이해할 수 있습니다. Google Analytics는 기기 유형, 브라우저 유형, LISTO와의 상호작용 방식 등 개인을 식별할 수 없는 정보를 수집할 수 있습니다. 이 데이터는 사용자 경험과 서비스 개선에만 사용됩니다."
         },
         "contact": {
-          "title": "Contact Information",
-          "content": "Should you have any questions about this privacy policy or LISTO's practices, please feel free to reach out to us at"
+          "title": "연락처",
+          "content": "이 개인정보 보호정책이나 LISTO의 관행에 대해 질문이 있으시면 언제든지 연락해 주세요"
         },
-        "changes": "Please be aware that our Privacy Policy may change from time to time. We will not reduce your rights under this Privacy Policy without providing notice, and we expect most such changes will be minor."
+        "changes": "개인정보 보호정책은 때때로 변경될 수 있습니다. 사전 통지 없이 이 개인정보 보호정책에 따른 귀하의 권리를 줄이지 않을 것이며, 대부분의 변경은 경미할 것으로 예상됩니다."
       }
     }
   },
   "list": {
-    "untitled": "Untitled List",
+    "untitled": "제목 없는 리스트",
     "share": {
-      "title": "Share",
-      "copyLink": "Copy link",
-      "copyMarkdown": "Copy as Markdown",
-      "linkCopied": "Link copied!",
-      "markdownCopied": "Markdown copied!",
-      "sendEmail": "Send via email",
-      "exportTodoist": "Export for Todoist",
-      "csvSubtitle": "CSV file you can import into any Todoist project",
-      "instruction": "Anyone with this link can view and edit the list in real-time."
+      "title": "공유",
+      "copyLink": "링크 복사",
+      "copyMarkdown": "Markdown으로 복사",
+      "linkCopied": "링크 복사됨!",
+      "markdownCopied": "Markdown 복사됨!",
+      "sendEmail": "이메일로 보내기",
+      "exportTodoist": "Todoist로 내보내기",
+      "csvSubtitle": "모든 Todoist 프로젝트에 가져올 수 있는 CSV 파일",
+      "instruction": "이 링크를 가진 모든 사람이 실시간으로 리스트를 보고 편집할 수 있습니다."
     },
     "footer": {
-      "createdWith": "Created with Listo",
-      "home": "Home",
-      "newList": "New List"
+      "createdWith": "Listo로 만듦",
+      "home": "홈",
+      "newList": "새 리스트"
     },
-    "backToList": "Back to list"
+    "backToList": "리스트로 돌아가기"
   },
   "input": {
-    "placeholder": "Add items...",
-    "notePlaceholder": "note: Write your note here... (Shift+Enter for new line)",
+    "placeholder": "항목 추가...",
+    "notePlaceholder": "메모: 여기에 메모 입력... (Shift+Enter로 줄바꿈)",
     "modes": {
-      "generate": "AI will generate items",
-      "transform": "AI will transform list",
-      "theme": "AI will generate theme",
-      "addingItems": "Adding {count} items",
-      "emoji": "Trigger emoji mode",
-      "title": "Generate list title",
-      "newList": "Create new list in new tab",
-      "removeTheme": "Remove custom theme",
-      "note": "Type your note...",
-      "addingNote": "Adding note",
-      "category": "Create category header"
+      "generate": "AI가 항목을 생성합니다",
+      "transform": "AI가 리스트를 변환합니다",
+      "theme": "AI가 테마를 생성합니다",
+      "addingItems": "{count}개 항목 추가 중",
+      "emoji": "이모지 모드 활성화",
+      "title": "리스트 제목 생성",
+      "newList": "새 탭에서 새 리스트 만들기",
+      "removeTheme": "맞춤 테마 제거",
+      "note": "메모 입력...",
+      "addingNote": "메모 추가 중",
+      "category": "카테고리 제목 만들기"
     },
     "commandPreview": {
-      "completeAll": "Complete all items",
-      "resetAll": "Reset all items",
-      "enableLarge": "Enable large mode",
-      "disableLarge": "Disable large mode",
-      "clearCompleted": "Delete all completed items",
-      "sort": "Sort items alphabetically",
-      "sortAll": "Sort everything alphabetically",
-      "removeCategories": "Remove all categories",
-      "toggleEmoji": "Toggle emoji mode",
-      "nukeAll": "Delete ALL items",
-      "generateTitle": "Generate list title",
-      "newList": "Create new list in new tab",
-      "resetTheme": "Remove custom theme"
+      "completeAll": "모든 항목 완료",
+      "resetAll": "모든 항목 초기화",
+      "enableLarge": "크게 모드 활성화",
+      "disableLarge": "크게 모드 비활성화",
+      "clearCompleted": "완료된 항목 삭제",
+      "sort": "항목 알파벳순 정렬",
+      "sortAll": "전체 알파벳순 정렬",
+      "removeCategories": "모든 카테고리 제거",
+      "toggleEmoji": "이모지 모드 전환",
+      "nukeAll": "모든 항목 삭제",
+      "generateTitle": "리스트 제목 생성",
+      "newList": "새 탭에서 새 리스트 만들기",
+      "resetTheme": "맞춤 테마 제거"
     },
     "processing": {
-      "thinking": "AI is thinking...",
-      "generatingTheme": "Generating theme...",
-      "reorganizing": "Reorganizing list...",
-      "unknownCommand": "Unknown command"
+      "thinking": "AI 생각 중...",
+      "generatingTheme": "테마 생성 중...",
+      "reorganizing": "리스트 재구성 중...",
+      "unknownCommand": "알 수 없는 명령"
     },
     "hints": {
-      "generate": "generate",
-      "transform": "transform",
-      "theme": "theme",
-      "category": "category",
-      "multi": "multi"
+      "generate": "생성",
+      "transform": "변환",
+      "theme": "테마",
+      "category": "카테고리",
+      "multi": "여러개"
     }
   },
   "commands": {
-    "title": "Commands",
-    "done": "Done",
+    "title": "명령어",
+    "done": "완료",
     "sections": {
-      "aiFeatures": "AI Features",
-      "quickActions": "Quick Actions",
-      "modes": "Modes"
+      "aiFeatures": "AI 기능",
+      "quickActions": "빠른 작업",
+      "modes": "모드"
     },
     "items": {
       "generate": {
-        "label": "Generate Items",
-        "description": "AI creates items from your description"
+        "label": "항목 생성",
+        "description": "AI가 설명으로 항목 생성"
       },
       "transform": {
-        "label": "AI Transform",
-        "description": "Transform your list any way you want"
+        "label": "AI로 변환",
+        "description": "원하는 대로 리스트 변환"
       },
       "theme": {
-        "label": "Custom Theme",
-        "description": "Generate colors from a description"
+        "label": "맞춤 테마",
+        "description": "설명으로 색상 생성"
       },
       "generateTitle": {
-        "label": "Generate Title",
-        "description": "AI creates a title from your items"
+        "label": "제목 생성",
+        "description": "AI가 항목으로 제목 생성"
       },
       "addCategory": {
-        "label": "Add Category",
-        "description": "Create a section header"
+        "label": "카테고리 추가",
+        "description": "섹션 제목 만들기"
       },
       "completeAll": {
-        "label": "Complete All",
-        "description": "Mark all items as done"
+        "label": "모두 완료",
+        "description": "모든 항목 완료로 표시"
       },
       "resetAll": {
-        "label": "Reset All",
-        "description": "Uncheck all items"
+        "label": "모두 초기화",
+        "description": "모든 체크 해제"
       },
       "clearCompleted": {
-        "label": "Clear Completed",
-        "description": "Delete all checked items"
+        "label": "완료 항목 삭제",
+        "description": "체크된 항목 모두 제거"
       },
       "sortItems": {
-        "label": "Sort Items",
-        "description": "Alphabetically sort all items"
+        "label": "항목 정렬",
+        "description": "모든 항목 알파벳순 정렬"
       },
       "removeCategories": {
-        "label": "Remove Categories",
-        "description": "Flatten all groups"
+        "label": "카테고리 제거",
+        "description": "모든 그룹 해제"
       },
       "largeMode": {
-        "label": "Large Mode",
-        "description": "Make everything 2x bigger"
+        "label": "크게 모드",
+        "description": "모든 것을 2배로 크게"
       },
       "normalMode": {
-        "label": "Normal Mode",
-        "description": "Return to normal size"
+        "label": "일반 모드",
+        "description": "일반 크기로 돌아가기"
       },
       "emojifyOn": {
-        "label": "Emojify Mode",
-        "description": "Auto-add emojis to new items"
+        "label": "이모지 모드",
+        "description": "새 항목에 자동으로 이모지 추가"
       },
       "emojifyOff": {
-        "label": "Turn Off Emojify",
-        "description": "Stop auto-adding emojis"
+        "label": "이모지 끄기",
+        "description": "자동 이모지 추가 중지"
       },
       "resetTheme": {
-        "label": "Reset Theme",
-        "description": "Remove custom colors"
+        "label": "테마 초기화",
+        "description": "맞춤 색상 제거"
       }
     }
   },
   "dictation": {
-    "listening": "Listening...",
-    "tapToStop": "Tap anywhere to stop",
-    "cancel": "Cancel",
-    "timeRemaining": "{time} remaining",
-    "microphoneDenied": "Microphone access denied"
+    "listening": "듣는 중...",
+    "tapToStop": "아무 곳이나 탭하여 중지",
+    "cancel": "취소",
+    "timeRemaining": "{time} 남음",
+    "microphoneDenied": "마이크 접근이 거부되었습니다"
   },
   "errors": {
-    "promptRequired": "Prompt is required",
-    "itemsRequired": "Items array is required",
-    "instructionRequired": "Instruction is required",
-    "invalidAction": "Invalid action",
-    "aiProcessingFailed": "AI processing failed",
-    "themeGenerationFailed": "Theme generation failed",
-    "textRequired": "Text is required",
-    "emojifyFailed": "Emojify failed",
-    "titleGenerationFailed": "Title generation failed",
-    "noAudioFile": "No audio file provided",
-    "transcriptionFailed": "Transcription failed",
-    "transcriptionTimeout": "Transcription timed out",
-    "noItemsToReorganize": "No items to reorganize",
-    "listManipulationNotAvailable": "List manipulation not available",
-    "failedToGenerateItems": "Failed to generate items",
-    "failedToGenerateList": "Failed to generate list"
+    "promptRequired": "텍스트가 필요합니다",
+    "itemsRequired": "항목 배열이 필요합니다",
+    "instructionRequired": "지시가 필요합니다",
+    "invalidAction": "잘못된 작업",
+    "aiProcessingFailed": "AI 처리 실패",
+    "themeGenerationFailed": "테마 생성 실패",
+    "textRequired": "텍스트가 필요합니다",
+    "emojifyFailed": "이모지 추가 실패",
+    "titleGenerationFailed": "제목 생성 실패",
+    "noAudioFile": "오디오 파일이 없습니다",
+    "transcriptionFailed": "음성 인식 실패",
+    "transcriptionTimeout": "음성 인식 시간 초과",
+    "noItemsToReorganize": "재구성할 항목이 없습니다",
+    "listManipulationNotAvailable": "리스트 조작을 사용할 수 없습니다",
+    "failedToGenerateItems": "항목 생성 실패",
+    "failedToGenerateList": "리스트 생성 실패"
   },
   "tutorial": {
-    "listTitle": "Welcome to Listo! ✨",
+    "listTitle": "Listo에 오신 것을 환영합니다! ✨",
     "gettingStarted": {
-      "title": "#Getting Started",
+      "title": "#시작하기",
       "items": [
-        "Tap any item to check it off — try it now!",
-        "Hold and drag any item to reorder it anywhere in your list",
-        "Share this list by tapping Share above — anyone with the link can collaborate!"
+        "항목을 탭하여 완료 표시 — 지금 해보세요!",
+        "길게 눌러 드래그하여 항목 재정렬",
+        "위의 공유 버튼으로 이 리스트 공유 — 링크가 있는 누구나 협업할 수 있습니다!"
       ]
     },
     "aiMagic": {
-      "title": "#AI Magic ✨",
+      "title": "#AI 마법 ✨",
       "items": [
-        "Type ...grocery list for tacos and AI generates items instantly",
-        "Type !sort by aisle to reorganize your entire list with AI",
-        "Type !group by category to auto-organize items into sections",
-        "Tap the microphone button and speak to add items hands-free"
+        "...타코 쇼핑 리스트 입력하면 AI가 즉시 항목 생성",
+        "!통로별 정렬 입력하여 AI로 리스트 재구성",
+        "!카테고리별 그룹화 입력하여 항목을 섹션으로 정리",
+        "마이크 버튼을 탭하고 말하여 핸즈프리로 항목 추가"
       ]
     },
     "proTips": {
-      "title": "#Pro Tips 🚀",
+      "title": "#프로 팁 🚀",
       "items": [
-        "Type milk, eggs, bread to add multiple items at once",
-        "Start any item with # to create a new category",
-        "Type style: ocean sunset to give your list a custom theme",
-        "Tap the ⚡ bolt icon to see all available commands"
+        "우유, 계란, 빵 입력으로 여러 항목 한 번에 추가",
+        "# 으로 시작하여 새 카테고리 만들기",
+        "스타일: 오션 선셋 입력으로 맞춤 테마 적용",
+        "⚡ 아이콘을 탭하여 사용 가능한 모든 명령어 보기"
       ]
     },
     "ready": {
-      "title": "#You're Ready! 🎉",
+      "title": "#준비 완료! 🎉",
       "items": [
-        "Delete this list and create your first real one",
-        "Or keep checking these off as you learn — it's your list now!"
+        "이 리스트를 삭제하고 첫 번째 실제 리스트 만들기",
+        "또는 배우면서 이 항목들을 체크하기 — 이제 당신의 리스트입니다!"
       ]
     }
   },
   "commandTriggers": {
-    "theme": ["theme:", "style:"],
-    "note": ["note:"]
+    "theme": ["스타일:", "테마:", "style:", "theme:"],
+    "note": ["메모:", "note:"]
   },
   "themes": {
-    "sunset": "sunset",
-    "ocean": "ocean",
-    "forest": "forest",
-    "neon": "neon",
-    "midnight": "midnight",
-    "rose": "rose",
-    "matrix": "matrix",
-    "birthday": "birthday"
+    "sunset": "석양",
+    "ocean": "바다",
+    "forest": "숲",
+    "neon": "네온",
+    "midnight": "미드나잇",
+    "rose": "로즈",
+    "matrix": "매트릭스",
+    "birthday": "생일"
   },
   "welcome": {
-    "title": "Welcome to Listo!",
-    "subtitle": "The simplest way to create and share lists",
+    "title": "Listo에 오신 것을 환영합니다!",
+    "subtitle": "리스트를 만들고 공유하는 가장 쉬운 방법",
     "tips": [
-      "Type anything and press Enter to add items",
-      "Tap items to mark them complete",
-      "Type ... to generate items with AI",
-      "Share the URL - anyone can collaborate!"
+      "아무거나 입력하고 Enter로 항목 추가",
+      "항목을 탭하여 완료 표시",
+      "... 입력으로 AI가 항목 생성",
+      "URL 공유 — 누구나 협업 가능!"
     ],
-    "gotIt": "Got it, let's go!",
+    "gotIt": "알겠습니다, 시작해요!",
     "aiPowered": {
-      "title": "AI-Powered Lists",
-      "description": "Start with <code>...</code> and describe what you need.",
-      "example": "Try: ...packing list for beach vacation"
+      "title": "AI 기반 리스트",
+      "description": "<code>...</code>로 시작하고 필요한 것을 설명하세요.",
+      "example": "예시: ...해변 휴가 짐 목록"
     },
     "instantSharing": {
-      "title": "Instant Sharing",
-      "description": "Every list has a unique URL. Share it with anyone on mobile or desktop — they can view and edit in real-time. No signup needed."
+      "title": "즉시 공유",
+      "description": "모든 리스트에는 고유한 URL이 있습니다. 모바일이나 데스크톱에서 누구와도 공유 — 실시간으로 보고 편집할 수 있습니다. 가입 불필요."
     }
   },
   "common": {
-    "loading": "Loading...",
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit",
-    "close": "Close",
-    "link": "link"
+    "loading": "로딩 중...",
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "편집",
+    "close": "닫기",
+    "link": "링크"
+  },
+  "appBanner": {
+    "appName": "Listo",
+    "openWithTitle": "앱에서 \"{title}\" 열기",
+    "openGeneric": "Listo 앱에서 이 리스트 열기",
+    "open": "열기"
   }
 }
