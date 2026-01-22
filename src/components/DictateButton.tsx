@@ -327,13 +327,12 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
       {/* Recording overlay */}
       {isRecording && (
         <div
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center cursor-pointer"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center"
           style={{
             backgroundColor: 'rgba(0, 0, 0, 0.4)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
           }}
-          onClick={stopRecording}
         >
           {/* Pulsing circle visualization */}
           <div className="relative w-48 h-48 flex items-center justify-center">
@@ -365,8 +364,11 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
             </div>
           </div>
 
+          {/* Listening label */}
+          <p className="mt-6 text-lg text-white/80">{tDictation('listening')}</p>
+
           {/* Timer */}
-          <div className="mt-8 text-white text-center">
+          <div className="mt-4 text-white text-center">
             <div className="text-4xl font-light tabular-nums">
               {formatTime(recordingTime)}
             </div>
@@ -376,29 +378,39 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
           </div>
 
           {/* Progress bar */}
-          <div className="mt-6 w-64 h-1 bg-white/20 rounded-full overflow-hidden">
+          <div className="mt-4 w-64 h-1 bg-white/20 rounded-full overflow-hidden">
             <div
               className="h-full bg-[var(--primary)] transition-all duration-100"
               style={{ width: `${progress * 100}%` }}
             />
           </div>
 
-          {/* Instructions */}
-          <div className="mt-8 text-white/80 text-center">
-            <p className="text-lg">{tDictation('listening')}</p>
-            <p className="text-sm text-white/50 mt-2">
-              {tDictation('tapToStop')}
-            </p>
-          </div>
+          {/* Done button - large checkmark */}
+          <button
+            onClick={stopRecording}
+            className="mt-12 w-18 h-18 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-105 active:scale-95"
+            style={{
+              width: '72px',
+              height: '72px',
+              backgroundColor: 'var(--primary)',
+            }}
+          >
+            <svg
+              className="w-9 h-9 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth={3}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </button>
 
           {/* Cancel button */}
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              cancelRecording();
-            }}
-            className="text-white/60 hover:text-white text-sm font-medium transition-colors"
-            style={{ marginTop: '32px' }}
+            onClick={cancelRecording}
+            className="mt-6 text-white/60 hover:text-white text-base font-medium transition-colors active:opacity-60"
+            style={{ padding: '8px 16px' }}
           >
             {tDictation('cancel')}
           </button>
