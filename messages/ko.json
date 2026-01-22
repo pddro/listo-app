@@ -1,0 +1,281 @@
+{
+  "metadata": {
+    "title": "Listo - Instant Shareable Lists | No Signup Required",
+    "description": "Create and share lists in seconds. No signup, no app needed. Real-time collaboration, AI-powered item generation, and custom themes. Just share the link.",
+    "ogTitle": "Listo - Instant Shareable Lists",
+    "ogDescription": "Create and share lists in seconds. No signup needed. Real-time collaboration with anyone."
+  },
+  "home": {
+    "title": "Listo",
+    "tagline": "Create a list. Share the link. Collaborate in real-time.",
+    "benefits": {
+      "noSignup": "No signup",
+      "realtime": "Real-time sharing",
+      "aiPowered": "AI-powered"
+    },
+    "buttons": {
+      "create": "Create",
+      "restore": "Restore",
+      "archived": "Archived"
+    },
+    "placeholders": [
+      "groceries for tacos",
+      "packing for beach vacation",
+      "questions for doctor visit",
+      "movies to watch this weekend",
+      "things to do before moving",
+      "gift ideas for mom",
+      "books to read this year",
+      "home improvement projects",
+      "weekly meal prep ideas",
+      "travel bucket list"
+    ],
+    "recentLists": "Your Lists",
+    "noRecentLists": "No recent lists",
+    "untitledList": "Untitled List",
+    "customStyles": {
+      "title": "Infinite custom styles",
+      "description": "Describe any style and it will be designed for you automatically"
+    },
+    "tips": {
+      "title": "Tips",
+      "items": [
+        "Type ... to generate items with AI",
+        "Type ! to transform your list",
+        "Type theme: to create custom colors",
+        "Type # to create a category"
+      ]
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "lastUpdated": "Last updated: January 2025",
+      "content": "Listo is designed with privacy in mind. Your lists are stored securely and are only accessible via their unique URLs. We do not sell your data or use it for advertising purposes."
+    }
+  },
+  "list": {
+    "untitled": "Untitled List",
+    "share": {
+      "title": "Share",
+      "copyLink": "Copy link",
+      "copyMarkdown": "Copy as Markdown",
+      "linkCopied": "Link copied!",
+      "markdownCopied": "Markdown copied!",
+      "sendEmail": "Send via email",
+      "exportTodoist": "Export for Todoist",
+      "csvSubtitle": "CSV file you can import into any Todoist project",
+      "instruction": "Anyone with this link can view and edit the list in real-time."
+    },
+    "footer": {
+      "createdWith": "Created with Listo",
+      "home": "Home",
+      "newList": "New List"
+    },
+    "backToList": "Back to list"
+  },
+  "input": {
+    "placeholder": "Add items...",
+    "notePlaceholder": "note: Write your note here... (Shift+Enter for new line)",
+    "modes": {
+      "generate": "AI will generate items",
+      "transform": "AI will transform list",
+      "theme": "AI will generate theme",
+      "addingItems": "Adding {count} items",
+      "emoji": "Trigger emoji mode",
+      "title": "Generate list title",
+      "newList": "Create new list in new tab",
+      "removeTheme": "Remove custom theme",
+      "note": "Type your note...",
+      "addingNote": "Adding note",
+      "category": "Create category header"
+    },
+    "commandPreview": {
+      "completeAll": "Complete all items",
+      "resetAll": "Reset all items",
+      "enableLarge": "Enable large mode",
+      "disableLarge": "Disable large mode",
+      "clearCompleted": "Delete all completed items",
+      "sort": "Sort items alphabetically",
+      "sortAll": "Sort everything alphabetically",
+      "removeCategories": "Remove all categories",
+      "toggleEmoji": "Toggle emoji mode",
+      "nukeAll": "Delete ALL items",
+      "generateTitle": "Generate list title",
+      "newList": "Create new list in new tab",
+      "resetTheme": "Remove custom theme"
+    },
+    "processing": {
+      "thinking": "AI is thinking...",
+      "generatingTheme": "Generating theme...",
+      "reorganizing": "Reorganizing list...",
+      "unknownCommand": "Unknown command"
+    },
+    "hints": {
+      "generate": "generate",
+      "transform": "transform",
+      "theme": "theme",
+      "category": "category",
+      "multi": "multi"
+    }
+  },
+  "commands": {
+    "title": "Commands",
+    "done": "Done",
+    "sections": {
+      "aiFeatures": "AI Features",
+      "quickActions": "Quick Actions",
+      "modes": "Modes"
+    },
+    "items": {
+      "generate": {
+        "label": "Generate Items",
+        "description": "AI creates items from your description"
+      },
+      "transform": {
+        "label": "AI Transform",
+        "description": "Transform your list any way you want"
+      },
+      "theme": {
+        "label": "Custom Theme",
+        "description": "Generate colors from a description"
+      },
+      "generateTitle": {
+        "label": "Generate Title",
+        "description": "AI creates a title from your items"
+      },
+      "addCategory": {
+        "label": "Add Category",
+        "description": "Create a section header"
+      },
+      "completeAll": {
+        "label": "Complete All",
+        "description": "Mark all items as done"
+      },
+      "resetAll": {
+        "label": "Reset All",
+        "description": "Uncheck all items"
+      },
+      "clearCompleted": {
+        "label": "Clear Completed",
+        "description": "Delete all checked items"
+      },
+      "sortItems": {
+        "label": "Sort Items",
+        "description": "Alphabetically sort all items"
+      },
+      "removeCategories": {
+        "label": "Remove Categories",
+        "description": "Flatten all groups"
+      },
+      "largeMode": {
+        "label": "Large Mode",
+        "description": "Make everything 2x bigger"
+      },
+      "normalMode": {
+        "label": "Normal Mode",
+        "description": "Return to normal size"
+      },
+      "emojifyOn": {
+        "label": "Emojify Mode",
+        "description": "Auto-add emojis to new items"
+      },
+      "emojifyOff": {
+        "label": "Turn Off Emojify",
+        "description": "Stop auto-adding emojis"
+      },
+      "resetTheme": {
+        "label": "Reset Theme",
+        "description": "Remove custom colors"
+      }
+    }
+  },
+  "dictation": {
+    "listening": "Listening...",
+    "tapToStop": "Tap anywhere to stop",
+    "cancel": "Cancel",
+    "timeRemaining": "{time} remaining",
+    "microphoneDenied": "Microphone access denied"
+  },
+  "errors": {
+    "promptRequired": "Prompt is required",
+    "itemsRequired": "Items array is required",
+    "instructionRequired": "Instruction is required",
+    "invalidAction": "Invalid action",
+    "aiProcessingFailed": "AI processing failed",
+    "themeGenerationFailed": "Theme generation failed",
+    "textRequired": "Text is required",
+    "emojifyFailed": "Emojify failed",
+    "titleGenerationFailed": "Title generation failed",
+    "noAudioFile": "No audio file provided",
+    "transcriptionFailed": "Transcription failed",
+    "transcriptionTimeout": "Transcription timed out",
+    "noItemsToReorganize": "No items to reorganize",
+    "listManipulationNotAvailable": "List manipulation not available",
+    "failedToGenerateItems": "Failed to generate items",
+    "failedToGenerateList": "Failed to generate list"
+  },
+  "tutorial": {
+    "gettingStarted": {
+      "title": "Getting Started",
+      "items": [
+        "Type anything and press enter to add items",
+        "Tap an item to mark it complete",
+        "Swipe left to delete an item",
+        "Share this list - anyone with the link can edit!"
+      ]
+    },
+    "aiMagic": {
+      "title": "AI Magic",
+      "items": [
+        "Type ... followed by a description to generate items",
+        "Type ! followed by instructions to transform your list",
+        "Type theme: followed by a style to customize colors"
+      ]
+    },
+    "proTips": {
+      "title": "Pro Tips",
+      "items": [
+        "Type # to create category headers",
+        "Drag items to reorder them",
+        "Use --commands to see all options"
+      ]
+    },
+    "ready": {
+      "title": "You're Ready!",
+      "items": [
+        "Delete this tutorial list when you're done",
+        "Create your own list from the home page",
+        "Have fun organizing!"
+      ]
+    }
+  },
+  "themes": {
+    "sunset": "sunset",
+    "ocean": "ocean",
+    "forest": "forest",
+    "neon": "neon",
+    "midnight": "midnight",
+    "rose": "rose",
+    "matrix": "matrix",
+    "birthday": "birthday"
+  },
+  "welcome": {
+    "title": "Welcome to Listo!",
+    "subtitle": "Your new list is ready. Here are some tips:",
+    "tips": [
+      "Type anything and press Enter to add items",
+      "Tap items to mark them complete",
+      "Type ... to generate items with AI",
+      "Share the URL - anyone can collaborate!"
+    ],
+    "gotIt": "Got it!"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "link": "link"
+  }
+}
