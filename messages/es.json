@@ -313,5 +313,11 @@
     "edit": "Editar",
     "close": "Cerrar",
     "link": "enlace"
+  },
+  "appBanner": {
+    "appName": "Listo",
+    "openWithTitle": "Abrir \"{title}\" en la app",
+    "openGeneric": "Abrir esta lista en la app de Listo",
+    "open": "ABRIR"
   }
 }

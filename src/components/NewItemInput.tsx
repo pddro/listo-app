@@ -60,7 +60,7 @@ export function NewItemInput({
   onToggleEmojify,
   onNuke,
   onGenerateTitle,
-  placeholder = 'Add items...',
+  placeholder,
   autoFocus = false,
   prefillValue,
   onPrefillConsumed,
@@ -70,6 +70,9 @@ export function NewItemInput({
 }: NewItemInputProps) {
   const t = useTranslations('input');
   const tTriggers = useTranslations('commandTriggers');
+
+  // Use translated placeholder if none provided
+  const inputPlaceholder = placeholder || t('placeholder');
 
   // Get localized command triggers
   const themeTriggers = useMemo(() => {
@@ -618,7 +621,7 @@ export function NewItemInput({
                 setAiError(null);
               }}
               onKeyDown={handleKeyDown}
-              placeholder={placeholder}
+              placeholder={inputPlaceholder}
               disabled={isProcessing}
               className={`
                 flex-1 bg-transparent border-none outline-none
@@ -655,7 +658,7 @@ export function NewItemInput({
           >
             <span><span style={{ color: 'var(--primary)' }}>...</span> {t('hints.generate')}</span>
             <span><span style={{ color: 'var(--primary)' }}>!</span> {t('hints.transform')}</span>
-            <span><span style={{ color: 'var(--primary)' }}>style:</span> {t('hints.theme')}</span>
+            <span><span style={{ color: 'var(--primary)' }}>{themeTriggers[0] || 'style:'}</span> {t('hints.theme')}</span>
             <span><span style={{ color: 'var(--text-secondary)' }}>#</span> {t('hints.category')}</span>
             <span><span style={{ color: 'var(--text-secondary)' }}>,</span> {t('hints.multi')}</span>
           </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface SmartAppBannerProps {
   listId: string;
@@ -8,6 +9,7 @@ interface SmartAppBannerProps {
 }
 
 export function SmartAppBanner({ listId, listTitle }: SmartAppBannerProps) {
+  const t = useTranslations('appBanner');
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -79,9 +81,9 @@ export function SmartAppBanner({ listId, listTitle }: SmartAppBannerProps) {
 
         {/* Text */}
         <div className="flex-1 min-w-0">
-          <div className="text-white font-semibold text-sm">Listo</div>
+          <div className="text-white font-semibold text-sm">{t('appName')}</div>
           <div className="text-gray-400 text-xs truncate">
-            {listTitle ? `Open "${listTitle}" in the app` : 'Open this list in the Listo app'}
+            {listTitle ? t('openWithTitle', { title: listTitle }) : t('openGeneric')}
           </div>
         </div>
 
@@ -95,7 +97,7 @@ export function SmartAppBanner({ listId, listTitle }: SmartAppBannerProps) {
             padding: '6px 16px',
           }}
         >
-          OPEN
+          {t('open')}
         </button>
 
         {/* Close button */}

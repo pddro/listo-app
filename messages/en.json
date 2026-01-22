@@ -313,5 +313,11 @@
     "edit": "Edit",
     "close": "Close",
     "link": "link"
+  },
+  "appBanner": {
+    "appName": "Listo",
+    "openWithTitle": "Open \"{title}\" in the app",
+    "openGeneric": "Open this list in the Listo app",
+    "open": "OPEN"
   }
 }
