@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
 
@@ -18,7 +18,7 @@ export interface Command {
 interface CommandDef {
   id: string;
   translationKey: string; // key in commands.items.*
-  prefix?: string;
+  prefix?: string | 'USE_THEME_TRIGGER'; // special value to use localized theme trigger
   action?: string;
   icon: Command['icon'];
   category: Command['category'];
@@ -28,7 +28,7 @@ const COMMAND_DEFS: CommandDef[] = [
   // AI Commands
   { id: 'generate', translationKey: 'generate', prefix: '...', icon: 'sparkles', category: 'ai' },
   { id: 'transform', translationKey: 'transform', prefix: '!', icon: 'wand', category: 'ai' },
-  { id: 'theme', translationKey: 'theme', prefix: 'style:', icon: 'palette', category: 'ai' },
+  { id: 'theme', translationKey: 'theme', prefix: 'USE_THEME_TRIGGER', icon: 'palette', category: 'ai' },
   { id: 'title', translationKey: 'generateTitle', action: '--title', icon: 'title', category: 'ai' },
   // Quick Actions
   { id: 'category', translationKey: 'addCategory', prefix: '#', icon: 'hash', category: 'actions' },
@@ -140,14 +140,21 @@ export function CommandPalette({
   emojifyMode = false,
 }: CommandPaletteProps) {
   const t = useTranslations('commands');
+  const tTriggers = useTranslations('commandTriggers');
   const sheetRef = useRef<HTMLDivElement>(null);
+
+  // Get the first localized theme trigger
+  const themeTrigger = useMemo(() => {
+    const raw = tTriggers.raw('theme');
+    return Array.isArray(raw) && raw.length > 0 ? raw[0] : 'style:';
+  }, [tTriggers]);
 
   // Build commands with translated labels and descriptions
   const COMMANDS: Command[] = COMMAND_DEFS.map(def => ({
     id: def.id,
     label: t(`items.${def.translationKey}.label`),
     description: t(`items.${def.translationKey}.description`),
-    prefix: def.prefix,
+    prefix: def.prefix === 'USE_THEME_TRIGGER' ? themeTrigger : def.prefix,
     action: def.action,
     icon: def.icon,
     category: def.category,

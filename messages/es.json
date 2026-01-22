@@ -36,14 +36,14 @@
     "customStyles": {
       "title": "Estilos personalizados infinitos",
       "description": "Describe cualquier estilo y se diseñará automáticamente para ti",
-      "instruction": "Escribe <code>style: atardecer en el mar</code> en tu lista para personalizarla"
+      "instruction": "Escribe <code>estilo: atardecer en el mar</code> en tu lista para personalizarla"
     },
     "tips": {
       "title": "Consejos",
       "items": [
         "Escribe ... para generar elementos con IA",
         "Escribe ! para transformar tu lista",
-        "Escribe theme: para crear colores personalizados",
+        "Escribe estilo: para crear colores personalizados",
         "Escribe # para crear una categoría"
       ]
     },
@@ -272,7 +272,7 @@
     }
   },
   "commandTriggers": {
-    "theme": ["tema:", "estilo:", "theme:", "style:"],
+    "theme": ["estilo:", "tema:", "theme:", "style:"],
     "note": ["nota:", "note:"]
   },
   "themes": {
