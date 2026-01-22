@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         audio_url: audioUrl,
         speech_model: 'universal',
+        language_detection: true,
       }),
     });
 
