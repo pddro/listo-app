@@ -70,18 +70,7 @@ const TUTORIAL_LIST = {
   ],
 };
 
-const PLACEHOLDERS = [
-  '...groceries for the week',
-  'passport, tickets, charger, headphones',
-  '...things to pack for camping',
-  'lettuce, tomato, bacon, mayo, bread',
-  '...ingredients for taco night',
-  'sunscreen, towel, sunglasses, book',
-  '...gift ideas for mom',
-  'eggs, milk, butter, flour, sugar',
-  '...what to bring to the potluck',
-  '...packing list for hiking day trip',
-];
+// Placeholders are now loaded from translations
 
 // Sparkles icon component
 const SparklesIcon = () => (
@@ -96,6 +85,14 @@ export default function Home() {
   const t = useTranslations('home');
   const tCommon = useTranslations('common');
   const tInput = useTranslations('input');
+  const tThemes = useTranslations('themes');
+  const tWelcome = useTranslations('welcome');
+
+  // Get translated placeholders
+  const placeholders = useMemo(() => {
+    const raw = t.raw('placeholders');
+    return Array.isArray(raw) ? raw : [];
+  }, [t]);
 
   const [value, setValue] = useState('');
   const [isCreating, setIsCreating] = useState(false);
@@ -263,16 +260,17 @@ export default function Home() {
 
   // Rotate placeholders every 2.5 seconds
   useEffect(() => {
+    if (placeholders.length === 0) return;
     const interval = setInterval(() => {
       setIsPlaceholderFading(true);
       setTimeout(() => {
-        setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDERS.length);
+        setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
         setIsPlaceholderFading(false);
       }, 200); // Fade out duration
     }, 2500);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [placeholders.length]);
 
   // Detect input mode based on content
   const { mode, itemCount, displayText } = useMemo(() => {
@@ -286,7 +284,7 @@ export default function Home() {
       return {
         mode: 'ai' as InputMode,
         itemCount: 0,
-        displayText: prompt ? 'AI will generate items' : ''
+        displayText: prompt ? tInput('modes.generate') : ''
       };
     }
 
@@ -296,13 +294,13 @@ export default function Home() {
       return {
         mode: 'multiple' as InputMode,
         itemCount: items.length,
-        displayText: `Adding ${items.length} items`
+        displayText: tInput('modes.addingItems', { count: items.length })
       };
     }
 
     // Single mode
     return { mode: 'single' as InputMode, itemCount: 0, displayText: '' };
-  }, [value]);
+  }, [value, tInput]);
 
   // Parse theme from input (supports ~theme, theme:theme, style:theme)
   const parseThemeFromInput = (input: string): { content: string; themeDescription: string | null } => {
@@ -634,7 +632,7 @@ export default function Home() {
                   `}
                   style={{ color: isCreating ? 'var(--primary)' : '#9CA3AF' }}
                 >
-                  {isCreating ? tCommon('loading') : PLACEHOLDERS[placeholderIndex]}
+                  {isCreating ? tCommon('loading') : (placeholders[placeholderIndex] || '...')}
                 </div>
               )}
             </div>
@@ -892,7 +890,7 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#EA580C' }} />
               </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>sunset</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('sunset')}</span>
             </div>
 
             {/* Ocean */}
@@ -911,7 +909,7 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#0D9488' }} />
               </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>ocean</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('ocean')}</span>
             </div>
 
             {/* Forest */}
@@ -930,7 +928,7 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#16A34A' }} />
               </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>forest</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('forest')}</span>
             </div>
 
             {/* Neon */}
@@ -949,7 +947,7 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#00F5FF' }} />
               </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>neon</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('neon')}</span>
             </div>
 
             {/* Midnight */}
@@ -968,7 +966,7 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#A5B4FC' }} />
               </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>midnight</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('midnight')}</span>
             </div>
 
             {/* Rose */}
@@ -987,7 +985,7 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#E11D48' }} />
               </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>rose</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('rose')}</span>
             </div>
 
             {/* Matrix */}
@@ -1006,7 +1004,7 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#34D399' }} />
               </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>matrix</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('matrix')}</span>
             </div>
 
             {/* Birthday */}
@@ -1025,23 +1023,21 @@ export default function Home() {
                 </div>
                 <div className="w-6 h-1 rounded" style={{ backgroundColor: '#C026D3' }} />
               </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>birthday</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('birthday')}</span>
             </div>
           </div>
-          <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '8px' }}>
-            Type <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-hover)', color: 'var(--text-secondary)' }}>style: ocean sunset</code> in your list to style it
-          </div>
+          <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '8px' }} dangerouslySetInnerHTML={{ __html: t('customStyles.instruction').replace('<code>', '<code class="font-semibold px-1 py-0.5 rounded" style="background-color: var(--bg-hover); color: var(--text-secondary)">') }} />
         </div>
 
         {/* Privacy note */}
         <div className="text-xs text-center" style={{ marginTop: '48px', color: 'var(--text-muted)' }}>
-          Note: All listos are public URLs. Never share personal information in a list.{' '}
+          {t('privacy.note')}{' '}
           <button
             onClick={() => setShowPrivacyModal(true)}
             className="underline hover:no-underline"
             style={{ color: 'var(--primary)' }}
           >
-            Read our privacy policy
+            {t('privacy.readPolicy')}
           </button>
         </div>
 
@@ -1111,10 +1107,10 @@ export default function Home() {
                 className="text-xl font-bold"
                 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}
               >
-                Welcome to Listo!
+                {tWelcome('title')}
               </h2>
               <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                The simplest way to create and share lists
+                {tWelcome('subtitle')}
               </p>
             </div>
 
@@ -1138,12 +1134,12 @@ export default function Home() {
                   </div>
                   <div>
                     <div className="font-semibold text-sm" style={{ color: 'var(--text-primary)', marginBottom: '4px' }}>
-                      AI-Powered Lists
+                      {tWelcome('aiPowered.title')}
                     </div>
                     <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                      Start with <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'white', color: 'var(--primary)' }}>...</code> and describe what you need.
+                      <span dangerouslySetInnerHTML={{ __html: tWelcome('aiPowered.description').replace('<code>', '<code class="font-semibold px-1 py-0.5 rounded" style="background-color: white; color: var(--primary)">') }} />
                       <span style={{ color: 'var(--text-muted)', display: 'block', marginTop: '4px' }}>
-                        Try: ...packing list for beach vacation
+                        {tWelcome('aiPowered.example')}
                       </span>
                     </div>
                   </div>
@@ -1170,10 +1166,10 @@ export default function Home() {
                   </div>
                   <div>
                     <div className="font-semibold text-sm" style={{ color: 'var(--text-primary)', marginBottom: '4px' }}>
-                      Instant Sharing
+                      {tWelcome('instantSharing.title')}
                     </div>
                     <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                      Every list has a unique URL. Share it with anyone on mobile or desktop — they can view and edit in real-time. No signup needed.
+                      {tWelcome('instantSharing.description')}
                     </div>
                   </div>
                 </div>
@@ -1191,7 +1187,7 @@ export default function Home() {
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-dark)'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
               >
-                Got it, let&apos;s go!
+                {tWelcome('gotIt')}
               </button>
             </div>
           </div>
@@ -1211,7 +1207,7 @@ export default function Home() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Privacy Policy</h2>
+              <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>{t('privacy.title')}</h2>
               <button
                 onClick={() => setShowPrivacyModal(false)}
                 className="p-1 hover:bg-gray-100 rounded"
@@ -1225,37 +1221,31 @@ export default function Home() {
 
             <div className="space-y-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
               <section>
-                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Public Use and Sharing</h3>
-                <p>
-                  LISTO checklists (hereafter referred to as &quot;listos&quot;) are inherently public. Once you create a listo and share its link, anyone with access to that link can view and edit the listo. Since listos are designed to be shared freely, we strongly advise against using LISTO to store or transmit sensitive, confidential, or any personal information that you do not wish to make public.
-                </p>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{t('privacy.sections.publicUse.title')}</h3>
+                <p>{t('privacy.sections.publicUse.content')}</p>
               </section>
 
               <section>
-                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Data Collection and Use</h3>
-                <p>
-                  As of now, LISTO does not require user registration, which means we do not collect personal data such as names, email addresses, or any other contact information. All listos are created anonymously.
-                </p>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{t('privacy.sections.dataCollection.title')}</h3>
+                <p>{t('privacy.sections.dataCollection.content')}</p>
               </section>
 
               <section>
-                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Analytics</h3>
-                <p>
-                  We utilize Google Analytics to analyze the performance of LISTO, which helps us understand traffic patterns and user engagement in an anonymous form. Google Analytics may collect non-personally identifiable information such as your device type, browser type, and the way you interact with LISTO. This data is used strictly for the purpose of enhancing user experience and improving our service.
-                </p>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{t('privacy.sections.analytics.title')}</h3>
+                <p>{t('privacy.sections.analytics.content')}</p>
               </section>
 
               <section>
-                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Contact Information</h3>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{t('privacy.sections.contact.title')}</h3>
                 <p>
-                  Should you have any questions about this privacy policy or LISTO&apos;s practices, please feel free to reach out to us at{' '}
+                  {t('privacy.sections.contact.content')}{' '}
                   <a href="mailto:hello@listo.to" className="underline" style={{ color: 'var(--primary)' }}>hello@listo.to</a>.
                 </p>
               </section>
 
               <section>
                 <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                  Please be aware that our Privacy Policy may change from time to time. We will not reduce your rights under this Privacy Policy without providing notice, and we expect most such changes will be minor.
+                  {t('privacy.sections.changes')}
                 </p>
               </section>
             </div>
@@ -1266,7 +1256,7 @@ export default function Home() {
                 className="text-white rounded font-medium"
                 style={{ backgroundColor: 'var(--primary)', padding: '8px 16px' }}
               >
-                Got it
+                {tWelcome('gotIt')}
               </button>
             </div>
           </div>

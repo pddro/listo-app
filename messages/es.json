@@ -35,7 +35,8 @@
     "untitledList": "Lista sin título",
     "customStyles": {
       "title": "Estilos personalizados infinitos",
-      "description": "Describe cualquier estilo y se diseñará automáticamente para ti"
+      "description": "Describe cualquier estilo y se diseñará automáticamente para ti",
+      "instruction": "Escribe <code>style: atardecer en el mar</code> en tu lista para personalizarla"
     },
     "tips": {
       "title": "Consejos",
@@ -49,7 +50,28 @@
     "privacy": {
       "title": "Política de Privacidad",
       "lastUpdated": "Última actualización: enero 2025",
-      "content": "Listo está diseñado pensando en la privacidad. Tus listas se almacenan de forma segura y solo son accesibles a través de sus URLs únicas. No vendemos tus datos ni los usamos con fines publicitarios."
+      "content": "Listo está diseñado pensando en la privacidad. Tus listas se almacenan de forma segura y solo son accesibles a través de sus URLs únicas. No vendemos tus datos ni los usamos con fines publicitarios.",
+      "note": "Nota: Todos los listos son URLs públicas. Nunca compartas información personal en una lista.",
+      "readPolicy": "Lee nuestra política de privacidad",
+      "sections": {
+        "publicUse": {
+          "title": "Uso Público y Compartir",
+          "content": "Las listas de LISTO (en adelante \"listos\") son inherentemente públicas. Una vez que creas un listo y compartes su enlace, cualquier persona con acceso a ese enlace puede ver y editar el listo. Dado que los listos están diseñados para compartirse libremente, recomendamos no usar LISTO para almacenar o transmitir información sensible, confidencial o cualquier información personal que no desees hacer pública."
+        },
+        "dataCollection": {
+          "title": "Recopilación y Uso de Datos",
+          "content": "Actualmente, LISTO no requiere registro de usuario, lo que significa que no recopilamos datos personales como nombres, direcciones de correo electrónico u otra información de contacto. Todos los listos se crean de forma anónima."
+        },
+        "analytics": {
+          "title": "Analíticas",
+          "content": "Utilizamos Google Analytics para analizar el rendimiento de LISTO, lo que nos ayuda a comprender los patrones de tráfico y la interacción de los usuarios de forma anónima. Google Analytics puede recopilar información no identificable personalmente, como el tipo de dispositivo, el tipo de navegador y la forma en que interactúas con LISTO. Estos datos se utilizan estrictamente para mejorar la experiencia del usuario y nuestro servicio."
+        },
+        "contact": {
+          "title": "Información de Contacto",
+          "content": "Si tienes alguna pregunta sobre esta política de privacidad o las prácticas de LISTO, no dudes en contactarnos en"
+        },
+        "changes": "Ten en cuenta que nuestra Política de Privacidad puede cambiar de vez en cuando. No reduciremos tus derechos bajo esta Política de Privacidad sin previo aviso, y esperamos que la mayoría de estos cambios sean menores."
+      }
     }
   },
   "list": {
@@ -260,14 +282,23 @@
   },
   "welcome": {
     "title": "¡Bienvenido a Listo!",
-    "subtitle": "Tu nueva lista está lista. Aquí hay algunos consejos:",
+    "subtitle": "La forma más sencilla de crear y compartir listas",
     "tips": [
       "Escribe cualquier cosa y presiona Enter para añadir elementos",
       "Toca los elementos para marcarlos como completados",
       "Escribe ... para generar elementos con IA",
       "¡Comparte la URL - cualquiera puede colaborar!"
     ],
-    "gotIt": "¡Entendido!"
+    "gotIt": "¡Entendido, vamos!",
+    "aiPowered": {
+      "title": "Listas con IA",
+      "description": "Comienza con <code>...</code> y describe lo que necesitas.",
+      "example": "Prueba: ...lista de equipaje para vacaciones en la playa"
+    },
+    "instantSharing": {
+      "title": "Compartir Instantáneo",
+      "description": "Cada lista tiene una URL única. Compártela con cualquier persona en móvil o escritorio — pueden ver y editar en tiempo real. Sin registro necesario."
+    }
   },
   "common": {
     "loading": "Cargando...",

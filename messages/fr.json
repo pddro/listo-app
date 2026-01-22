@@ -35,7 +35,8 @@
     "untitledList": "Untitled List",
     "customStyles": {
       "title": "Infinite custom styles",
-      "description": "Describe any style and it will be designed for you automatically"
+      "description": "Describe any style and it will be designed for you automatically",
+      "instruction": "Type <code>style: ocean sunset</code> in your list to style it"
     },
     "tips": {
       "title": "Tips",
@@ -49,7 +50,28 @@
     "privacy": {
       "title": "Privacy Policy",
       "lastUpdated": "Last updated: January 2025",
-      "content": "Listo is designed with privacy in mind. Your lists are stored securely and are only accessible via their unique URLs. We do not sell your data or use it for advertising purposes."
+      "content": "Listo is designed with privacy in mind. Your lists are stored securely and are only accessible via their unique URLs. We do not sell your data or use it for advertising purposes.",
+      "note": "Note: All listos are public URLs. Never share personal information in a list.",
+      "readPolicy": "Read our privacy policy",
+      "sections": {
+        "publicUse": {
+          "title": "Public Use and Sharing",
+          "content": "LISTO checklists (hereafter referred to as \"listos\") are inherently public. Once you create a listo and share its link, anyone with access to that link can view and edit the listo. Since listos are designed to be shared freely, we strongly advise against using LISTO to store or transmit sensitive, confidential, or any personal information that you do not wish to make public."
+        },
+        "dataCollection": {
+          "title": "Data Collection and Use",
+          "content": "As of now, LISTO does not require user registration, which means we do not collect personal data such as names, email addresses, or any other contact information. All listos are created anonymously."
+        },
+        "analytics": {
+          "title": "Analytics",
+          "content": "We utilize Google Analytics to analyze the performance of LISTO, which helps us understand traffic patterns and user engagement in an anonymous form. Google Analytics may collect non-personally identifiable information such as your device type, browser type, and the way you interact with LISTO. This data is used strictly for the purpose of enhancing user experience and improving our service."
+        },
+        "contact": {
+          "title": "Contact Information",
+          "content": "Should you have any questions about this privacy policy or LISTO's practices, please feel free to reach out to us at"
+        },
+        "changes": "Please be aware that our Privacy Policy may change from time to time. We will not reduce your rights under this Privacy Policy without providing notice, and we expect most such changes will be minor."
+      }
     }
   },
   "list": {
@@ -260,14 +282,23 @@
   },
   "welcome": {
     "title": "Welcome to Listo!",
-    "subtitle": "Your new list is ready. Here are some tips:",
+    "subtitle": "The simplest way to create and share lists",
     "tips": [
       "Type anything and press Enter to add items",
       "Tap items to mark them complete",
       "Type ... to generate items with AI",
       "Share the URL - anyone can collaborate!"
     ],
-    "gotIt": "Got it!"
+    "gotIt": "Got it, let's go!",
+    "aiPowered": {
+      "title": "AI-Powered Lists",
+      "description": "Start with <code>...</code> and describe what you need.",
+      "example": "Try: ...packing list for beach vacation"
+    },
+    "instantSharing": {
+      "title": "Instant Sharing",
+      "description": "Every list has a unique URL. Share it with anyone on mobile or desktop — they can view and edit in real-time. No signup needed."
+    }
   },
   "common": {
     "loading": "Loading...",
