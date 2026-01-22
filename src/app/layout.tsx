@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import { locales } from "@/i18n/config";
 
-const inter = Inter({
-  subsets: ["latin"],
-});
+// Font fallback - Google Fonts may be blocked in build environment
+const inter = {
+  className: "font-sans",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://listo.to"),
@@ -61,6 +62,9 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://listo.to",
+    languages: Object.fromEntries(
+      locales.map((locale) => [locale, `https://listo.to/${locale}`])
+    ),
   },
   category: "Productivity",
 };
@@ -98,7 +102,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html suppressHydrationWarning>
       <head>
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}

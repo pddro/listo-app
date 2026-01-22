@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
+import { useLocale } from 'next-intl';
 import { supabase } from '@/lib/supabase';
 import { generateListId } from '@/lib/utils/generateId';
 import { useAI, isCategorizedResult, ManipulatedItem } from '@/lib/hooks/useAI';

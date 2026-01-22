@@ -8,6 +8,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- **Localization Infrastructure (Phase 1)**
+  - Installed `next-intl` for internationalization support
+  - Created locale configuration (`src/i18n/config.ts`) with 8 supported languages
+  - Set up `[locale]` route structure for path-based localization (`/en/`, `/es/`, etc.)
+  - Added middleware for automatic language detection from browser
+  - Created initial English translation file (`messages/en.json`) with ~200 strings
+  - Added hreflang alternate links for SEO
+  - Created localized navigation utilities (`src/i18n/navigation.ts`)
+
 ---
 
 ## [0.2.1] - 2025-01-17

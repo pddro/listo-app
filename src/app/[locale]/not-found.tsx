@@ -1,7 +1,7 @@
 'use client';
 
 import { generateListId } from '@/lib/utils/generateId';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 
 export default function NotFound() {
   const router = useRouter();

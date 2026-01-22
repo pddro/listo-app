@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
+import { setRequestLocale } from 'next-intl/server';
 import { supabase } from '@/lib/supabase';
 import ListPageClient from './client';
 
 type Props = {
-  params: Promise<{ listId: string }>;
+  params: Promise<{ locale: string; listId: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -36,6 +37,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ListPage({ params }: Props) {
-  const { listId } = await params;
+  const { locale, listId } = await params;
+
+  // Enable static rendering
+  setRequestLocale(locale);
+
   return <ListPageClient listId={listId} />;
 }
