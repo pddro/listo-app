@@ -388,10 +388,11 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
           {/* Done button - large checkmark */}
           <button
             onClick={stopRecording}
-            className="mt-12 w-18 h-18 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-105 active:scale-95"
+            className="rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-105 active:scale-95"
             style={{
               width: '72px',
               height: '72px',
+              marginTop: '56px',
               backgroundColor: 'var(--primary)',
             }}
           >
@@ -409,8 +410,8 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
           {/* Cancel button */}
           <button
             onClick={cancelRecording}
-            className="mt-6 text-white/60 hover:text-white text-base font-medium transition-colors active:opacity-60"
-            style={{ padding: '8px 16px' }}
+            className="text-white/60 hover:text-white text-base font-medium transition-colors active:opacity-60"
+            style={{ marginTop: '24px', padding: '8px 16px' }}
           >
             {tDictation('cancel')}
           </button>

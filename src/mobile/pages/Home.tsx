@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Device } from '@capacitor/device';
+import { Preferences } from '@capacitor/preferences';
 import { supabase } from '@/lib/supabase';
 import { generateListId } from '@/lib/utils/generateId';
 import { useAI, isCategorizedResult, ManipulatedItem } from '@/lib/hooks/useAI';
@@ -12,6 +13,9 @@ import { useHomeTheme } from '@/lib/hooks/useHomeTheme';
 import { HomeThemeModal } from '@/mobile/components/HomeThemeModal';
 import { ThemeColors } from '@/lib/gemini';
 import { useAppState } from '@/mobile/context/AppStateContext';
+import { analytics } from '@/lib/analytics';
+
+const TUTORIAL_COMPLETED_KEY = 'listo_tutorial_completed';
 
 // Tutorial list theme (same as web)
 const TUTORIAL_THEME: ThemeColors = {
@@ -275,6 +279,7 @@ export default function HomePage() {
   const { theme: homeTheme, description: homeThemeDescription, setHomeTheme, clearHomeTheme } = useHomeTheme();
   const { preloadList, getCachedList, setHomeTheme: setAppHomeTheme } = useAppState();
   const [isCreatingTutorial, setIsCreatingTutorial] = useState(false);
+  const [tutorialCompleted, setTutorialCompleted] = useState(true); // Default to true to hide until loaded
 
   // Sync home theme with AppStateContext for synchronous access from List page
   useEffect(() => {
@@ -285,6 +290,13 @@ export default function HomePage() {
   useEffect(() => {
     Device.getInfo().then(info => {
       setPlatform(info.platform as 'ios' | 'android' | 'web');
+    });
+  }, []);
+
+  // Load tutorial completed state from Preferences
+  useEffect(() => {
+    Preferences.get({ key: TUTORIAL_COMPLETED_KEY }).then(({ value }) => {
+      setTutorialCompleted(value === 'true');
     });
   }, []);
 
@@ -310,10 +322,8 @@ export default function HomePage() {
     return { title, items, theme: TUTORIAL_THEME };
   }, [t]);
 
-  // Check if tutorial list already exists in user's lists
-  const hasTutorialList = useMemo(() => {
-    return recentLists.some(list => list.title === tutorialList.title);
-  }, [recentLists, tutorialList.title]);
+  // Check if tutorial has been completed (persisted in Preferences)
+  const hasTutorialList = tutorialCompleted;
 
   // Create tutorial list in Supabase when clicked
   const createTutorialList = async () => {
@@ -376,8 +386,15 @@ export default function HomePage() {
         }
       }
 
+      // Mark tutorial as completed in Preferences
+      await Preferences.set({ key: TUTORIAL_COMPLETED_KEY, value: 'true' });
+      setTutorialCompleted(true);
+
       // Add to recent lists
       addList(listId, tutorialList.title, tutorialList.theme.bgSecondary);
+
+      // Track analytics
+      analytics.listCreated('tutorial');
 
       // Navigate to the new list
       navigate(`/${listId}`);
@@ -466,6 +483,7 @@ export default function HomePage() {
           text: `Check out my list: ${shareTitle}`,
           url: url,
         });
+        analytics.listShared('native_share');
       } catch (err) {
         // User cancelled or share failed, ignore
         if ((err as Error).name !== 'AbortError') {
@@ -475,6 +493,7 @@ export default function HomePage() {
     } else {
       // Fallback: copy to clipboard
       await navigator.clipboard.writeText(url);
+      analytics.listShared('copy_link');
     }
   };
 
@@ -615,6 +634,7 @@ export default function HomePage() {
       const listId = generateListId();
       await supabase.from('lists').insert({ id: listId, title: null, theme: homeTheme || null });
       addList(listId);
+      analytics.listCreated('manual');
       navigate(`/${listId}`);
       return;
     }
@@ -725,6 +745,9 @@ export default function HomePage() {
       }
 
       addList(listId);
+      // Track with appropriate method
+      const method = (forceAI || inputWithoutTheme.startsWith('...')) ? 'ai' : 'manual';
+      analytics.listCreated(method);
       navigate(`/${listId}`);
     } catch (err) {
       console.error('Failed to create list:', err);
@@ -805,6 +828,7 @@ export default function HomePage() {
       }
 
       addList(listId);
+      analytics.listCreated('dictation');
       navigate(`/${listId}`);
     } catch (err) {
       console.error('Failed to create list from dictation:', err);

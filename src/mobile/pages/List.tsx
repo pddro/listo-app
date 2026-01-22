@@ -13,6 +13,7 @@ import { isCategorizedResult } from '@/lib/hooks/useAI';
 import { ThemeColors } from '@/lib/gemini';
 import { API } from '@/lib/api';
 import { useAppState } from '@/mobile/context/AppStateContext';
+import { analytics } from '@/lib/analytics';
 
 // Apply theme to CSS variables
 function applyThemeToRoot(theme: ThemeColors | null) {
@@ -339,6 +340,7 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
       finalContent = await emojifyText(content);
     }
     await addItem(finalContent, parentId);
+    analytics.itemCreated('manual');
   };
 
   const handleAddItems = async (contents: string[], parentId?: string | null) => {
@@ -353,7 +355,12 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
         })
       );
     }
-    return await addItems(finalContents, parentId);
+    const result = await addItems(finalContents, parentId);
+    // Track each item created via bulk add
+    for (let i = 0; i < contents.length; i++) {
+      analytics.itemCreated('bulk');
+    }
+    return result;
   };
 
   const handleShare = async () => {
@@ -367,6 +374,7 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
           text: `Check out my list: ${shareTitle}`,
           url: url,
         });
+        analytics.listShared('native_share');
       } catch (err) {
         if ((err as Error).name !== 'AbortError') {
           console.error('Share failed:', err);
@@ -374,6 +382,7 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
       }
     } else {
       await navigator.clipboard.writeText(url);
+      analytics.listShared('copy_link');
     }
   };
 
@@ -489,9 +498,13 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
 
       if (result.length > 0) {
         if (isCategorizedResult(result)) {
-          await handleCategorizedGenerate(result);
+          await handleCategorizedGenerate(result, 'dictation');
         } else {
           await addItems(result);
+          // Track each item created via dictation
+          for (let i = 0; i < result.length; i++) {
+            analytics.itemCreated('dictation');
+          }
         }
       }
     } catch (err) {
@@ -499,7 +512,7 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
     }
   };
 
-  const handleCategorizedGenerate = async (generatedItems: ManipulatedItem[]) => {
+  const handleCategorizedGenerate = async (generatedItems: ManipulatedItem[], method: 'ai' | 'dictation' = 'ai') => {
     if (generatedItems.length === 0) return;
 
     const idMapping: Record<string, string> = {};
@@ -528,6 +541,11 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
         position: child.position,
         completed: false,
       });
+    }
+
+    // Track each item created (headers + children)
+    for (let i = 0; i < generatedItems.length; i++) {
+      analytics.itemCreated(method);
     }
   };
 

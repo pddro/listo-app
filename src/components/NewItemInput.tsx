@@ -652,14 +652,69 @@ export function NewItemInput({
         {/* Inline hints - only show when input is empty and not processing */}
         {!isProcessing && !value.trim() && (
           <div
-            className="flex items-center justify-between gap-2"
+            className="flex items-center justify-between gap-1"
             style={{ fontSize: '10px', color: 'var(--text-muted)', paddingTop: '8px' }}
           >
-            <span><span style={{ color: 'var(--primary)' }}>...</span> {t('input.hints.generate')}</span>
-            <span><span style={{ color: 'var(--primary)' }}>!</span> {t('input.hints.transform')}</span>
-            <span><span style={{ color: 'var(--primary)' }}>{themeTriggers[0] || 'style:'}</span> {t('input.hints.theme')}</span>
-            <span><span style={{ color: 'var(--text-secondary)' }}>#</span> {t('input.hints.category')}</span>
-            <span><span style={{ color: 'var(--text-secondary)' }}>,</span> {t('input.hints.multi')}</span>
+            <button
+              type="button"
+              onClick={() => {
+                setValue('...');
+                inputRef.current?.focus();
+                setTimeout(() => inputRef.current?.setSelectionRange(3, 3), 0);
+              }}
+              className="active:opacity-60 transition-opacity rounded px-1 py-0.5"
+              style={{ backgroundColor: 'transparent' }}
+            >
+              <span style={{ color: 'var(--primary)' }}>...</span> {t('input.hints.generate')}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setValue('!');
+                inputRef.current?.focus();
+                setTimeout(() => inputRef.current?.setSelectionRange(1, 1), 0);
+              }}
+              className="active:opacity-60 transition-opacity rounded px-1 py-0.5"
+              style={{ backgroundColor: 'transparent' }}
+            >
+              <span style={{ color: 'var(--primary)' }}>!</span> {t('input.hints.transform')}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const trigger = themeTriggers[0] || 'style:';
+                setValue(trigger + ' ');
+                inputRef.current?.focus();
+                setTimeout(() => inputRef.current?.setSelectionRange(trigger.length + 1, trigger.length + 1), 0);
+              }}
+              className="active:opacity-60 transition-opacity rounded px-1 py-0.5"
+              style={{ backgroundColor: 'transparent' }}
+            >
+              <span style={{ color: 'var(--primary)' }}>{themeTriggers[0] || 'style:'}</span> {t('input.hints.theme')}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setValue('#');
+                inputRef.current?.focus();
+                setTimeout(() => inputRef.current?.setSelectionRange(1, 1), 0);
+              }}
+              className="active:opacity-60 transition-opacity rounded px-1 py-0.5"
+              style={{ backgroundColor: 'transparent' }}
+            >
+              <span style={{ color: 'var(--text-secondary)' }}>#</span> {t('input.hints.category')}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setValue('');
+                inputRef.current?.focus();
+              }}
+              className="active:opacity-60 transition-opacity rounded px-1 py-0.5"
+              style={{ backgroundColor: 'transparent' }}
+            >
+              <span style={{ color: 'var(--text-secondary)' }}>,</span> {t('input.hints.multi')}
+            </button>
           </div>
         )}
       </div>

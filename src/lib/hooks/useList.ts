@@ -196,7 +196,7 @@ export function useList(listId: string, options: UseListOptions = {}) {
 
     if (error) throw error;
     setList(data);
-    analytics.listCreated(listId);
+    analytics.listCreated('manual');
     return data;
   };
 
@@ -273,8 +273,6 @@ export function useList(listId: string, options: UseListOptions = {}) {
     setNewItemIds(ids);
     setTimeout(() => setNewItemIds([]), 500);
 
-    // Track item creations
-    contents.forEach(() => analytics.itemCreated(listId));
 
     // Update positions of existing siblings in database
     const updates = siblings.map(sibling =>
@@ -324,8 +322,6 @@ export function useList(listId: string, options: UseListOptions = {}) {
     setNewItemId(tempId);
     setTimeout(() => setNewItemId(null), 500);
 
-    // Track item creation
-    analytics.itemCreated(listId);
 
     // Register pending insert so realtime can correlate temp ID with real ID
     const pendingKey = `${content}|${targetParentId}|0`;
