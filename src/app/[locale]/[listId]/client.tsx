@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { useList } from '@/lib/hooks/useList';
 import { useAI, ManipulatedItem } from '@/lib/hooks/useAI';
 import { supabase } from '@/lib/supabase';
@@ -18,6 +19,9 @@ interface ListPageClientProps {
 }
 
 export default function ListPageClient({ listId }: ListPageClientProps) {
+  const t = useTranslations('list');
+  const tCommon = useTranslations('common');
+
   const [copied, setCopied] = useState(false);
   const [copiedMarkdown, setCopiedMarkdown] = useState(false);
   const [showShareView, setShowShareView] = useState(false);
@@ -531,7 +535,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
-        <div className="text-[var(--primary)] animate-pulse">Loading...</div>
+        <div className="text-[var(--primary)] animate-pulse">{tCommon('loading')}</div>
       </div>
     );
   }
@@ -578,7 +582,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                Back to list
+                {t('backToList')}
               </button>
             ) : (
               <button
@@ -594,7 +598,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                 </svg>
-                Share
+                {t('share.title')}
               </button>
             )}
           </div>
@@ -612,7 +616,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
               className="text-sm px-4"
               style={{ color: 'var(--text-muted)', marginBottom: '16px' }}
             >
-              Anyone with this link can view and edit the list in real-time.
+              {t('share.instruction')}
             </div>
 
             {/* Share options - styled like list items */}
@@ -637,7 +641,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
                   </svg>
                 )}
                 <span style={{ color: copied ? 'var(--primary)' : 'var(--text-primary)' }}>
-                  {copied ? 'Link copied!' : 'Copy link'}
+                  {copied ? t('share.linkCopied') : t('share.copyLink')}
                 </span>
               </button>
 
@@ -661,7 +665,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
                   </svg>
                 )}
                 <span style={{ color: copiedMarkdown ? 'var(--primary)' : 'var(--text-primary)' }}>
-                  {copiedMarkdown ? 'Markdown copied!' : 'Copy as Markdown'}
+                  {copiedMarkdown ? t('share.markdownCopied') : t('share.copyMarkdown')}
                 </span>
               </button>
 
@@ -682,7 +686,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
                 <span style={{ color: 'var(--text-primary)' }}>
-                  Send via email
+                  {t('share.sendEmail')}
                 </span>
               </a>
 
@@ -699,11 +703,11 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
                     <path d="M21 0H3C1.35 0 0 1.35 0 3v18c0 1.65 1.35 3 3 3h18c1.65 0 3-1.35 3-3V3c0-1.65-1.35-3-3-3zM5.5 6.75h13c.414 0 .75.336.75.75s-.336.75-.75.75h-13c-.414 0-.75-.336-.75-.75s.336-.75.75-.75zm0 4.5h13c.414 0 .75.336.75.75s-.336.75-.75.75h-13c-.414 0-.75-.336-.75-.75s.336-.75.75-.75zm0 4.5h13c.414 0 .75.336.75.75s-.336.75-.75.75h-13c-.414 0-.75-.336-.75-.75s.336-.75.75-.75z"/>
                   </svg>
                   <span style={{ color: 'var(--text-primary)' }}>
-                    Export for Todoist
+                    {t('share.exportTodoist')}
                   </span>
                 </button>
                 <div className="text-xs px-4" style={{ color: 'var(--text-muted)', marginTop: '4px', marginLeft: '32px' }}>
-                  CSV file you can import into any Todoist project
+                  {t('share.csvSubtitle')}
                 </div>
               </div>
             </div>
@@ -760,7 +764,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
             />
 
             <div className="text-xs" style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>
-              Created with <span style={{ fontWeight: 600 }}>Listo</span>
+              {t('footer.createdWith')}
             </div>
 
             <div className="flex items-center justify-center gap-4">
@@ -771,7 +775,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
                 onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary-dark)'}
                 onMouseLeave={(e) => e.currentTarget.style.color = 'var(--primary)'}
               >
-                Home
+                {t('footer.home')}
               </a>
               <span style={{ color: 'var(--border-medium)' }}>·</span>
               <button
@@ -784,7 +788,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
                 onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary-dark)'}
                 onMouseLeave={(e) => e.currentTarget.style.color = 'var(--primary)'}
               >
-                New List
+                {t('footer.newList')}
               </button>
             </div>
           </div>

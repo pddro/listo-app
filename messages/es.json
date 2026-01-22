@@ -1,0 +1,265 @@
+{
+  "metadata": {
+    "title": "Listo - Listas Compartidas al Instante | Sin Registro",
+    "description": "Crea y comparte listas en segundos. Sin registro, sin app. Colaboración en tiempo real, generación de elementos con IA y temas personalizados. Solo comparte el enlace.",
+    "ogTitle": "Listo - Listas Compartidas al Instante",
+    "ogDescription": "Crea y comparte listas en segundos. Sin registro necesario. Colaboración en tiempo real con cualquier persona."
+  },
+  "home": {
+    "title": "Listo",
+    "tagline": "Crea una lista. Comparte el enlace. Colabora en tiempo real.",
+    "benefits": {
+      "noSignup": "Sin registro",
+      "realtime": "Tiempo real",
+      "aiPowered": "Con IA"
+    },
+    "buttons": {
+      "create": "Crear",
+      "restore": "Restaurar",
+      "archived": "Archivadas"
+    },
+    "placeholders": [
+      "compras para tacos",
+      "maleta para vacaciones en la playa",
+      "preguntas para el médico",
+      "películas para ver este fin de semana",
+      "cosas que hacer antes de mudarse",
+      "ideas de regalo para mamá",
+      "libros para leer este año",
+      "proyectos de mejoras del hogar",
+      "ideas de comidas semanales",
+      "lista de viajes soñados"
+    ],
+    "recentLists": "Tus Listas",
+    "noRecentLists": "No hay listas recientes",
+    "untitledList": "Lista sin título",
+    "customStyles": {
+      "title": "Estilos personalizados infinitos",
+      "description": "Describe cualquier estilo y se diseñará automáticamente para ti"
+    },
+    "tips": {
+      "title": "Consejos",
+      "items": [
+        "Escribe ... para generar elementos con IA",
+        "Escribe ! para transformar tu lista",
+        "Escribe theme: para crear colores personalizados",
+        "Escribe # para crear una categoría"
+      ]
+    },
+    "privacy": {
+      "title": "Política de Privacidad",
+      "lastUpdated": "Última actualización: enero 2025",
+      "content": "Listo está diseñado pensando en la privacidad. Tus listas se almacenan de forma segura y solo son accesibles a través de sus URLs únicas. No vendemos tus datos ni los usamos con fines publicitarios."
+    }
+  },
+  "list": {
+    "untitled": "Lista sin título",
+    "share": {
+      "title": "Compartir",
+      "copyLink": "Copiar enlace",
+      "copyMarkdown": "Copiar como Markdown",
+      "linkCopied": "¡Enlace copiado!",
+      "markdownCopied": "¡Markdown copiado!",
+      "sendEmail": "Enviar por correo",
+      "exportTodoist": "Exportar para Todoist",
+      "csvSubtitle": "Archivo CSV que puedes importar en cualquier proyecto de Todoist",
+      "instruction": "Cualquier persona con este enlace puede ver y editar la lista en tiempo real."
+    },
+    "footer": {
+      "createdWith": "Creado con Listo",
+      "home": "Inicio",
+      "newList": "Nueva Lista"
+    },
+    "backToList": "Volver a la lista"
+  },
+  "input": {
+    "placeholder": "Añadir elementos...",
+    "modes": {
+      "generate": "IA generará elementos",
+      "transform": "IA transformará la lista",
+      "theme": "IA generará tema",
+      "addingItems": "Añadiendo {count} elementos",
+      "emoji": "Activar modo emoji",
+      "title": "Generar título de lista",
+      "newList": "Crear nueva lista en nueva pestaña",
+      "removeTheme": "Eliminar tema personalizado",
+      "note": "Escribe tu nota...",
+      "addingNote": "Añadiendo nota",
+      "category": "Crear encabezado de categoría"
+    },
+    "processing": {
+      "thinking": "IA está pensando...",
+      "generatingTheme": "Generando tema...",
+      "reorganizing": "Reorganizando lista...",
+      "unknownCommand": "Comando desconocido"
+    },
+    "hints": {
+      "generate": "generar",
+      "transform": "transformar",
+      "theme": "tema",
+      "category": "categoría",
+      "multi": "múltiple"
+    }
+  },
+  "commands": {
+    "title": "Comandos",
+    "done": "Listo",
+    "sections": {
+      "aiFeatures": "Funciones de IA",
+      "quickActions": "Acciones Rápidas",
+      "modes": "Modos"
+    },
+    "items": {
+      "generate": {
+        "label": "Generar Elementos",
+        "description": "IA crea elementos a partir de tu descripción"
+      },
+      "transform": {
+        "label": "Transformar con IA",
+        "description": "Transforma tu lista como quieras"
+      },
+      "theme": {
+        "label": "Tema Personalizado",
+        "description": "Genera colores a partir de una descripción"
+      },
+      "generateTitle": {
+        "label": "Generar Título",
+        "description": "IA crea un título a partir de tus elementos"
+      },
+      "addCategory": {
+        "label": "Añadir Categoría",
+        "description": "Crear un encabezado de sección"
+      },
+      "completeAll": {
+        "label": "Completar Todo",
+        "description": "Marcar todos los elementos como completados"
+      },
+      "resetAll": {
+        "label": "Reiniciar Todo",
+        "description": "Desmarcar todos los elementos"
+      },
+      "clearCompleted": {
+        "label": "Limpiar Completados",
+        "description": "Eliminar todos los elementos marcados"
+      },
+      "sortItems": {
+        "label": "Ordenar Elementos",
+        "description": "Ordenar alfabéticamente todos los elementos"
+      },
+      "removeCategories": {
+        "label": "Eliminar Categorías",
+        "description": "Aplanar todos los grupos"
+      },
+      "largeMode": {
+        "label": "Modo Grande",
+        "description": "Hacer todo 2x más grande"
+      },
+      "normalMode": {
+        "label": "Modo Normal",
+        "description": "Volver al tamaño normal"
+      },
+      "emojifyOn": {
+        "label": "Modo Emoji",
+        "description": "Añadir emojis automáticamente a nuevos elementos"
+      },
+      "emojifyOff": {
+        "label": "Desactivar Emojis",
+        "description": "Dejar de añadir emojis automáticamente"
+      },
+      "resetTheme": {
+        "label": "Reiniciar Tema",
+        "description": "Eliminar colores personalizados"
+      }
+    }
+  },
+  "dictation": {
+    "listening": "Escuchando...",
+    "tapToStop": "Toca en cualquier lugar para detener",
+    "cancel": "Cancelar",
+    "timeRemaining": "{time} restante",
+    "microphoneDenied": "Acceso al micrófono denegado"
+  },
+  "errors": {
+    "promptRequired": "Se requiere un texto",
+    "itemsRequired": "Se requiere un array de elementos",
+    "instructionRequired": "Se requiere una instrucción",
+    "invalidAction": "Acción inválida",
+    "aiProcessingFailed": "Error en el procesamiento de IA",
+    "themeGenerationFailed": "Error al generar el tema",
+    "textRequired": "Se requiere texto",
+    "emojifyFailed": "Error al añadir emoji",
+    "titleGenerationFailed": "Error al generar título",
+    "noAudioFile": "No se proporcionó archivo de audio",
+    "transcriptionFailed": "Error en la transcripción",
+    "transcriptionTimeout": "Tiempo de transcripción agotado",
+    "noItemsToReorganize": "No hay elementos para reorganizar",
+    "listManipulationNotAvailable": "Manipulación de lista no disponible",
+    "failedToGenerateItems": "Error al generar elementos",
+    "failedToGenerateList": "Error al generar lista"
+  },
+  "tutorial": {
+    "gettingStarted": {
+      "title": "Comenzar",
+      "items": [
+        "Escribe cualquier cosa y presiona enter para añadir elementos",
+        "Toca un elemento para marcarlo como completado",
+        "Desliza hacia la izquierda para eliminar un elemento",
+        "¡Comparte esta lista - cualquiera con el enlace puede editarla!"
+      ]
+    },
+    "aiMagic": {
+      "title": "Magia de IA",
+      "items": [
+        "Escribe ... seguido de una descripción para generar elementos",
+        "Escribe ! seguido de instrucciones para transformar tu lista",
+        "Escribe theme: seguido de un estilo para personalizar colores"
+      ]
+    },
+    "proTips": {
+      "title": "Consejos Pro",
+      "items": [
+        "Escribe # para crear encabezados de categoría",
+        "Arrastra elementos para reordenarlos",
+        "Usa --commands para ver todas las opciones"
+      ]
+    },
+    "ready": {
+      "title": "¡Estás Listo!",
+      "items": [
+        "Elimina esta lista tutorial cuando termines",
+        "Crea tu propia lista desde la página de inicio",
+        "¡Diviértete organizando!"
+      ]
+    }
+  },
+  "themes": {
+    "sunset": "atardecer",
+    "ocean": "océano",
+    "forest": "bosque",
+    "neon": "neón",
+    "midnight": "medianoche",
+    "rose": "rosa",
+    "matrix": "matrix",
+    "birthday": "cumpleaños"
+  },
+  "welcome": {
+    "title": "¡Bienvenido a Listo!",
+    "subtitle": "Tu nueva lista está lista. Aquí hay algunos consejos:",
+    "tips": [
+      "Escribe cualquier cosa y presiona Enter para añadir elementos",
+      "Toca los elementos para marcarlos como completados",
+      "Escribe ... para generar elementos con IA",
+      "¡Comparte la URL - cualquiera puede colaborar!"
+    ],
+    "gotIt": "¡Entendido!"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "link": "enlace"
+  }
+}

@@ -30,8 +30,13 @@
       "weekly meal prep ideas",
       "travel bucket list"
     ],
-    "recentLists": "Recent Lists",
+    "recentLists": "Your Lists",
     "noRecentLists": "No recent lists",
+    "untitledList": "Untitled List",
+    "customStyles": {
+      "title": "Infinite custom styles",
+      "description": "Describe any style and it will be designed for you automatically"
+    },
     "tips": {
       "title": "Tips",
       "items": [

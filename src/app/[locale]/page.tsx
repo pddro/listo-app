@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from '@/i18n/navigation';
-import { useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { supabase } from '@/lib/supabase';
 import { generateListId } from '@/lib/utils/generateId';
 import { useAI, isCategorizedResult, ManipulatedItem } from '@/lib/hooks/useAI';
@@ -92,6 +92,10 @@ const SparklesIcon = () => (
 );
 
 export default function Home() {
+  const t = useTranslations('home');
+  const tCommon = useTranslations('common');
+  const tInput = useTranslations('input');
+
   const [value, setValue] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -559,10 +563,10 @@ export default function Home() {
         {/* Logo/Title */}
         <div className="space-y-3" style={{ marginBottom: '24px' }}>
           <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-[0.2em]">
-            Listo
+            {t('title')}
           </h1>
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            Create a list. Share the link. Collaborate in real-time.
+            {t('tagline')}
           </p>
           {/* Hero benefit strip */}
           <div className="flex items-center justify-center gap-4 text-xs" style={{ color: 'var(--text-muted)', marginTop: '12px' }}>
@@ -570,19 +574,19 @@ export default function Home() {
               <svg className="w-3 h-3" style={{ color: 'var(--primary)' }} fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
-              No signup
+              {t('benefits.noSignup')}
             </span>
             <span className="flex items-center gap-1">
               <svg className="w-3 h-3" style={{ color: 'var(--primary)' }} fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
-              Real-time sharing
+              {t('benefits.realtime')}
             </span>
             <span className="flex items-center gap-1">
               <svg className="w-3 h-3" style={{ color: 'var(--primary)' }} fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
-              AI-powered
+              {t('benefits.aiPowered')}
             </span>
           </div>
         </div>
@@ -629,7 +633,7 @@ export default function Home() {
                   `}
                   style={{ color: isCreating ? 'var(--primary)' : '#9CA3AF' }}
                 >
-                  {isCreating ? 'Creating your list...' : PLACEHOLDERS[placeholderIndex]}
+                  {isCreating ? tCommon('loading') : PLACEHOLDERS[placeholderIndex]}
                 </div>
               )}
             </div>
@@ -649,7 +653,7 @@ export default function Home() {
               {isCreating ? (
                 <span className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                'Create'
+                t('buttons.create')
               )}
             </button>
           </div>
@@ -672,7 +676,7 @@ export default function Home() {
               style={{ top: 'calc(100% + 4px)' }}
             >
               <span className="inline-block w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              AI is thinking...
+              {tInput('processing.thinking')}
             </div>
           )}
 
@@ -700,7 +704,7 @@ export default function Home() {
         {/* Recent Lists */}
         <div style={{ marginTop: '32px' }}>
           <div className="font-bold uppercase tracking-wide text-xs mb-3 text-left" style={{ color: 'var(--text-muted)' }}>
-            Your Lists
+            {t('recentLists')}
           </div>
 
           {/* Tutorial List for New Users - styled exactly like a regular list */}
@@ -753,7 +757,7 @@ export default function Home() {
                     {list.totalCount > 0 ? `${list.completedCount}/${list.totalCount}` : '0'}
                   </div>
                   <span className="flex-1 text-base text-left truncate font-medium" style={{ color: 'var(--text-primary)' }}>
-                    {list.title || 'Untitled List'}
+                    {list.title || t('untitledList')}
                   </span>
                   {/* Copy link button */}
                   <button
@@ -812,7 +816,7 @@ export default function Home() {
               >
                 <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
               </svg>
-              Archived ({archivedLists.length})
+              {t('buttons.archived')} ({archivedLists.length})
             </button>
             {showArchived && (
               <div className="space-y-2 mt-2">
@@ -836,7 +840,7 @@ export default function Home() {
                       {list.totalCount > 0 ? `${list.completedCount}/${list.totalCount}` : '0'}
                     </div>
                     <span className="flex-1 text-sm text-left truncate" style={{ color: 'var(--text-primary)' }}>
-                      {list.title || 'Untitled List'}
+                      {list.title || t('untitledList')}
                     </span>
                     <button
                       onClick={(e) => {
@@ -846,7 +850,7 @@ export default function Home() {
                       className="opacity-0 group-hover:opacity-100 text-xs px-2 py-1 hover:bg-gray-200 rounded transition-opacity"
                       style={{ color: 'var(--text-muted)' }}
                     >
-                      Restore
+                      {t('buttons.restore')}
                     </button>
                   </div>
                 ))}
@@ -865,10 +869,10 @@ export default function Home() {
           }}
         >
           <div className="font-bold uppercase tracking-wide text-xs" style={{ color: 'var(--text-muted)' }}>
-            Infinite custom styles
+            {t('customStyles.title')}
           </div>
           <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '4px', marginBottom: '16px' }}>
-            Describe any style and it will be designed for you automatically
+            {t('customStyles.description')}
           </div>
           <div className="grid grid-cols-4 gap-3">
             {/* Sunset */}
