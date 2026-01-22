@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { API } from '@/lib/api';
+import { API, getSupabaseHeaders } from '@/lib/api';
 
 // Get Supabase anon key for auth header
 const isVite = typeof import.meta !== 'undefined' && typeof import.meta.env !== 'undefined';
@@ -213,9 +212,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
 
       const response = await fetch(API.transcribe, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        },
+        headers: getSupabaseHeaders(),
         body: formData,
       });
 

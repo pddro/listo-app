@@ -4,15 +4,18 @@
 // Determine if we're in Vite environment
 const isVite = typeof import.meta !== 'undefined' && typeof import.meta.env !== 'undefined';
 
-// Get Supabase URL based on environment
+// Get Supabase URL and anon key based on environment
 let SUPABASE_URL: string;
+let SUPABASE_ANON_KEY: string;
 
 if (isVite) {
   // Vite environment
   SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
+  SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 } else {
   // Next.js environment
   SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL_PROD || process.env.NEXT_PUBLIC_SUPABASE_URL_DEV || '';
+  SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_PROD || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_DEV || '';
 }
 
 // Get edge function URL
@@ -33,6 +36,17 @@ export const API = {
   emojify: getEdgeFunctionUrl('emojify'),
   transcribe: getEdgeFunctionUrl('transcribe'),
 } as const;
+
+// Get headers for Supabase edge function calls
+export const getSupabaseHeaders = (): Record<string, string> => {
+  if (SUPABASE_ANON_KEY) {
+    return {
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'apikey': SUPABASE_ANON_KEY,
+    };
+  }
+  return {};
+};
 
 // Helper to make API calls with proper error handling
 export async function apiCall<T>(

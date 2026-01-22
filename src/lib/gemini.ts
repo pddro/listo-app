@@ -206,13 +206,26 @@ ${prompt}
 2. Extract or generate the appropriate list items
 3. Return clean, concise items
 
+## LANGUAGE - CRITICAL
+- ALWAYS respond in the SAME LANGUAGE as the user's input
+- Spanish input → Spanish output
+- French input → French output
+- English input → English output
+- Do NOT translate items to a different language
+
+## NUMBERS - CRITICAL
+- ALWAYS use numeric digits, never spell out numbers
+- "six eggs" → "6 eggs"
+- "twenty-two items" → "22 items"
+- "three bottles of water" → "3 bottles of water"
+
 ## HANDLING DICTATION
 Users may speak naturally:
 - "I need to get milk and eggs and also bread" → ["Milk", "Eggs", "Bread"]
 - "Um let me think groceries for dinner tonight chicken rice vegetables" → ["Chicken", "Rice", "Vegetables"]
-- "Things I need to do call mom finish the report buy groceries" → ["Call mom", "Finish the report", "Buy groceries"]
+- "Necesito leche, huevos y pan" → ["Leche", "Huevos", "Pan"]
 
-Filter out filler words (um, uh, let me think, so, like) and extract the actual items.
+Filter out filler words (um, uh, let me think, so, like, este, bueno, pues) and extract the actual items.
 
 ## OUTPUT FORMAT
 Return ONLY a valid JSON array of strings. Each string should be a single, concise list item.
@@ -222,8 +235,8 @@ Capitalize appropriately and clean up the items.
 Example: "ingredients for a basic omelette"
 Response: ["Eggs", "Butter", "Salt", "Pepper", "Cheese"]
 
-Example: "things to pack for a beach day"
-Response: ["Sunscreen", "Towel", "Swimsuit", "Sunglasses", "Water bottle", "Snacks"]
+Example: "necesito cosas para la playa"
+Response: ["Protector solar", "Toalla", "Traje de baño", "Lentes de sol", "Botella de agua"]
 
 Return ONLY the JSON array, no markdown, no explanation.`;
 
@@ -276,6 +289,17 @@ export async function generateCategorizedItems(
 
 USER REQUEST (may be dictated speech):
 ${prompt}
+
+## LANGUAGE - CRITICAL
+- ALWAYS respond in the SAME LANGUAGE as the user's input
+- Spanish input → Spanish headers and items in Spanish
+- French input → French headers and items in French
+- Do NOT translate items or headers to a different language
+
+## NUMBERS - CRITICAL
+- ALWAYS use numeric digits, never spell out numbers
+- "six eggs" → "6 eggs"
+- "veintidós artículos" → "22 artículos"
 
 ## UNDERSTANDING THE REQUEST
 The user may have:
