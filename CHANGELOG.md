@@ -9,6 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- **Delightful UX Architecture (Mobile)**
+  - Added `AppStateContext` for global state management and list caching
+  - Persistent background layer prevents white flash during navigation
+  - Home theme stored in memory for instant synchronous access on back navigation
+  - Lists are preloaded when visible on Home screen for instant loading
+  - `useList` hook accepts initial data from cache for zero-loading-state transitions
+
 - **Localization Infrastructure (Phase 1)**
   - Installed `next-intl` for internationalization support
   - Created locale configuration (`src/i18n/config.ts`) with 8 supported languages
@@ -17,6 +24,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Created initial English translation file (`messages/en.json`) with ~200 strings
   - Added hreflang alternate links for SEO
   - Created localized navigation utilities (`src/i18n/navigation.ts`)
+
+### Fixed
+- iOS audio recording now properly detects supported MIME types (fixes transcription on iOS)
 
 ---
 

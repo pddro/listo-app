@@ -76,12 +76,12 @@ export function NewItemInput({
   // Get localized command triggers
   const themeTriggers = useMemo(() => {
     const raw = t('commandTriggers.theme', { returnObjects: true });
-    return Array.isArray(raw) ? raw.map((s: string) => s.toLowerCase()) : ['theme:', 'style:'];
+    return Array.isArray(raw) ? (raw as string[]).map(s => s.toLowerCase()) : ['theme:', 'style:'];
   }, [t]);
 
   const noteTriggers = useMemo(() => {
     const raw = t('commandTriggers.note', { returnObjects: true });
-    return Array.isArray(raw) ? raw.map((s: string) => s.toLowerCase()) : ['note:'];
+    return Array.isArray(raw) ? (raw as string[]).map(s => s.toLowerCase()) : ['note:'];
   }, [t]);
 
   // Helper to check if input starts with any trigger

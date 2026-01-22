@@ -6,10 +6,22 @@ import { List, Item, ItemWithChildren } from '@/types';
 import { ThemeColors } from '@/lib/gemini';
 import { analytics } from '@/lib/analytics';
 
-export function useList(listId: string) {
-  const [list, setList] = useState<List | null>(null);
-  const [items, setItems] = useState<Item[]>([]);
-  const [loading, setLoading] = useState(true);
+export interface UseListOptions {
+  initialList?: List | null;
+  initialItems?: Item[];
+  onListChange?: (list: List) => void;
+  onItemsChange?: (items: Item[]) => void;
+}
+
+export function useList(listId: string, options: UseListOptions = {}) {
+  const { initialList, initialItems, onListChange, onItemsChange } = options;
+
+  // If initial data is provided, start with it (no loading state)
+  const hasInitialData = initialList !== undefined || (initialItems && initialItems.length > 0);
+
+  const [list, setList] = useState<List | null>(initialList ?? null);
+  const [items, setItems] = useState<Item[]>(initialItems ?? []);
+  const [loading, setLoading] = useState(!hasInitialData);
   const [error, setError] = useState<string | null>(null);
 
   // Track pending inserts to correlate temp IDs with real IDs from realtime
@@ -70,7 +82,10 @@ export function useList(listId: string) {
   // Fetch list and items
   useEffect(() => {
     async function fetchData() {
-      setLoading(true);
+      // Only show loading if we don't have initial data
+      if (!hasInitialData) {
+        setLoading(true);
+      }
       setError(null);
 
       // Fetch list
@@ -87,6 +102,9 @@ export function useList(listId: string) {
       }
 
       setList(listData);
+      if (listData && onListChange) {
+        onListChange(listData);
+      }
 
       // Fetch items
       const { data: itemsData, error: itemsError } = await supabase
@@ -102,11 +120,14 @@ export function useList(listId: string) {
       }
 
       setItems(itemsData || []);
+      if (itemsData && onItemsChange) {
+        onItemsChange(itemsData);
+      }
       setLoading(false);
     }
 
     fetchData();
-  }, [listId]);
+  }, [listId, hasInitialData, onListChange, onItemsChange]);
 
   // Real-time subscriptions
   useEffect(() => {

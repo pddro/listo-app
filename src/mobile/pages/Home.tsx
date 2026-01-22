@@ -11,6 +11,7 @@ import { useRecentLists, SavedList } from '@/lib/hooks/useRecentLists';
 import { useHomeTheme } from '@/lib/hooks/useHomeTheme';
 import { HomeThemeModal } from '@/mobile/components/HomeThemeModal';
 import { ThemeColors } from '@/lib/gemini';
+import { useAppState } from '@/mobile/context/AppStateContext';
 
 // Swipeable List Row Component
 interface SwipeableListRowProps {
@@ -231,6 +232,12 @@ export default function HomePage() {
   const { lists: recentLists, archivedLists, addList, archiveList, restoreList, deleteList } = useRecentLists();
   const [showArchived, setShowArchived] = useState(false);
   const { theme: homeTheme, description: homeThemeDescription, setHomeTheme, clearHomeTheme } = useHomeTheme();
+  const { preloadList, getCachedList, setHomeTheme: setAppHomeTheme } = useAppState();
+
+  // Sync home theme with AppStateContext for synchronous access from List page
+  useEffect(() => {
+    setAppHomeTheme(homeTheme);
+  }, [homeTheme, setAppHomeTheme]);
 
   // Detect platform for safe-area handling
   useEffect(() => {
@@ -238,6 +245,18 @@ export default function HomePage() {
       setPlatform(info.platform as 'ios' | 'android' | 'web');
     });
   }, []);
+
+  // Preload visible lists for instant navigation
+  useEffect(() => {
+    // Preload first 5 lists immediately
+    const listsToPreload = recentLists.slice(0, 5);
+    listsToPreload.forEach(list => {
+      // Only preload if not already cached
+      if (!getCachedList(list.id)) {
+        preloadList(list.id);
+      }
+    });
+  }, [recentLists, preloadList, getCachedList]);
 
   // Get translated placeholders
   const placeholders = t('mobile.placeholders', { returnObjects: true }) as string[];

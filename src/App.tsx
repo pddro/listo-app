@@ -5,6 +5,7 @@ import { Preferences } from '@capacitor/preferences';
 import HomePage from './mobile/pages/Home';
 import ListPage from './mobile/pages/List';
 import { SwipeBackLayout } from './mobile/components/SwipeBackLayout';
+import { AppStateProvider } from './mobile/context/AppStateContext';
 import { ThemeColors } from '@/lib/gemini';
 
 // Initialize i18n for mobile
@@ -32,7 +33,7 @@ function applyThemeToRoot(theme: ThemeColors | null) {
   }
 }
 
-export default function App() {
+function AppContent() {
   const navigate = useNavigate();
   const hasHandledLaunchUrl = useRef(false);
 
@@ -102,11 +103,31 @@ export default function App() {
   }, [navigate]);
 
   return (
-    <SwipeBackLayout>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/:listId" element={<ListPage />} />
-      </Routes>
-    </SwipeBackLayout>
+    <>
+      {/* Persistent background layer - prevents white flash during navigation */}
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'var(--bg-primary, #ffffff)',
+          zIndex: -1,
+          transition: 'background-color 150ms ease-out',
+        }}
+      />
+      <SwipeBackLayout>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/:listId" element={<ListPage />} />
+        </Routes>
+      </SwipeBackLayout>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <AppStateProvider>
+      <AppContent />
+    </AppStateProvider>
   );
 }
