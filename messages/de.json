@@ -316,7 +316,7 @@
   },
   "appBanner": {
     "appName": "Listo",
-    "openWithTitle": "„{title}" in der App öffnen",
+    "openWithTitle": "\"{title}\" in der App öffnen",
     "openGeneric": "Diese Liste in der Listo-App öffnen",
     "open": "ÖFFNEN"
   }
