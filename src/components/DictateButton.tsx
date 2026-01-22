@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslation } from 'react-i18next';
 import { API } from '@/lib/api';
 
 interface DictateButtonProps {
@@ -13,8 +13,9 @@ interface DictateButtonProps {
 const MAX_RECORDING_TIME = 90000; // 90 seconds
 
 export function DictateButton({ onTranscription, disabled = false, position = 'floating' }: DictateButtonProps) {
-  const t = useTranslations('dictation');
-  const tErrors = useTranslations('errors');
+  const { t } = useTranslation();
+  const tDictation = (key: string, params?: Record<string, string | number>) => t(`dictation.${key}`, params);
+  const tErrors = (key: string) => t(`errors.${key}`);
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +24,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const mimeTypeRef = useRef<string>('audio/webm');
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -74,10 +76,20 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
       // Start analyzing
       analyzeAudio();
 
-      // Set up MediaRecorder
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus',
-      });
+      // Set up MediaRecorder with supported mimeType
+      // iOS doesn't support webm, so we need to detect what's available
+      let mimeType = 'audio/webm;codecs=opus';
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        // Try mp4 (iOS)
+        mimeType = 'audio/mp4';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          // Fallback to default (let browser choose)
+          mimeType = '';
+        }
+      }
+
+      const mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      mimeTypeRef.current = mediaRecorder.mimeType || 'audio/webm';
 
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -118,7 +130,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
       }, 100);
     } catch (err) {
       console.error('Failed to start recording:', err);
-      setError(t('microphoneDenied'));
+      setError(tDictation('microphoneDenied'));
     }
   };
 
@@ -160,7 +172,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
     setError(null);
 
     try {
-      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+      const audioBlob = new Blob(audioChunksRef.current, { type: mimeTypeRef.current });
 
       // Send to transcription API
       const formData = new FormData();
@@ -318,7 +330,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
               {formatTime(recordingTime)}
             </div>
             <div className="text-sm text-white/60 mt-2">
-              {t('timeRemaining', { time: formatTime(remainingTime) })}
+              {tDictation('timeRemaining', { time: formatTime(remainingTime) })}
             </div>
           </div>
 
@@ -332,9 +344,9 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
 
           {/* Instructions */}
           <div className="mt-8 text-white/80 text-center">
-            <p className="text-lg">{t('listening')}</p>
+            <p className="text-lg">{tDictation('listening')}</p>
             <p className="text-sm text-white/50 mt-2">
-              {t('tapToStop')}
+              {tDictation('tapToStop')}
             </p>
           </div>
 
@@ -347,7 +359,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
             className="text-white/60 hover:text-white text-sm font-medium transition-colors"
             style={{ marginTop: '32px' }}
           >
-            {t('cancel')}
+            {tDictation('cancel')}
           </button>
         </div>
       )}

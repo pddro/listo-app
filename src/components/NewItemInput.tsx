@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslation } from 'react-i18next';
 import { ManipulatedItem, GenerateResult, isCategorizedResult } from '@/lib/hooks/useAI';
 import { generateListId } from '@/lib/utils/generateId';
 import { CommandPalette, Command } from './CommandPalette';
@@ -68,22 +68,21 @@ export function NewItemInput({
   largeMode = false,
   emojifyMode = false,
 }: NewItemInputProps) {
-  const t = useTranslations('input');
-  const tTriggers = useTranslations('commandTriggers');
+  const { t } = useTranslation();
 
   // Use translated placeholder if none provided
-  const inputPlaceholder = placeholder || t('placeholder');
+  const inputPlaceholder = placeholder || t('input.placeholder');
 
   // Get localized command triggers
   const themeTriggers = useMemo(() => {
-    const raw = tTriggers.raw('theme');
+    const raw = t('commandTriggers.theme', { returnObjects: true });
     return Array.isArray(raw) ? raw.map((s: string) => s.toLowerCase()) : ['theme:', 'style:'];
-  }, [tTriggers]);
+  }, [t]);
 
   const noteTriggers = useMemo(() => {
-    const raw = tTriggers.raw('note');
+    const raw = t('commandTriggers.note', { returnObjects: true });
     return Array.isArray(raw) ? raw.map((s: string) => s.toLowerCase()) : ['note:'];
-  }, [tTriggers]);
+  }, [t]);
 
   // Helper to check if input starts with any trigger
   const startsWithTrigger = useCallback((input: string, triggers: string[]) => {
@@ -144,31 +143,31 @@ export function NewItemInput({
       const command = lowerTrimmed.slice(2).trim();
       let displayText = '';
       if (command === 'complete all' || command === 'complete') {
-        displayText = t('commandPreview.completeAll');
+        displayText = t('input.commandPreview.completeAll');
       } else if (command === 'uncomplete all' || command === 'uncomplete' || command === 'reset') {
-        displayText = t('commandPreview.resetAll');
+        displayText = t('input.commandPreview.resetAll');
       } else if (command === 'large' || command === 'big') {
-        displayText = t('commandPreview.enableLarge');
+        displayText = t('input.commandPreview.enableLarge');
       } else if (command === 'normal' || command === 'small' || command === 'default') {
-        displayText = t('commandPreview.disableLarge');
+        displayText = t('input.commandPreview.disableLarge');
       } else if (command === 'clean' || command === 'clear' || command === 'clear completed') {
-        displayText = t('commandPreview.clearCompleted');
+        displayText = t('input.commandPreview.clearCompleted');
       } else if (command === 'sort') {
-        displayText = t('commandPreview.sort');
+        displayText = t('input.commandPreview.sort');
       } else if (command === 'sort all') {
-        displayText = t('commandPreview.sortAll');
+        displayText = t('input.commandPreview.sortAll');
       } else if (command === 'ungroup' || command === 'ungroup all' || command === 'flatten') {
-        displayText = t('commandPreview.removeCategories');
+        displayText = t('input.commandPreview.removeCategories');
       } else if (command === 'emojify') {
-        displayText = t('commandPreview.toggleEmoji');
+        displayText = t('input.commandPreview.toggleEmoji');
       } else if (command === 'nuke') {
-        displayText = t('commandPreview.nukeAll');
+        displayText = t('input.commandPreview.nukeAll');
       } else if (command === 'title') {
-        displayText = t('commandPreview.generateTitle');
+        displayText = t('input.commandPreview.generateTitle');
       } else if (command === 'new') {
-        displayText = t('commandPreview.newList');
+        displayText = t('input.commandPreview.newList');
       } else if (command === 'reset-theme') {
-        displayText = t('commandPreview.resetTheme');
+        displayText = t('input.commandPreview.resetTheme');
       }
       return {
         mode: 'command' as InputMode,
@@ -180,7 +179,7 @@ export function NewItemInput({
     if (startsWithTrigger(lowerTrimmed, themeTriggers)) {
       return {
         mode: 'theme' as InputMode,
-        displayText: t('modes.theme')
+        displayText: t('input.modes.theme')
       };
     }
 
@@ -188,7 +187,7 @@ export function NewItemInput({
     if (trimmed.startsWith('!')) {
       return {
         mode: 'manipulate' as InputMode,
-        displayText: t('modes.transform')
+        displayText: t('input.modes.transform')
       };
     }
 
@@ -196,7 +195,7 @@ export function NewItemInput({
     if (trimmed.startsWith('...')) {
       return {
         mode: 'ai' as InputMode,
-        displayText: t('modes.generate')
+        displayText: t('input.modes.generate')
       };
     }
 
@@ -205,7 +204,7 @@ export function NewItemInput({
       const noteContent = getContentAfterTrigger(trimmed, noteTriggers);
       return {
         mode: 'note' as InputMode,
-        displayText: noteContent ? t('modes.addingNote') : t('modes.note')
+        displayText: noteContent ? t('input.modes.addingNote') : t('input.modes.note')
       };
     }
 
@@ -214,7 +213,7 @@ export function NewItemInput({
       const items = trimmed.split(',').map(s => s.trim()).filter(Boolean);
       return {
         mode: 'multiple' as InputMode,
-        displayText: t('modes.addingItems', { count: items.length })
+        displayText: t('input.modes.addingItems', { count: items.length })
       };
     }
 
@@ -361,7 +360,7 @@ export function NewItemInput({
 
         // Unknown command - restore input
         setValue(currentValue);
-        setAiError(t('processing.unknownCommand'));
+        setAiError(t('input.processing.unknownCommand'));
         return;
       }
 
@@ -375,17 +374,17 @@ export function NewItemInput({
         }
 
         if (!onThemeGenerate) {
-          setAiError(t('processing.unknownCommand'));
+          setAiError(t('input.processing.unknownCommand'));
           setValue(currentValue);
           return;
         }
 
         setIsProcessing(true);
-        setProcessingMessage(t('processing.generatingTheme'));
+        setProcessingMessage(t('input.processing.generatingTheme'));
         try {
           await onThemeGenerate(description);
         } catch (err) {
-          setAiError(err instanceof Error ? err.message : t('processing.generatingTheme'));
+          setAiError(err instanceof Error ? err.message : t('input.processing.generatingTheme'));
           setValue(currentValue);
         } finally {
           setIsProcessing(false);
@@ -402,17 +401,17 @@ export function NewItemInput({
         }
 
         if (!onAIManipulate) {
-          setAiError(t('processing.unknownCommand'));
+          setAiError(t('input.processing.unknownCommand'));
           setValue(currentValue);
           return;
         }
 
         setIsProcessing(true);
-        setProcessingMessage(t('processing.reorganizing'));
+        setProcessingMessage(t('input.processing.reorganizing'));
         try {
           await onAIManipulate(instruction);
         } catch (err) {
-          setAiError(err instanceof Error ? err.message : t('processing.reorganizing'));
+          setAiError(err instanceof Error ? err.message : t('input.processing.reorganizing'));
           setValue(currentValue);
         } finally {
           setIsProcessing(false);
@@ -429,7 +428,7 @@ export function NewItemInput({
         }
 
         setIsProcessing(true);
-        setProcessingMessage(t('processing.thinking'));
+        setProcessingMessage(t('input.processing.thinking'));
         try {
           const result = await onAIGenerate(prompt);
           if (result.length > 0) {
@@ -456,7 +455,7 @@ export function NewItemInput({
             }
           }
         } catch (err) {
-          setAiError(err instanceof Error ? err.message : t('processing.thinking'));
+          setAiError(err instanceof Error ? err.message : t('input.processing.thinking'));
           setValue(currentValue);
         } finally {
           setIsProcessing(false);

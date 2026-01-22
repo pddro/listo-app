@@ -1,8 +1,49 @@
 import { useEffect, useRef, useState, ReactNode } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Preferences } from '@capacitor/preferences';
+import { ThemeColors } from '@/lib/gemini';
 
 interface SwipeBackLayoutProps {
   children: ReactNode;
+}
+
+// Apply theme to CSS variables (same as App.tsx)
+function applyThemeToRoot(theme: ThemeColors | null) {
+  const root = document.documentElement;
+  if (theme) {
+    root.style.setProperty('--primary', theme.primary);
+    root.style.setProperty('--primary-dark', theme.primaryDark);
+    root.style.setProperty('--primary-light', theme.primaryLight);
+    root.style.setProperty('--primary-pale', theme.primaryPale);
+    root.style.setProperty('--primary-glow', theme.primaryGlow);
+    root.style.setProperty('--text-primary', theme.textPrimary);
+    root.style.setProperty('--text-secondary', theme.textSecondary);
+    root.style.setProperty('--text-muted', theme.textMuted);
+    root.style.setProperty('--text-placeholder', theme.textPlaceholder);
+    root.style.setProperty('--bg-primary', theme.bgPrimary);
+    root.style.setProperty('--bg-secondary', theme.bgSecondary);
+    root.style.setProperty('--bg-hover', theme.bgHover);
+    root.style.setProperty('--border-light', theme.borderLight);
+    root.style.setProperty('--border-medium', theme.borderMedium);
+    root.style.setProperty('--error', theme.error);
+  } else {
+    // Reset to defaults
+    root.style.removeProperty('--primary');
+    root.style.removeProperty('--primary-dark');
+    root.style.removeProperty('--primary-light');
+    root.style.removeProperty('--primary-pale');
+    root.style.removeProperty('--primary-glow');
+    root.style.removeProperty('--text-primary');
+    root.style.removeProperty('--text-secondary');
+    root.style.removeProperty('--text-muted');
+    root.style.removeProperty('--text-placeholder');
+    root.style.removeProperty('--bg-primary');
+    root.style.removeProperty('--bg-secondary');
+    root.style.removeProperty('--bg-hover');
+    root.style.removeProperty('--border-light');
+    root.style.removeProperty('--border-medium');
+    root.style.removeProperty('--error');
+  }
 }
 
 export function SwipeBackLayout({ children }: SwipeBackLayoutProps) {
@@ -83,7 +124,20 @@ export function SwipeBackLayout({ children }: SwipeBackLayoutProps) {
       if (currentProgress > 0.25) {
         // Animate to completion then navigate
         setSwipeProgress(1);
-        setTimeout(() => {
+        setTimeout(async () => {
+          // Apply home theme BEFORE navigation to prevent white flash
+          try {
+            const { value } = await Preferences.get({ key: 'listo_home_theme' });
+            if (value) {
+              const { theme } = JSON.parse(value);
+              if (theme) applyThemeToRoot(theme);
+            } else {
+              applyThemeToRoot(null);
+            }
+          } catch {
+            applyThemeToRoot(null);
+          }
+
           navigate('/');
           // Reset after navigation
           setTimeout(() => {

@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Device } from '@capacitor/device';
 import { supabase } from '@/lib/supabase';
 import { generateListId } from '@/lib/utils/generateId';
 import { useAI, isCategorizedResult, ManipulatedItem } from '@/lib/hooks/useAI';
@@ -224,11 +225,19 @@ export default function HomePage() {
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [deleteConfirmList, setDeleteConfirmList] = useState<SavedList | null>(null);
   const [duplicateConfirmList, setDuplicateConfirmList] = useState<SavedList | null>(null);
+  const [platform, setPlatform] = useState<'ios' | 'android' | 'web'>('web');
   const navigate = useNavigate();
   const { generateItems } = useAI();
   const { lists: recentLists, archivedLists, addList, archiveList, restoreList, deleteList } = useRecentLists();
   const [showArchived, setShowArchived] = useState(false);
   const { theme: homeTheme, description: homeThemeDescription, setHomeTheme, clearHomeTheme } = useHomeTheme();
+
+  // Detect platform for safe-area handling
+  useEffect(() => {
+    Device.getInfo().then(info => {
+      setPlatform(info.platform as 'ios' | 'android' | 'web');
+    });
+  }, []);
 
   // Get translated placeholders
   const placeholders = t('mobile.placeholders', { returnObjects: true }) as string[];
@@ -459,7 +468,7 @@ export default function HomePage() {
     if (!trimmed) {
       setIsCreating(true);
       const listId = generateListId();
-      await supabase.from('lists').insert({ id: listId, title: null });
+      await supabase.from('lists').insert({ id: listId, title: null, theme: homeTheme || null });
       addList(listId);
       navigate(`/${listId}`);
       return;
@@ -562,6 +571,12 @@ export default function HomePage() {
         } catch (themeErr) {
           console.error('Theme generation failed:', themeErr);
         }
+      } else if (homeTheme) {
+        // Inherit home theme if no explicit theme was requested
+        await supabase
+          .from('lists')
+          .update({ theme: homeTheme })
+          .eq('id', listId);
       }
 
       addList(listId);
@@ -592,7 +607,7 @@ export default function HomePage() {
 
       const { error: listError } = await supabase
         .from('lists')
-        .insert({ id: listId, title: null });
+        .insert({ id: listId, title: null, theme: homeTheme || null });
 
       if (listError) throw listError;
 
@@ -653,13 +668,17 @@ export default function HomePage() {
     }
   };
 
+  // Safe area padding - Android doesn't support env(safe-area-inset-*) in WebView
+  const safeAreaTop = platform === 'android' ? '36px' : 'env(safe-area-inset-top, 0px)';
+  const safeAreaBottom = platform === 'android' ? '24px' : 'env(safe-area-inset-bottom, 0px)';
+
   return (
     <div
       className="h-screen flex flex-col"
       style={{
         backgroundColor: 'var(--bg-primary)',
-        paddingTop: 'env(safe-area-inset-top, 0px)',
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        paddingTop: safeAreaTop,
+        paddingBottom: safeAreaBottom,
       }}
     >
       {/* Fixed Header Section */}
@@ -929,11 +948,12 @@ export default function HomePage() {
           onClick={() => setShowPrivacyModal(false)}
         >
           <div
-            className="bg-white w-full max-h-[85vh] overflow-y-auto"
+            className="w-full max-h-[85vh] overflow-y-auto"
             style={{
               padding: '24px',
               paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
               borderRadius: '20px 20px 0 0',
+              backgroundColor: 'var(--bg-primary)',
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -989,11 +1009,12 @@ export default function HomePage() {
           onClick={() => setShowTipsModal(false)}
         >
           <div
-            className="bg-white w-full"
+            className="w-full"
             style={{
               padding: '24px',
               paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
               borderRadius: '20px 20px 0 0',
+              backgroundColor: 'var(--bg-primary)',
             }}
             onClick={(e) => e.stopPropagation()}
           >

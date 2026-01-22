@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useTranslations } from 'next-intl';
+import { useTranslation } from 'react-i18next';
 
 export interface Command {
   id: string;
@@ -139,21 +139,20 @@ export function CommandPalette({
   largeMode = false,
   emojifyMode = false,
 }: CommandPaletteProps) {
-  const t = useTranslations('commands');
-  const tTriggers = useTranslations('commandTriggers');
+  const { t } = useTranslation();
   const sheetRef = useRef<HTMLDivElement>(null);
 
   // Get the first localized theme trigger
   const themeTrigger = useMemo(() => {
-    const raw = tTriggers.raw('theme');
+    const raw = t('commandTriggers.theme', { returnObjects: true });
     return Array.isArray(raw) && raw.length > 0 ? raw[0] : 'style:';
-  }, [tTriggers]);
+  }, [t]);
 
   // Build commands with translated labels and descriptions
   const COMMANDS: Command[] = COMMAND_DEFS.map(def => ({
     id: def.id,
-    label: t(`items.${def.translationKey}.label`),
-    description: t(`items.${def.translationKey}.description`),
+    label: t(`commands.items.${def.translationKey}.label`),
+    description: t(`commands.items.${def.translationKey}.description`),
     prefix: def.prefix === 'USE_THEME_TRIGGER' ? themeTrigger : def.prefix,
     action: def.action,
     icon: def.icon,
@@ -200,8 +199,8 @@ export function CommandPalette({
     ...COMMANDS.filter(c => c.category === 'ai'),
     ...(hasTheme ? [{
       id: 'reset-theme',
-      label: t('items.resetTheme.label'),
-      description: t('items.resetTheme.description'),
+      label: t('commands.items.resetTheme.label'),
+      description: t('commands.items.resetTheme.description'),
       action: '--reset-theme',
       icon: 'palette' as const,
       category: 'ai' as const,
@@ -216,16 +215,16 @@ export function CommandPalette({
     if (cmd.id === 'large' && largeMode) {
       return {
         ...cmd,
-        label: t('items.normalMode.label'),
-        description: t('items.normalMode.description'),
+        label: t('commands.items.normalMode.label'),
+        description: t('commands.items.normalMode.description'),
         action: '--normal',
       };
     }
     if (cmd.id === 'emojify' && emojifyMode) {
       return {
         ...cmd,
-        label: t('items.emojifyOff.label'),
-        description: t('items.emojifyOff.description'),
+        label: t('commands.items.emojifyOff.label'),
+        description: t('commands.items.emojifyOff.description'),
         action: '--emojify',
       };
     }
@@ -267,14 +266,14 @@ export function CommandPalette({
         {/* Header */}
         <div className="flex items-center justify-between" style={{ padding: '0 16px 12px 16px' }}>
           <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
-            {t('title')}
+            {t('commands.title')}
           </h2>
           <button
             onClick={onClose}
             className="py-1 active:opacity-60"
             style={{ color: 'var(--primary)', fontSize: '17px' }}
           >
-            {t('done')}
+            {t('commands.done')}
           </button>
         </div>
 
@@ -283,7 +282,7 @@ export function CommandPalette({
           {/* AI Section */}
           <div style={{ paddingTop: '8px', paddingBottom: '12px' }}>
             <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--primary)' }}>
-              {t('sections.aiFeatures')}
+              {t('commands.sections.aiFeatures')}
             </div>
           </div>
           <div className="space-y-2">
@@ -323,7 +322,7 @@ export function CommandPalette({
           {/* Actions Section */}
           <div style={{ paddingTop: '24px', paddingBottom: '12px' }}>
             <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
-              {t('sections.quickActions')}
+              {t('commands.sections.quickActions')}
             </div>
           </div>
           <div className="space-y-2">
@@ -363,7 +362,7 @@ export function CommandPalette({
           {/* Modes Section */}
           <div style={{ paddingTop: '24px', paddingBottom: '12px' }}>
             <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
-              {t('sections.modes')}
+              {t('commands.sections.modes')}
             </div>
           </div>
           <div className="space-y-2" style={{ paddingBottom: '24px' }}>
