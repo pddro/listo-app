@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
+import { Device } from '@capacitor/device';
+import { App } from '@capacitor/app';
 import { Preferences } from '@capacitor/preferences';
 
 // Import all translation files
@@ -45,48 +46,60 @@ const resources = {
   ko: { translation: ko },
 };
 
-// Custom language detector that uses Capacitor Preferences
-const capacitorLanguageDetector = {
-  name: 'capacitorPreferences',
-  async: true,
-  detect: async (callback: (lng: string) => void) => {
-    try {
-      const { value } = await Preferences.get({ key: 'listo_language' });
-      if (value && locales.includes(value as Locale)) {
-        callback(value);
-        return;
-      }
-    } catch {
-      // Preferences not available, fall through to browser detection
-    }
-    // Return undefined to let the next detector handle it
-    callback('');
-  },
-  cacheUserLanguage: async (lng: string) => {
-    try {
-      await Preferences.set({ key: 'listo_language', value: lng });
-    } catch {
-      // Preferences not available
-    }
-  },
-};
+// Map device language codes to our supported locales
+function mapLanguageToLocale(languageCode: string): Locale {
+  // Normalize the language code
+  const normalized = languageCode.toLowerCase().replace('_', '-');
 
-// Initialize i18next
+  // Direct matches
+  if (locales.includes(normalized as Locale)) {
+    return normalized as Locale;
+  }
+
+  // Handle Chinese variants
+  if (normalized.startsWith('zh')) {
+    // zh-hans, zh-cn, zh-sg -> Simplified
+    if (normalized.includes('hans') || normalized.includes('cn') || normalized.includes('sg')) {
+      return 'zh-Hans';
+    }
+    // zh-hant, zh-tw, zh-hk, zh-mo -> Traditional
+    if (normalized.includes('hant') || normalized.includes('tw') || normalized.includes('hk') || normalized.includes('mo')) {
+      return 'zh-Hant';
+    }
+    // Default Chinese to Simplified
+    return 'zh-Hans';
+  }
+
+  // Get base language (e.g., 'en-US' -> 'en')
+  const baseLang = normalized.split('-')[0];
+  if (locales.includes(baseLang as Locale)) {
+    return baseLang as Locale;
+  }
+
+  return defaultLocale;
+}
+
+// Get the device language using Capacitor Device API
+async function getDeviceLanguage(): Promise<Locale> {
+  try {
+    const info = await Device.getLanguageCode();
+    // info.value returns the language code (e.g., 'en', 'es', 'zh-Hans')
+    return mapLanguageToLocale(info.value);
+  } catch {
+    // Fallback to navigator if Device API fails
+    const browserLang = navigator.language || (navigator as { userLanguage?: string }).userLanguage || defaultLocale;
+    return mapLanguageToLocale(browserLang);
+  }
+}
+
+// Initialize i18next with default language first
 i18n
-  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
+    lng: defaultLocale, // Start with default, will update after device detection
     fallbackLng: defaultLocale,
     supportedLngs: locales as unknown as string[],
-
-    // Language detection options
-    detection: {
-      // Order of detection: stored preference > navigator > html lang
-      order: ['localStorage', 'navigator', 'htmlTag'],
-      caches: ['localStorage'],
-      lookupLocalStorage: 'listo_language',
-    },
 
     interpolation: {
       escapeValue: false, // React already escapes
@@ -100,21 +113,58 @@ i18n
     },
   });
 
-// Function to change language and persist
+// Detect and set the device language
+async function detectAndSetLanguage(): Promise<void> {
+  // First check if user has manually set a language preference
+  try {
+    const { value } = await Preferences.get({ key: 'listo_language_manual' });
+    if (value && locales.includes(value as Locale)) {
+      // User has manually chosen a language, use that
+      await i18n.changeLanguage(value);
+      return;
+    }
+  } catch {
+    // Preferences not available
+  }
+
+  // Otherwise, detect from device
+  const deviceLocale = await getDeviceLanguage();
+  await i18n.changeLanguage(deviceLocale);
+}
+
+// Initial detection
+detectAndSetLanguage();
+
+// Listen for app resume to re-check language (user might have changed it in Settings)
+App.addListener('resume', () => {
+  detectAndSetLanguage();
+});
+
+// Function to manually set language (and persist the preference)
 export async function setLanguage(locale: Locale): Promise<void> {
   await i18n.changeLanguage(locale);
   try {
-    await Preferences.set({ key: 'listo_language', value: locale });
+    // Mark as manually set so we don't override on next detection
+    await Preferences.set({ key: 'listo_language_manual', value: locale });
   } catch {
-    // Fallback to localStorage if Preferences not available
-    localStorage.setItem('listo_language', locale);
+    localStorage.setItem('listo_language_manual', locale);
   }
+}
+
+// Function to clear manual language preference (follow system language)
+export async function clearLanguagePreference(): Promise<void> {
+  try {
+    await Preferences.remove({ key: 'listo_language_manual' });
+  } catch {
+    localStorage.removeItem('listo_language_manual');
+  }
+  // Re-detect from device
+  await detectAndSetLanguage();
 }
 
 // Function to get current language
 export function getCurrentLanguage(): Locale {
   const lang = i18n.language;
-  // Handle partial matches (e.g., 'en-US' -> 'en')
   if (locales.includes(lang as Locale)) {
     return lang as Locale;
   }
