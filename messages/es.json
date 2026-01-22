@@ -214,7 +214,7 @@
     "listening": "Escuchando...",
     "tapToStop": "Toca en cualquier lugar para detener",
     "cancel": "Cancelar",
-    "timeRemaining": "{time} restante",
+    "timeRemaining": "{{time}} restante",
     "microphoneDenied": "Acceso al micrófono denegado"
   },
   "errors": {
@@ -321,7 +321,7 @@
     "open": "ABRIR"
   },
   "mobile": {
-    "taglineShort": "Crea una lista. Comparte el enlace.",
+    "taglineShort": "Crea y comparte listas.",
     "placeholders": [
       "...compras para la semana",
       "pasaporte, boletos, cargador",

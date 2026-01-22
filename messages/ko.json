@@ -214,7 +214,7 @@
     "listening": "듣는 중...",
     "tapToStop": "아무 곳이나 탭하여 중지",
     "cancel": "취소",
-    "timeRemaining": "{time} 남음",
+    "timeRemaining": "{{time}} 남음",
     "microphoneDenied": "마이크 접근이 거부되었습니다"
   },
   "errors": {

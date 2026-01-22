@@ -808,9 +808,9 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
           left: 0,
           right: 0,
           bottom: 0,
-          overflowY: 'auto',
+          overflowY: 'scroll',
           WebkitOverflowScrolling: 'touch',
-          paddingTop: `calc(${safeAreaTop} + 113px)`,
+          paddingTop: `calc(${safeAreaTop} + 121px)`,
         }}
       >
         {/* Add to My Lists Banner (for received lists) */}

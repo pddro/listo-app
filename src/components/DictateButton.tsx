@@ -4,6 +4,12 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { API } from '@/lib/api';
 
+// Get Supabase anon key for auth header
+const isVite = typeof import.meta !== 'undefined' && typeof import.meta.env !== 'undefined';
+const SUPABASE_ANON_KEY = isVite
+  ? import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+  : '';
+
 interface DictateButtonProps {
   onTranscription: (text: string) => void;
   disabled?: boolean;
@@ -59,11 +65,14 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
 
   const startRecording = async () => {
     try {
+      console.log('[Dictation] Starting recording...');
       setError(null);
       audioChunksRef.current = [];
       cancelledRef.current = false;
 
+      console.log('[Dictation] Requesting microphone permission...');
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      console.log('[Dictation] Microphone permission granted, stream:', stream.id);
 
       // Set up audio analysis
       const audioContext = new AudioContext();
@@ -79,25 +88,37 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
       // Set up MediaRecorder with supported mimeType
       // iOS doesn't support webm, so we need to detect what's available
       let mimeType = 'audio/webm;codecs=opus';
+      console.log('[Dictation] Checking MIME type support...');
+      console.log('[Dictation] webm;opus supported:', MediaRecorder.isTypeSupported(mimeType));
       if (!MediaRecorder.isTypeSupported(mimeType)) {
         // Try mp4 (iOS)
         mimeType = 'audio/mp4';
+        console.log('[Dictation] audio/mp4 supported:', MediaRecorder.isTypeSupported(mimeType));
         if (!MediaRecorder.isTypeSupported(mimeType)) {
           // Fallback to default (let browser choose)
           mimeType = '';
+          console.log('[Dictation] Using default MIME type');
         }
       }
 
+      console.log('[Dictation] Creating MediaRecorder with mimeType:', mimeType || 'default');
       const mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
       mimeTypeRef.current = mediaRecorder.mimeType || 'audio/webm';
+      console.log('[Dictation] MediaRecorder created, actual mimeType:', mimeTypeRef.current);
 
       mediaRecorder.ondataavailable = (event) => {
+        console.log('[Dictation] Data available, size:', event.data.size);
         if (event.data.size > 0) {
           audioChunksRef.current.push(event.data);
         }
       };
 
+      mediaRecorder.onerror = (event) => {
+        console.error('[Dictation] MediaRecorder error:', event);
+      };
+
       mediaRecorder.onstop = async () => {
+        console.log('[Dictation] Recording stopped, chunks:', audioChunksRef.current.length);
         // Stop all tracks
         stream.getTracks().forEach((track) => track.stop());
 
@@ -108,12 +129,16 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
 
         // Process the recorded audio (skip if cancelled)
         if (!cancelledRef.current && audioChunksRef.current.length > 0) {
+          console.log('[Dictation] Processing audio...');
           await processAudio();
+        } else {
+          console.log('[Dictation] Skipping processing - cancelled:', cancelledRef.current, 'chunks:', audioChunksRef.current.length);
         }
       };
 
       mediaRecorderRef.current = mediaRecorder;
       mediaRecorder.start(100); // Collect data every 100ms
+      console.log('[Dictation] Recording started');
 
       setIsRecording(true);
       startTimeRef.current = Date.now();
@@ -129,7 +154,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
         }
       }, 100);
     } catch (err) {
-      console.error('Failed to start recording:', err);
+      console.error('[Dictation] Failed to start recording:', err);
       setError(tDictation('microphoneDenied'));
     }
   };
@@ -172,28 +197,44 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
     setError(null);
 
     try {
-      const audioBlob = new Blob(audioChunksRef.current, { type: mimeTypeRef.current });
+      console.log('[Dictation] Creating blob from chunks...');
+      console.log('[Dictation] Chunks count:', audioChunksRef.current.length);
+      console.log('[Dictation] MIME type:', mimeTypeRef.current);
 
-      // Send to transcription API
+      const audioBlob = new Blob(audioChunksRef.current, { type: mimeTypeRef.current });
+      console.log('[Dictation] Blob created, size:', audioBlob.size, 'type:', audioBlob.type);
+
+      // Send to transcription API with auth header
       const formData = new FormData();
       formData.append('audio', audioBlob);
 
+      console.log('[Dictation] Sending to API:', API.transcribe);
+      console.log('[Dictation] Auth key present:', !!SUPABASE_ANON_KEY);
+
       const response = await fetch(API.transcribe, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        },
         body: formData,
       });
 
+      console.log('[Dictation] API response status:', response.status);
       const data = await response.json();
+      console.log('[Dictation] API response data:', data);
 
       if (!response.ok) {
         throw new Error(data.error || tErrors('transcriptionFailed'));
       }
 
       if (data.text) {
+        console.log('[Dictation] Transcription successful:', data.text);
         onTranscription(data.text);
+      } else {
+        console.log('[Dictation] No text in response');
       }
     } catch (err) {
-      console.error('Transcription error:', err);
+      console.error('[Dictation] Transcription error:', err);
       setError(err instanceof Error ? err.message : tErrors('transcriptionFailed'));
     } finally {
       setIsProcessing(false);

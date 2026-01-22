@@ -214,7 +214,7 @@
     "listening": "Ouvindo...",
     "tapToStop": "Toque em qualquer lugar para parar",
     "cancel": "Cancelar",
-    "timeRemaining": "{time} restante",
+    "timeRemaining": "{{time}} restante",
     "microphoneDenied": "Acesso ao microfone negado"
   },
   "errors": {

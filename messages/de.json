@@ -214,7 +214,7 @@
     "listening": "Höre zu...",
     "tapToStop": "Tippe irgendwo zum Stoppen",
     "cancel": "Abbrechen",
-    "timeRemaining": "Noch {time}",
+    "timeRemaining": "Noch {{time}}",
     "microphoneDenied": "Mikrofonzugriff verweigert"
   },
   "errors": {

@@ -13,6 +13,47 @@ import { HomeThemeModal } from '@/mobile/components/HomeThemeModal';
 import { ThemeColors } from '@/lib/gemini';
 import { useAppState } from '@/mobile/context/AppStateContext';
 
+// Tutorial list theme (same as web)
+const TUTORIAL_THEME: ThemeColors = {
+  primary: "#8B5CF6",
+  primaryDark: "#7C3AED",
+  primaryLight: "#A78BFA",
+  primaryPale: "#EDE9FE",
+  primaryGlow: "rgba(139, 92, 246, 0.3)",
+  textPrimary: "#1F2937",
+  textSecondary: "#4B5563",
+  textMuted: "#6B7280",
+  textPlaceholder: "#9CA3AF",
+  bgPrimary: "#FDFCFF",
+  bgSecondary: "#F5F3FF",
+  bgHover: "#EDE9FE",
+  borderLight: "#E9E5FF",
+  borderMedium: "#DDD6FE",
+  error: "#EF4444",
+};
+
+// Build tutorial items from translations
+type TFunction = (key: string, options?: { returnObjects?: boolean }) => string | string[];
+
+function buildTutorialItems(t: TFunction): { content: string; parent: string | null }[] {
+  const sections = ['gettingStarted', 'aiMagic', 'proTips', 'ready'] as const;
+  const items: { content: string; parent: string | null }[] = [];
+
+  for (const section of sections) {
+    const title = t(`tutorial.${section}.title`) as string;
+    items.push({ content: title, parent: null });
+
+    const sectionItems = t(`tutorial.${section}.items`, { returnObjects: true }) as string[];
+    if (Array.isArray(sectionItems)) {
+      for (const item of sectionItems) {
+        items.push({ content: item, parent: title });
+      }
+    }
+  }
+
+  return items;
+}
+
 // Swipeable List Row Component
 interface SwipeableListRowProps {
   list: SavedList;
@@ -169,7 +210,7 @@ function SwipeableListRow({ list, onNavigate, onDelete, onShare, onDuplicate, un
                 color: list.themeTextColor || 'var(--primary)',
               }}
             >
-              {(list.itemCount || 0) - (list.completedCount || 0)}/{list.itemCount}
+              {list.completedCount || 0}/{list.itemCount}
             </span>
           )}
         </div>
@@ -233,6 +274,7 @@ export default function HomePage() {
   const [showArchived, setShowArchived] = useState(false);
   const { theme: homeTheme, description: homeThemeDescription, setHomeTheme, clearHomeTheme } = useHomeTheme();
   const { preloadList, getCachedList, setHomeTheme: setAppHomeTheme } = useAppState();
+  const [isCreatingTutorial, setIsCreatingTutorial] = useState(false);
 
   // Sync home theme with AppStateContext for synchronous access from List page
   useEffect(() => {
@@ -260,6 +302,90 @@ export default function HomePage() {
 
   // Get translated placeholders
   const placeholders = t('mobile.placeholders', { returnObjects: true }) as string[];
+
+  // Build tutorial list data from translations
+  const tutorialList = useMemo(() => {
+    const title = t('tutorial.listTitle') as string;
+    const items = buildTutorialItems(t);
+    return { title, items, theme: TUTORIAL_THEME };
+  }, [t]);
+
+  // Check if tutorial list already exists in user's lists
+  const hasTutorialList = useMemo(() => {
+    return recentLists.some(list => list.title === tutorialList.title);
+  }, [recentLists, tutorialList.title]);
+
+  // Create tutorial list in Supabase when clicked
+  const createTutorialList = async () => {
+    if (isCreatingTutorial) return;
+    setIsCreatingTutorial(true);
+
+    try {
+      const listId = generateListId();
+
+      // Create the list with tutorial theme
+      const { error: listError } = await supabase
+        .from('lists')
+        .insert({
+          id: listId,
+          title: tutorialList.title,
+          theme: tutorialList.theme,
+        });
+
+      if (listError) throw listError;
+
+      // Create ID mapping for parent references
+      const idMapping: Record<string, string> = {};
+
+      // Insert items - headers first, then children
+      let position = 0;
+      for (const item of tutorialList.items) {
+        if (item.parent === null) {
+          // This is a header/category
+          const { data } = await supabase
+            .from('items')
+            .insert({
+              list_id: listId,
+              content: item.content,
+              completed: false,
+              parent_id: null,
+              position: position++,
+            })
+            .select()
+            .single();
+
+          if (data) {
+            idMapping[item.content] = data.id;
+          }
+        }
+      }
+
+      // Now insert children with parent references
+      for (const item of tutorialList.items) {
+        if (item.parent !== null) {
+          const parentId = idMapping[item.parent];
+          await supabase
+            .from('items')
+            .insert({
+              list_id: listId,
+              content: item.content,
+              completed: false,
+              parent_id: parentId || null,
+              position: position++,
+            });
+        }
+      }
+
+      // Add to recent lists
+      addList(listId, tutorialList.title, tutorialList.theme.bgSecondary);
+
+      // Navigate to the new list
+      navigate(`/${listId}`);
+    } catch (err) {
+      console.error('Failed to create tutorial list:', err);
+      setIsCreatingTutorial(false);
+    }
+  };
 
   // Apply theme to CSS variables
   const applyThemeToRoot = useCallback((theme: ThemeColors | null) => {
@@ -693,11 +819,12 @@ export default function HomePage() {
 
   return (
     <div
-      className="h-screen flex flex-col"
+      className="flex flex-col"
       style={{
         backgroundColor: 'var(--bg-primary)',
         paddingTop: safeAreaTop,
-        paddingBottom: safeAreaBottom,
+        height: '100dvh',
+        minHeight: '100vh',
       }}
     >
       {/* Fixed Header Section */}
@@ -850,9 +977,77 @@ export default function HomePage() {
 
       {/* Scrollable Lists Section */}
       <div
-        className="flex-1 overflow-y-auto"
-        style={{ paddingLeft: '20px', paddingRight: '20px' }}
+        className="flex-1 min-h-0"
+        style={{
+          paddingLeft: '20px',
+          paddingRight: '20px',
+          paddingBottom: `calc(100px + ${safeAreaBottom})`,
+          overflowY: 'scroll',
+          WebkitOverflowScrolling: 'touch',
+        }}
       >
+        {/* Tutorial List Card - visible until user creates it */}
+        {!hasTutorialList && (
+          <div style={{ marginTop: '8px' }}>
+            {recentLists.length === 0 && (
+            <div
+              className="font-semibold uppercase tracking-wide text-left"
+              style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '8px' }}
+            >
+              {t('home.recentLists')}
+            </div>
+          )}
+          <button
+              onClick={createTutorialList}
+              disabled={isCreatingTutorial}
+              className="w-full flex items-center active:opacity-80 transition-opacity"
+              style={{ padding: '12px 0' }}
+            >
+              <div
+                className="rounded-lg flex-shrink-0 flex items-center justify-center"
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  backgroundColor: TUTORIAL_THEME.bgSecondary,
+                  border: `1px solid ${TUTORIAL_THEME.borderLight}`,
+                }}
+              >
+                <span style={{ fontSize: '18px' }}>✨</span>
+              </div>
+              <div className="flex-1 min-w-0 text-left" style={{ marginLeft: '14px' }}>
+                <div
+                  className="font-medium truncate"
+                  style={{ color: 'var(--text-primary)', fontSize: '17px' }}
+                >
+                  {tutorialList.title}
+                </div>
+                <div
+                  className="text-sm truncate"
+                  style={{ color: 'var(--text-muted)', marginTop: '2px' }}
+                >
+                  {t('welcome.subtitle')}
+                </div>
+              </div>
+              {isCreatingTutorial ? (
+                <span
+                  className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin flex-shrink-0"
+                  style={{ borderColor: 'var(--primary)', borderTopColor: 'transparent', marginLeft: '8px' }}
+                />
+              ) : (
+                <svg
+                  className="flex-shrink-0"
+                  style={{ width: '20px', height: '20px', color: '#c7c7cc', marginLeft: '8px' }}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                </svg>
+              )}
+            </button>
+          </div>
+        )}
+
         {/* Your Lists */}
         {recentLists.length > 0 && (
           <div>
@@ -915,7 +1110,7 @@ export default function HomePage() {
                             color: list.themeTextColor || 'var(--primary)',
                           }}
                         >
-                          {(list.itemCount || 0) - (list.completedCount || 0)}/{list.itemCount}
+                          {list.completedCount || 0}/{list.itemCount}
                         </span>
                       )}
                     </div>

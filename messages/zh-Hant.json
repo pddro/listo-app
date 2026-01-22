@@ -214,7 +214,7 @@
     "listening": "正在聆聽...",
     "tapToStop": "點擊任意處停止",
     "cancel": "取消",
-    "timeRemaining": "剩餘 {time}",
+    "timeRemaining": "剩餘 {{time}}",
     "microphoneDenied": "麥克風權限被拒絕"
   },
   "errors": {

@@ -655,11 +655,11 @@ export function NewItemInput({
             className="flex items-center justify-between gap-2"
             style={{ fontSize: '10px', color: 'var(--text-muted)', paddingTop: '8px' }}
           >
-            <span><span style={{ color: 'var(--primary)' }}>...</span> {t('hints.generate')}</span>
-            <span><span style={{ color: 'var(--primary)' }}>!</span> {t('hints.transform')}</span>
-            <span><span style={{ color: 'var(--primary)' }}>{themeTriggers[0] || 'style:'}</span> {t('hints.theme')}</span>
-            <span><span style={{ color: 'var(--text-secondary)' }}>#</span> {t('hints.category')}</span>
-            <span><span style={{ color: 'var(--text-secondary)' }}>,</span> {t('hints.multi')}</span>
+            <span><span style={{ color: 'var(--primary)' }}>...</span> {t('input.hints.generate')}</span>
+            <span><span style={{ color: 'var(--primary)' }}>!</span> {t('input.hints.transform')}</span>
+            <span><span style={{ color: 'var(--primary)' }}>{themeTriggers[0] || 'style:'}</span> {t('input.hints.theme')}</span>
+            <span><span style={{ color: 'var(--text-secondary)' }}>#</span> {t('input.hints.category')}</span>
+            <span><span style={{ color: 'var(--text-secondary)' }}>,</span> {t('input.hints.multi')}</span>
           </div>
         )}
       </div>

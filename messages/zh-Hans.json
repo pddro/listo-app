@@ -214,7 +214,7 @@
     "listening": "正在听...",
     "tapToStop": "点击任意处停止",
     "cancel": "取消",
-    "timeRemaining": "剩余 {time}",
+    "timeRemaining": "剩余 {{time}}",
     "microphoneDenied": "麦克风权限被拒绝"
   },
   "errors": {

@@ -214,7 +214,7 @@
     "listening": "Listening...",
     "tapToStop": "Tap anywhere to stop",
     "cancel": "Cancel",
-    "timeRemaining": "{time} remaining",
+    "timeRemaining": "{{time}} remaining",
     "microphoneDenied": "Microphone access denied"
   },
   "errors": {
