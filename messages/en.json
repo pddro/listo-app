@@ -74,6 +74,7 @@
   },
   "input": {
     "placeholder": "Add items...",
+    "notePlaceholder": "note: Write your note here... (Shift+Enter for new line)",
     "modes": {
       "generate": "AI will generate items",
       "transform": "AI will transform list",
@@ -86,6 +87,21 @@
       "note": "Type your note...",
       "addingNote": "Adding note",
       "category": "Create category header"
+    },
+    "commandPreview": {
+      "completeAll": "Complete all items",
+      "resetAll": "Reset all items",
+      "enableLarge": "Enable large mode",
+      "disableLarge": "Disable large mode",
+      "clearCompleted": "Delete all completed items",
+      "sort": "Sort items alphabetically",
+      "sortAll": "Sort everything alphabetically",
+      "removeCategories": "Remove all categories",
+      "toggleEmoji": "Toggle emoji mode",
+      "nukeAll": "Delete ALL items",
+      "generateTitle": "Generate list title",
+      "newList": "Create new list in new tab",
+      "resetTheme": "Remove custom theme"
     },
     "processing": {
       "thinking": "AI is thinking...",

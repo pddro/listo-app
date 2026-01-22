@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { generateListId } from '@/lib/utils/generateId';
 import { useAI, isCategorizedResult, ManipulatedItem } from '@/lib/hooks/useAI';
 import { DictateButton } from '@/components/DictateButton';
+import { LanguageSwitcherCompact } from '@/components/LanguageSwitcher';
 import { analytics } from '@/lib/analytics';
 import { API } from '@/lib/api';
 import { useRecentListsWeb } from '@/lib/hooks/useRecentListsWeb';
@@ -1042,6 +1043,11 @@ export default function Home() {
           >
             Read our privacy policy
           </button>
+        </div>
+
+        {/* Language Switcher */}
+        <div className="flex justify-center" style={{ marginTop: '24px' }}>
+          <LanguageSwitcherCompact />
         </div>
       </div>
 

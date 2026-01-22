@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { API } from '@/lib/api';
 
 interface DictateButtonProps {
@@ -12,6 +13,8 @@ interface DictateButtonProps {
 const MAX_RECORDING_TIME = 90000; // 90 seconds
 
 export function DictateButton({ onTranscription, disabled = false, position = 'floating' }: DictateButtonProps) {
+  const t = useTranslations('dictation');
+  const tErrors = useTranslations('errors');
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -115,7 +118,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
       }, 100);
     } catch (err) {
       console.error('Failed to start recording:', err);
-      setError('Microphone access denied');
+      setError(t('microphoneDenied'));
     }
   };
 
@@ -171,7 +174,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Transcription failed');
+        throw new Error(data.error || tErrors('transcriptionFailed'));
       }
 
       if (data.text) {
@@ -179,7 +182,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
       }
     } catch (err) {
       console.error('Transcription error:', err);
-      setError(err instanceof Error ? err.message : 'Transcription failed');
+      setError(err instanceof Error ? err.message : tErrors('transcriptionFailed'));
     } finally {
       setIsProcessing(false);
       setRecordingTime(0);
@@ -315,7 +318,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
               {formatTime(recordingTime)}
             </div>
             <div className="text-sm text-white/60 mt-2">
-              {formatTime(remainingTime)} remaining
+              {t('timeRemaining', { time: formatTime(remainingTime) })}
             </div>
           </div>
 
@@ -329,9 +332,9 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
 
           {/* Instructions */}
           <div className="mt-8 text-white/80 text-center">
-            <p className="text-lg">Listening...</p>
+            <p className="text-lg">{t('listening')}</p>
             <p className="text-sm text-white/50 mt-2">
-              Tap anywhere to stop
+              {t('tapToStop')}
             </p>
           </div>
 
@@ -344,7 +347,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
             className="text-white/60 hover:text-white text-sm font-medium transition-colors"
             style={{ marginTop: '32px' }}
           >
-            Cancel
+            {t('cancel')}
           </button>
         </div>
       )}

@@ -74,6 +74,7 @@
   },
   "input": {
     "placeholder": "Añadir elementos...",
+    "notePlaceholder": "nota: Escribe tu nota aquí... (Shift+Enter para nueva línea)",
     "modes": {
       "generate": "IA generará elementos",
       "transform": "IA transformará la lista",
@@ -86,6 +87,21 @@
       "note": "Escribe tu nota...",
       "addingNote": "Añadiendo nota",
       "category": "Crear encabezado de categoría"
+    },
+    "commandPreview": {
+      "completeAll": "Completar todos los elementos",
+      "resetAll": "Reiniciar todos los elementos",
+      "enableLarge": "Activar modo grande",
+      "disableLarge": "Desactivar modo grande",
+      "clearCompleted": "Eliminar todos los completados",
+      "sort": "Ordenar elementos alfabéticamente",
+      "sortAll": "Ordenar todo alfabéticamente",
+      "removeCategories": "Eliminar todas las categorías",
+      "toggleEmoji": "Alternar modo emoji",
+      "nukeAll": "Eliminar TODOS los elementos",
+      "generateTitle": "Generar título de lista",
+      "newList": "Crear nueva lista en nueva pestaña",
+      "resetTheme": "Eliminar tema personalizado"
     },
     "processing": {
       "thinking": "IA está pensando...",

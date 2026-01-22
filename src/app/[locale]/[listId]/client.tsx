@@ -13,6 +13,7 @@ import { isCategorizedResult } from '@/lib/hooks/useAI';
 import { ThemeColors } from '@/lib/gemini';
 import { analytics } from '@/lib/analytics';
 import { generateListId } from '@/lib/utils/generateId';
+import { LanguageSwitcherCompact } from '@/components/LanguageSwitcher';
 
 interface ListPageClientProps {
   listId: string;
@@ -790,6 +791,11 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
               >
                 {t('footer.newList')}
               </button>
+            </div>
+
+            {/* Language Switcher */}
+            <div className="flex justify-center" style={{ marginTop: '16px' }}>
+              <LanguageSwitcherCompact />
             </div>
           </div>
         )}

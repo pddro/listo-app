@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslations } from 'next-intl';
 
 export interface Command {
   id: string;
@@ -13,106 +14,32 @@ export interface Command {
   category: 'ai' | 'actions' | 'modes';
 }
 
-const COMMANDS: Command[] = [
+// Command definitions without labels/descriptions (those come from translations)
+interface CommandDef {
+  id: string;
+  translationKey: string; // key in commands.items.*
+  prefix?: string;
+  action?: string;
+  icon: Command['icon'];
+  category: Command['category'];
+}
+
+const COMMAND_DEFS: CommandDef[] = [
   // AI Commands
-  {
-    id: 'generate',
-    label: 'Generate Items',
-    description: 'AI creates items from your description',
-    prefix: '...',
-    icon: 'sparkles',
-    category: 'ai',
-  },
-  {
-    id: 'transform',
-    label: 'AI Transform',
-    description: 'Transform your list any way you want',
-    prefix: '!',
-    icon: 'wand',
-    category: 'ai',
-  },
-  {
-    id: 'theme',
-    label: 'Custom Theme',
-    description: 'Generate colors from a description',
-    prefix: 'style:',
-    icon: 'palette',
-    category: 'ai',
-  },
-  {
-    id: 'title',
-    label: 'Generate Title',
-    description: 'AI creates a title from your items',
-    action: '--title',
-    icon: 'title',
-    category: 'ai',
-  },
+  { id: 'generate', translationKey: 'generate', prefix: '...', icon: 'sparkles', category: 'ai' },
+  { id: 'transform', translationKey: 'transform', prefix: '!', icon: 'wand', category: 'ai' },
+  { id: 'theme', translationKey: 'theme', prefix: 'style:', icon: 'palette', category: 'ai' },
+  { id: 'title', translationKey: 'generateTitle', action: '--title', icon: 'title', category: 'ai' },
   // Quick Actions
-  {
-    id: 'category',
-    label: 'Add Category',
-    description: 'Create a section header',
-    prefix: '#',
-    icon: 'hash',
-    category: 'actions',
-  },
-  {
-    id: 'complete',
-    label: 'Complete All',
-    description: 'Mark all items as done',
-    action: '--complete',
-    icon: 'check',
-    category: 'actions',
-  },
-  {
-    id: 'reset',
-    label: 'Reset All',
-    description: 'Uncheck all items',
-    action: '--reset',
-    icon: 'reset',
-    category: 'actions',
-  },
-  {
-    id: 'clean',
-    label: 'Clear Completed',
-    description: 'Delete all checked items',
-    action: '--clean',
-    icon: 'trash',
-    category: 'actions',
-  },
-  {
-    id: 'sort',
-    label: 'Sort Items',
-    description: 'Alphabetically sort all items',
-    action: '--sort all',
-    icon: 'sort',
-    category: 'actions',
-  },
-  {
-    id: 'ungroup',
-    label: 'Remove Categories',
-    description: 'Flatten all groups',
-    action: '--ungroup',
-    icon: 'ungroup',
-    category: 'actions',
-  },
+  { id: 'category', translationKey: 'addCategory', prefix: '#', icon: 'hash', category: 'actions' },
+  { id: 'complete', translationKey: 'completeAll', action: '--complete', icon: 'check', category: 'actions' },
+  { id: 'reset', translationKey: 'resetAll', action: '--reset', icon: 'reset', category: 'actions' },
+  { id: 'clean', translationKey: 'clearCompleted', action: '--clean', icon: 'trash', category: 'actions' },
+  { id: 'sort', translationKey: 'sortItems', action: '--sort all', icon: 'sort', category: 'actions' },
+  { id: 'ungroup', translationKey: 'removeCategories', action: '--ungroup', icon: 'ungroup', category: 'actions' },
   // Modes
-  {
-    id: 'large',
-    label: 'Large Mode',
-    description: 'Make everything 2x bigger',
-    action: '--large',
-    icon: 'large',
-    category: 'modes',
-  },
-  {
-    id: 'emojify',
-    label: 'Emojify Mode',
-    description: 'Auto-add emojis to new items',
-    action: '--emojify',
-    icon: 'emoji',
-    category: 'modes',
-  },
+  { id: 'large', translationKey: 'largeMode', action: '--large', icon: 'large', category: 'modes' },
+  { id: 'emojify', translationKey: 'emojifyOn', action: '--emojify', icon: 'emoji', category: 'modes' },
 ];
 
 interface CommandPaletteProps {
@@ -212,7 +139,19 @@ export function CommandPalette({
   largeMode = false,
   emojifyMode = false,
 }: CommandPaletteProps) {
+  const t = useTranslations('commands');
   const sheetRef = useRef<HTMLDivElement>(null);
+
+  // Build commands with translated labels and descriptions
+  const COMMANDS: Command[] = COMMAND_DEFS.map(def => ({
+    id: def.id,
+    label: t(`items.${def.translationKey}.label`),
+    description: t(`items.${def.translationKey}.description`),
+    prefix: def.prefix,
+    action: def.action,
+    icon: def.icon,
+    category: def.category,
+  }));
 
   // Close on backdrop tap
   useEffect(() => {
@@ -254,8 +193,8 @@ export function CommandPalette({
     ...COMMANDS.filter(c => c.category === 'ai'),
     ...(hasTheme ? [{
       id: 'reset-theme',
-      label: 'Reset Theme',
-      description: 'Remove custom colors',
+      label: t('items.resetTheme.label'),
+      description: t('items.resetTheme.description'),
       action: '--reset-theme',
       icon: 'palette' as const,
       category: 'ai' as const,
@@ -270,16 +209,16 @@ export function CommandPalette({
     if (cmd.id === 'large' && largeMode) {
       return {
         ...cmd,
-        label: 'Normal Mode',
-        description: 'Return to normal size',
+        label: t('items.normalMode.label'),
+        description: t('items.normalMode.description'),
         action: '--normal',
       };
     }
     if (cmd.id === 'emojify' && emojifyMode) {
       return {
         ...cmd,
-        label: 'Turn Off Emojify',
-        description: 'Stop auto-adding emojis',
+        label: t('items.emojifyOff.label'),
+        description: t('items.emojifyOff.description'),
         action: '--emojify',
       };
     }
@@ -321,14 +260,14 @@ export function CommandPalette({
         {/* Header */}
         <div className="flex items-center justify-between" style={{ padding: '0 16px 12px 16px' }}>
           <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
-            Commands
+            {t('title')}
           </h2>
           <button
             onClick={onClose}
             className="py-1 active:opacity-60"
             style={{ color: 'var(--primary)', fontSize: '17px' }}
           >
-            Done
+            {t('done')}
           </button>
         </div>
 
@@ -337,7 +276,7 @@ export function CommandPalette({
           {/* AI Section */}
           <div style={{ paddingTop: '8px', paddingBottom: '12px' }}>
             <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--primary)' }}>
-              AI Features
+              {t('sections.aiFeatures')}
             </div>
           </div>
           <div className="space-y-2">
@@ -377,7 +316,7 @@ export function CommandPalette({
           {/* Actions Section */}
           <div style={{ paddingTop: '24px', paddingBottom: '12px' }}>
             <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
-              Quick Actions
+              {t('sections.quickActions')}
             </div>
           </div>
           <div className="space-y-2">
@@ -417,7 +356,7 @@ export function CommandPalette({
           {/* Modes Section */}
           <div style={{ paddingTop: '24px', paddingBottom: '12px' }}>
             <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
-              Modes
+              {t('sections.modes')}
             </div>
           </div>
           <div className="space-y-2" style={{ paddingBottom: '24px' }}>

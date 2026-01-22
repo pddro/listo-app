@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { ManipulatedItem, GenerateResult, isCategorizedResult } from '@/lib/hooks/useAI';
 import { generateListId } from '@/lib/utils/generateId';
 import { CommandPalette, Command } from './CommandPalette';
@@ -67,9 +68,11 @@ export function NewItemInput({
   largeMode = false,
   emojifyMode = false,
 }: NewItemInputProps) {
+  const t = useTranslations('input');
+
   const [value, setValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [processingMessage, setProcessingMessage] = useState('AI is thinking...');
+  const [processingMessage, setProcessingMessage] = useState('');
   const [aiError, setAiError] = useState<string | null>(null);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -111,31 +114,31 @@ export function NewItemInput({
       const command = lowerTrimmed.slice(2).trim();
       let displayText = '';
       if (command === 'complete all' || command === 'complete') {
-        displayText = 'Complete all items';
+        displayText = t('commandPreview.completeAll');
       } else if (command === 'uncomplete all' || command === 'uncomplete' || command === 'reset') {
-        displayText = 'Reset all items';
+        displayText = t('commandPreview.resetAll');
       } else if (command === 'large' || command === 'big') {
-        displayText = 'Enable large mode';
+        displayText = t('commandPreview.enableLarge');
       } else if (command === 'normal' || command === 'small' || command === 'default') {
-        displayText = 'Disable large mode';
+        displayText = t('commandPreview.disableLarge');
       } else if (command === 'clean' || command === 'clear' || command === 'clear completed') {
-        displayText = 'Delete all completed items';
+        displayText = t('commandPreview.clearCompleted');
       } else if (command === 'sort') {
-        displayText = 'Sort items alphabetically';
+        displayText = t('commandPreview.sort');
       } else if (command === 'sort all') {
-        displayText = 'Sort everything alphabetically';
+        displayText = t('commandPreview.sortAll');
       } else if (command === 'ungroup' || command === 'ungroup all' || command === 'flatten') {
-        displayText = 'Remove all categories';
+        displayText = t('commandPreview.removeCategories');
       } else if (command === 'emojify') {
-        displayText = 'Toggle emoji mode';
+        displayText = t('commandPreview.toggleEmoji');
       } else if (command === 'nuke') {
-        displayText = 'Delete ALL items';
+        displayText = t('commandPreview.nukeAll');
       } else if (command === 'title') {
-        displayText = 'Generate list title';
+        displayText = t('commandPreview.generateTitle');
       } else if (command === 'new') {
-        displayText = 'Create new list in new tab';
+        displayText = t('commandPreview.newList');
       } else if (command === 'reset-theme') {
-        displayText = 'Remove custom theme';
+        displayText = t('commandPreview.resetTheme');
       }
       return {
         mode: 'command' as InputMode,
@@ -147,7 +150,7 @@ export function NewItemInput({
     if (lowerTrimmed.startsWith('theme:') || lowerTrimmed.startsWith('style:')) {
       return {
         mode: 'theme' as InputMode,
-        displayText: 'AI will generate theme'
+        displayText: t('modes.theme')
       };
     }
 
@@ -155,7 +158,7 @@ export function NewItemInput({
     if (trimmed.startsWith('!')) {
       return {
         mode: 'manipulate' as InputMode,
-        displayText: 'AI will transform list'
+        displayText: t('modes.transform')
       };
     }
 
@@ -163,7 +166,7 @@ export function NewItemInput({
     if (trimmed.startsWith('...')) {
       return {
         mode: 'ai' as InputMode,
-        displayText: 'AI will generate items'
+        displayText: t('modes.generate')
       };
     }
 
@@ -172,7 +175,7 @@ export function NewItemInput({
       const noteContent = trimmed.slice(5).trim();
       return {
         mode: 'note' as InputMode,
-        displayText: noteContent ? 'Adding note' : 'Type your note...'
+        displayText: noteContent ? t('modes.addingNote') : t('modes.note')
       };
     }
 
@@ -181,13 +184,13 @@ export function NewItemInput({
       const items = trimmed.split(',').map(s => s.trim()).filter(Boolean);
       return {
         mode: 'multiple' as InputMode,
-        displayText: `Adding ${items.length} items`
+        displayText: t('modes.addingItems', { count: items.length })
       };
     }
 
     // Single mode
     return { mode: 'single' as InputMode, displayText: '' };
-  }, [value]);
+  }, [value, t]);
 
   // Track previous mode to detect switch to note mode
   const prevModeRef = useRef<InputMode>('single');
@@ -328,7 +331,7 @@ export function NewItemInput({
 
         // Unknown command - restore input
         setValue(currentValue);
-        setAiError('Unknown command');
+        setAiError(t('processing.unknownCommand'));
         return;
       }
 
@@ -342,17 +345,17 @@ export function NewItemInput({
         }
 
         if (!onThemeGenerate) {
-          setAiError('Theme generation not available');
+          setAiError(t('processing.unknownCommand'));
           setValue(currentValue);
           return;
         }
 
         setIsProcessing(true);
-        setProcessingMessage('Generating theme...');
+        setProcessingMessage(t('processing.generatingTheme'));
         try {
           await onThemeGenerate(description);
         } catch (err) {
-          setAiError(err instanceof Error ? err.message : 'Theme generation failed');
+          setAiError(err instanceof Error ? err.message : t('processing.generatingTheme'));
           setValue(currentValue);
         } finally {
           setIsProcessing(false);
@@ -369,17 +372,17 @@ export function NewItemInput({
         }
 
         if (!onAIManipulate) {
-          setAiError('List manipulation not available');
+          setAiError(t('processing.unknownCommand'));
           setValue(currentValue);
           return;
         }
 
         setIsProcessing(true);
-        setProcessingMessage('Reorganizing list...');
+        setProcessingMessage(t('processing.reorganizing'));
         try {
           await onAIManipulate(instruction);
         } catch (err) {
-          setAiError(err instanceof Error ? err.message : 'List manipulation failed');
+          setAiError(err instanceof Error ? err.message : t('processing.reorganizing'));
           setValue(currentValue);
         } finally {
           setIsProcessing(false);
@@ -396,7 +399,7 @@ export function NewItemInput({
         }
 
         setIsProcessing(true);
-        setProcessingMessage('AI is thinking...');
+        setProcessingMessage(t('processing.thinking'));
         try {
           const result = await onAIGenerate(prompt);
           if (result.length > 0) {
@@ -423,7 +426,7 @@ export function NewItemInput({
             }
           }
         } catch (err) {
-          setAiError(err instanceof Error ? err.message : 'AI generation failed');
+          setAiError(err instanceof Error ? err.message : t('processing.thinking'));
           setValue(currentValue);
         } finally {
           setIsProcessing(false);
@@ -565,7 +568,7 @@ export function NewItemInput({
               value={value}
               onChange={handleTextareaChange}
               onKeyDown={handleTextareaKeyDown}
-              placeholder="note: Write your note here... (Shift+Enter for new line)"
+              placeholder={t('notePlaceholder')}
               disabled={isProcessing}
               rows={1}
               className={`
@@ -623,11 +626,11 @@ export function NewItemInput({
             className="flex items-center justify-between gap-2"
             style={{ fontSize: '10px', color: 'var(--text-muted)', paddingTop: '8px' }}
           >
-            <span><span style={{ color: 'var(--primary)' }}>...</span> generate</span>
-            <span><span style={{ color: 'var(--primary)' }}>!</span> transform</span>
-            <span><span style={{ color: 'var(--primary)' }}>style:</span> theme</span>
-            <span><span style={{ color: 'var(--text-secondary)' }}>#</span> category</span>
-            <span><span style={{ color: 'var(--text-secondary)' }}>,</span> multi</span>
+            <span><span style={{ color: 'var(--primary)' }}>...</span> {t('hints.generate')}</span>
+            <span><span style={{ color: 'var(--primary)' }}>!</span> {t('hints.transform')}</span>
+            <span><span style={{ color: 'var(--primary)' }}>style:</span> {t('hints.theme')}</span>
+            <span><span style={{ color: 'var(--text-secondary)' }}>#</span> {t('hints.category')}</span>
+            <span><span style={{ color: 'var(--text-secondary)' }}>,</span> {t('hints.multi')}</span>
           </div>
         )}
       </div>
