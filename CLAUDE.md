@@ -43,11 +43,18 @@
 - **Drag & Drop**: dnd-kit
 - **IDs**: nanoid
 
-### Planned (Mobile)
-- Convert to iOS and Android apps
-- Likely using React Native or Capacitor
+### Mobile (iOS/Android)
+- **Framework**: Vite + Capacitor (NOT Next.js!)
 - Same Supabase backend
 - Native audio recording for dictation
+- Source: `src/mobile/` directory
+
+**IMPORTANT - Separate Build Systems:**
+- **Web**: `npm run build` (Next.js)
+- **Mobile**: `npm run mobile:build` (Vite)
+- **Mobile + Sync**: `npm run mobile:sync` (builds and syncs to iOS/Android)
+
+When making changes to mobile code, you MUST run `npm run mobile:build` or `npm run mobile:sync`, NOT `npm run build`.
 
 ---
 

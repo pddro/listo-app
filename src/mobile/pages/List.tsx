@@ -136,7 +136,7 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
   });
 
   const { manipulateList, generateItems } = useAI();
-  const { lists: savedLists, addList: addSavedList, updateList: updateSavedList } = useRecentLists();
+  const { lists: savedLists, isLoading: isLoadingSavedLists, addList: addSavedList, updateList: updateSavedList } = useRecentLists();
 
   // Check if this list is already saved
   const isListSaved = savedLists.some(savedList => savedList.id === listId);
@@ -851,8 +851,8 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
           paddingTop: `calc(${safeAreaTop} + 121px)`,
         }}
       >
-        {/* Add to My Lists Banner (for received lists) */}
-      {!isListSaved && !justAddedToMyLists && (
+        {/* Add to My Lists Banner (for received lists) - only show after lists loaded */}
+      {!isLoadingSavedLists && !isListSaved && !justAddedToMyLists && (
         <div style={{ padding: '12px 16px', backgroundColor: 'var(--primary-pale)' }}>
           <button
             onClick={handleAddToMyLists}

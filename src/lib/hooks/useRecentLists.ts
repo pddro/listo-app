@@ -1,123 +1,198 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Preferences } from '@capacitor/preferences';
+import { getListIds, addListId, removeListId, migrateListIds } from '@/lib/listIdStore';
 
 export interface SavedList {
   id: string;
   title: string | null;
-  themeColor: string | null; // primary color from theme
-  themeTextColor: string | null; // text color from theme (for contrast)
+  themeColor: string | null;
+  themeTextColor: string | null;
   createdAt: string;
   archived: boolean;
   itemCount?: number;
   completedCount?: number;
 }
 
-const STORAGE_KEY = 'listo_saved_lists';
+const METADATA_KEY = 'listo_list_metadata_v3';
+const OLD_STORAGE_KEY = 'listo_saved_lists';
+
+/**
+ * Get metadata for all lists (keyed by ID)
+ */
+async function getMetadata(): Promise<Record<string, SavedList>> {
+  try {
+    const { value } = await Preferences.get({ key: METADATA_KEY });
+    if (value) {
+      return JSON.parse(value);
+    }
+  } catch (e) {
+    console.error('[Metadata] GET failed:', e);
+  }
+  return {};
+}
+
+/**
+ * Save metadata for a single list
+ */
+async function saveMetadata(id: string, data: SavedList): Promise<void> {
+  try {
+    const current = await getMetadata();
+    current[id] = data;
+    await Preferences.set({ key: METADATA_KEY, value: JSON.stringify(current) });
+  } catch (e) {
+    console.error('[Metadata] SAVE failed:', e);
+  }
+}
+
+/**
+ * Delete metadata for a single list
+ */
+async function deleteMetadata(id: string): Promise<void> {
+  try {
+    const current = await getMetadata();
+    delete current[id];
+    await Preferences.set({ key: METADATA_KEY, value: JSON.stringify(current) });
+  } catch (e) {
+    console.error('[Metadata] DELETE failed:', e);
+  }
+}
+
+/**
+ * Build full list from IDs + metadata
+ */
+async function buildLists(): Promise<SavedList[]> {
+  const ids = await getListIds();
+  const metadata = await getMetadata();
+
+  return ids.map(id => {
+    if (metadata[id]) {
+      return metadata[id];
+    }
+    return {
+      id,
+      title: null,
+      themeColor: null,
+      themeTextColor: null,
+      createdAt: new Date().toISOString(),
+      archived: false,
+    };
+  });
+}
 
 export function useRecentLists() {
   const [lists, setLists] = useState<SavedList[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const listsRef = useRef<SavedList[]>([]);
 
-  // Keep ref in sync with state
-  useEffect(() => {
-    listsRef.current = lists;
-  }, [lists]);
+  // Load lists from storage
+  const loadLists = useCallback(async () => {
+    const loaded = await buildLists();
+    setLists(loaded);
+    setIsLoading(false);
+  }, []);
 
-  // Load lists from storage on mount
+  // Initial load + migration
   useEffect(() => {
-    const loadLists = async () => {
-      try {
-        const { value } = await Preferences.get({ key: STORAGE_KEY });
-        if (value) {
-          const parsed = JSON.parse(value);
-          setLists(parsed);
-          listsRef.current = parsed;
+    const init = async () => {
+      // Check for migration from old format
+      const currentIds = await getListIds();
+
+      if (currentIds.length === 0) {
+        try {
+          const { value } = await Preferences.get({ key: OLD_STORAGE_KEY });
+          if (value) {
+            const oldLists: SavedList[] = JSON.parse(value);
+            if (oldLists.length > 0) {
+              // Migrate IDs
+              await migrateListIds(oldLists.map(l => l.id));
+              // Migrate metadata
+              const metadataMap: Record<string, SavedList> = {};
+              for (const list of oldLists) {
+                metadataMap[list.id] = list;
+              }
+              await Preferences.set({ key: METADATA_KEY, value: JSON.stringify(metadataMap) });
+            }
+          }
+        } catch (e) {
+          console.error('[useRecentLists] Migration failed:', e);
         }
-      } catch (error) {
-        console.error('Failed to load saved lists:', error);
-      } finally {
-        setIsLoading(false);
       }
+
+      await loadLists();
     };
-    loadLists();
-  }, []);
 
-  // Save lists to storage
-  const saveLists = useCallback(async (newLists: SavedList[]) => {
-    try {
-      await Preferences.set({
-        key: STORAGE_KEY,
-        value: JSON.stringify(newLists),
-      });
-      setLists(newLists);
-      listsRef.current = newLists;
-    } catch (error) {
-      console.error('Failed to save lists:', error);
-    }
-  }, []);
+    init();
+  }, [loadLists]);
 
-  // Add a new list (called when user creates a list)
-  const addList = useCallback(async (id: string, title: string | null = null, themeColor: string | null = null, themeTextColor: string | null = null) => {
-    // Use ref to get current lists (avoids stale closure)
-    const currentLists = listsRef.current;
+  // Add a list
+  const addList = useCallback(async (
+    id: string,
+    title: string | null = null,
+    themeColor: string | null = null,
+    themeTextColor: string | null = null
+  ) => {
+    // Add ID to storage
+    await addListId(id);
 
-    // Don't add if already exists
-    const exists = currentLists.some(list => list.id === id);
-    if (exists) return;
-
-    const newList: SavedList = {
+    // Save metadata
+    await saveMetadata(id, {
       id,
       title,
       themeColor,
       themeTextColor,
       createdAt: new Date().toISOString(),
       archived: false,
-    };
+    });
 
-    await saveLists([newList, ...currentLists]);
-  }, [saveLists]);
+    // Reload to update UI
+    await loadLists();
+  }, [loadLists]);
 
-  // Update list metadata (title, theme color, item counts)
-  const updateList = useCallback(async (id: string, updates: Partial<Pick<SavedList, 'title' | 'themeColor' | 'themeTextColor' | 'itemCount' | 'completedCount'>>) => {
-    const currentLists = listsRef.current;
-    const newLists = currentLists.map(list =>
-      list.id === id ? { ...list, ...updates } : list
-    );
-    await saveLists(newLists);
-  }, [saveLists]);
+  // Update list metadata
+  const updateList = useCallback(async (
+    id: string,
+    updates: Partial<Pick<SavedList, 'title' | 'themeColor' | 'themeTextColor' | 'itemCount' | 'completedCount'>>
+  ) => {
+    const metadata = await getMetadata();
+    const current = metadata[id];
+    if (!current) {
+      return;
+    }
 
-  // Archive a list (soft delete)
+    await saveMetadata(id, { ...current, ...updates });
+    await loadLists();
+  }, [loadLists]);
+
+  // Archive a list
   const archiveList = useCallback(async (id: string) => {
-    const currentLists = listsRef.current;
-    const newLists = currentLists.map(list =>
-      list.id === id ? { ...list, archived: true } : list
-    );
-    await saveLists(newLists);
-  }, [saveLists]);
+    const metadata = await getMetadata();
+    const current = metadata[id];
+    if (!current) return;
 
-  // Restore a list from archive
+    await saveMetadata(id, { ...current, archived: true });
+    await loadLists();
+  }, [loadLists]);
+
+  // Restore a list
   const restoreList = useCallback(async (id: string) => {
-    const currentLists = listsRef.current;
-    const newLists = currentLists.map(list =>
-      list.id === id ? { ...list, archived: false } : list
-    );
-    await saveLists(newLists);
-  }, [saveLists]);
+    const metadata = await getMetadata();
+    const current = metadata[id];
+    if (!current) return;
 
-  // Permanently delete a list
+    await saveMetadata(id, { ...current, archived: false });
+    await loadLists();
+  }, [loadLists]);
+
+  // Delete a list
   const deleteList = useCallback(async (id: string) => {
-    const currentLists = listsRef.current;
-    const newLists = currentLists.filter(list => list.id !== id);
-    await saveLists(newLists);
-  }, [saveLists]);
+    await removeListId(id);
+    await deleteMetadata(id);
+    await loadLists();
+  }, [loadLists]);
 
-  // Get active (non-archived) lists
+  // Filter lists
   const activeLists = lists.filter(list => !list.archived);
-
-  // Get archived lists
   const archivedLists = lists.filter(list => list.archived);
 
   return {
