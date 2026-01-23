@@ -732,7 +732,7 @@ export default function Home() {
 
           {/* Actual lists */}
           {recentLists.length > 0 && (
-            <div className="space-y-2">
+            <div className="flex flex-col" style={{ gap: '8px' }}>
               {recentLists.map((list) => (
                 <div
                   key={list.id}
