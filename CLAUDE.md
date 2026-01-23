@@ -6,6 +6,7 @@
 1. **ALWAYS create a new branch** before starting any work
    - Never commit directly to `main` unless explicitly instructed
    - Branch naming: `feature/`, `fix/`, `refactor/` prefixes
+   - **Even for minor fixes** - no exceptions, always branch first
 2. **Merge to main** only when the user explicitly requests it
 3. **Run `npm run build`** before committing to ensure no TypeScript errors
 
