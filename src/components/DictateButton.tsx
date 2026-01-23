@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API, getSupabaseHeaders } from '@/lib/api';
 
 // Get Supabase anon key for auth header
