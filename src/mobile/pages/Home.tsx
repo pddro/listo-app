@@ -276,7 +276,7 @@ export default function HomePage() {
   const { generateItems } = useAI();
   const { lists: recentLists, archivedLists, addList, archiveList, restoreList, deleteList } = useRecentLists();
   const [showArchived, setShowArchived] = useState(false);
-  const { theme: homeTheme, description: homeThemeDescription, setHomeTheme, clearHomeTheme } = useHomeTheme();
+  const { theme: homeTheme, description: homeThemeDescription, setHomeTheme, clearHomeTheme, isLoading: isHomeThemeLoading } = useHomeTheme();
   const { preloadList, getCachedList, setHomeTheme: setAppHomeTheme } = useAppState();
   const [isCreatingTutorial, setIsCreatingTutorial] = useState(false);
   const [tutorialCompleted, setTutorialCompleted] = useState(true); // Default to true to hide until loaded
@@ -443,9 +443,12 @@ export default function HomePage() {
   }, []);
 
   // Apply home theme on mount and when theme changes
+  // IMPORTANT: Don't apply theme while still loading from storage
+  // This preserves any theme applied before navigation (e.g., from List.tsx handleBack)
   useEffect(() => {
+    if (isHomeThemeLoading) return;
     applyThemeToRoot(homeTheme);
-  }, [homeTheme, applyThemeToRoot]);
+  }, [homeTheme, isHomeThemeLoading, applyThemeToRoot]);
 
   // Handle theme generation
   const handleHomeThemeGenerate = async (description: string) => {

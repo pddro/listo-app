@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import Script from 'next/script';
 import { locales, type Locale, rtlLocales } from '@/i18n/config';
 import type { Metadata } from 'next';
+import { I18nextBridge } from '@/components/I18nextProvider';
 import '../globals.css';
 
 // Map our locale codes to OpenGraph locale format
@@ -204,7 +205,9 @@ export default async function LocaleLayout({ children, params }: Props) {
       </head>
       <body className={`${inter.className} antialiased`}>
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <I18nextBridge>
+            {children}
+          </I18nextBridge>
         </NextIntlClientProvider>
       </body>
     </html>

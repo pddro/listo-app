@@ -6,6 +6,7 @@ interface HomeThemeModalProps {
   onGenerate: (description: string) => Promise<void>;
   onReset?: () => void;
   hasTheme: boolean;
+  title?: string;
 }
 
 const EXAMPLE_CHIPS = [
@@ -20,6 +21,7 @@ export function HomeThemeModal({
   onGenerate,
   onReset,
   hasTheme,
+  title = 'Customize Theme',
 }: HomeThemeModalProps) {
   const [description, setDescription] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -75,7 +77,7 @@ export function HomeThemeModal({
           {/* Header with close button */}
           <div className="flex items-center justify-between" style={{ marginBottom: '12px' }}>
             <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
-              Customize Homepage
+              {title}
             </h2>
             <button
               onClick={onClose}
