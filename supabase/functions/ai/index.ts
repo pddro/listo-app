@@ -192,6 +192,107 @@ Return ONLY the JSON array, no markdown, no explanation.`
   return parseJsonResponse(text) as ManipulatedItem[]
 }
 
+interface DictationResult {
+  title: string | null
+  titleCommand: boolean
+  items: string[] | ManipulatedItem[]
+}
+
+async function generateFromDictation(transcription: string): Promise<DictationResult> {
+  const wantsCategories = wantsCategorization(transcription)
+
+  const systemPrompt = `You are a helpful list-making assistant processing dictated speech.
+
+USER DICTATION:
+"${transcription}"
+
+## TASK 1: EXTRACT TITLE (IMPORTANT!)
+FIRST, check if the user mentioned a list name/title. Look for these patterns:
+
+**Title change commands (user wants to CHANGE/SET the title):**
+- "change title to X" or "change the title to X" → title: X, titleCommand: true
+- "rename to X" or "rename list to X" → title: X, titleCommand: true
+- "set title to X" or "set the title to X" → title: X, titleCommand: true
+- "cambiar título a X" or "renombrar a X" → title: X, titleCommand: true
+
+**New list with title:**
+- "title X" or "Title X" → extract X as title
+- "list title X" → extract X as title
+- "called X" or "call it X" → extract X as title
+- "named X" or "name it X" → extract X as title
+- "título X" or "lista llamada X" → extract X as title
+
+Examples:
+- "Change title to Weekend BBQ" → title: "Weekend BBQ", titleCommand: true, items: []
+- "Title Shopping. Milk eggs bread" → title: "Shopping", titleCommand: false, items: ["Milk", "Eggs", "Bread"]
+- "Milk eggs bread" → title: null, titleCommand: false, items: ["Milk", "Eggs", "Bread"]
+
+IMPORTANT: If it's a title change command, set titleCommand: true and items can be empty.
+
+## TITLE FORMATTING
+- ALWAYS format titles in Title Case (capitalize first letter of each word)
+- "change title to banana split" → title: "Banana Split"
+- "rename to my shopping list" → title: "My Shopping List"
+
+## TASK 2: EXTRACT ITEMS
+Extract list items from the remaining text. Filter out filler words.
+
+## LANGUAGE - CRITICAL
+- ALWAYS respond in the SAME LANGUAGE as the user's input
+- Spanish input → Spanish output
+- French input → French output
+- Do NOT translate items or title to a different language
+
+## NUMBERS - CRITICAL
+- ALWAYS use numeric digits, never spell out numbers
+- "six eggs" → "6 eggs"
+
+## ITEM EXTRACTION
+Extract clean, concise list items from the dictation.
+Filter out filler words (um, uh, let me think, so, like, este, bueno, pues).
+
+${wantsCategories ? `
+## CATEGORIZATION REQUESTED
+The user wants items organized into categories.
+Return items as structured objects with headers (starting with #) and parent_id relationships.
+Use placeholder IDs: "new_1", "new_2", etc.
+Headers have parent_id: null, child items have parent_id set to their header's ID.
+` : `
+## OUTPUT FORMAT FOR ITEMS
+Return items as a simple array of strings.
+`}
+
+## OUTPUT FORMAT
+Return ONLY a valid JSON object:
+${wantsCategories ? `{
+  "title": "extracted title" or null,
+  "titleCommand": true or false,
+  "items": [
+    {"id": "new_1", "content": "#Category", "completed": false, "parent_id": null, "position": 0},
+    {"id": "new_2", "content": "Item", "completed": false, "parent_id": "new_1", "position": 0}
+  ]
+}` : `{
+  "title": "extracted title" or null,
+  "titleCommand": true or false,
+  "items": ["Item 1", "Item 2", "Item 3"]
+}`}
+
+Return ONLY the JSON object, no markdown, no explanation.`
+
+  const text = await callGemini(systemPrompt)
+
+  try {
+    const parsed = parseJsonResponse(text) as DictationResult
+    return {
+      title: parsed.title || null,
+      titleCommand: parsed.titleCommand || false,
+      items: parsed.items || [],
+    }
+  } catch {
+    return { title: null, titleCommand: false, items: [] }
+  }
+}
+
 async function generateSuggestions(items: ListItem[], context?: string): Promise<string[]> {
   const itemsText = items.map((item) => item.content).join('\n')
 
@@ -260,6 +361,17 @@ Deno.serve(async (req) => {
           )
         }
         result = await generateSuggestions(items as ListItem[], context)
+        break
+      }
+
+      case 'dictation': {
+        if (!prompt) {
+          return new Response(
+            JSON.stringify({ error: 'Prompt (transcription) is required for dictation action' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          )
+        }
+        result = await generateFromDictation(prompt)
         break
       }
 

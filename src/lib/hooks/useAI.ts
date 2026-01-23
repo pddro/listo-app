@@ -147,8 +147,7 @@ export function useAI() {
     setError(null);
 
     try {
-      // Use local API route for dictation (Edge Function doesn't support it yet)
-      const response = await fetch('/api/ai', {
+      const response = await fetch(API.ai, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
