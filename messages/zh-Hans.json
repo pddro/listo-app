@@ -297,7 +297,7 @@
     "gotIt": "明白了，开始吧！",
     "aiPowered": {
       "title": "AI 驱动的清单",
-      "description": "以 <code>...</code> 开头并描述你需要什么。",
+      "description": "以 {code} 开头并描述你需要什么。",
       "example": "试试：...海滩度假行李清单"
     },
     "instantSharing": {
@@ -347,7 +347,7 @@
       "title": "小技巧",
       "aiGenerate": {
         "title": "AI 生成",
-        "description": "以 <code>...</code> 开头，从描述中生成项目"
+        "description": "以 {code} 开头，从描述中生成项目"
       },
       "multipleItems": {
         "title": "多个项目",
@@ -355,11 +355,11 @@
       },
       "customThemes": {
         "title": "自定义主题",
-        "description": "在清单中输入 <code>风格: 海洋</code> 来更改主题"
+        "description": "在清单中输入 {code} 来更改主题"
       },
       "aiTransform": {
         "title": "AI 转换",
-        "description": "使用 <code>!</code> 来重组或转换你的清单"
+        "description": "使用 {code} 来重组或转换你的清单"
       }
     },
     "done": "完成",

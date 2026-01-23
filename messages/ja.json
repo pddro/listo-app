@@ -297,7 +297,7 @@
     "gotIt": "わかりました、始めましょう！",
     "aiPowered": {
       "title": "AI搭載リスト",
-      "description": "<code>...</code> で始めて、必要なものを説明。",
+      "description": "{code} で始めて、必要なものを説明。",
       "example": "例：...ビーチ旅行の持ち物リスト"
     },
     "instantSharing": {
@@ -347,7 +347,7 @@
       "title": "ヒント",
       "aiGenerate": {
         "title": "AI生成",
-        "description": "<code>...</code> で始めると、説明からアイテムを生成します"
+        "description": "{code} で始めると、説明からアイテムを生成します"
       },
       "multipleItems": {
         "title": "複数アイテム",
@@ -355,11 +355,11 @@
       },
       "customThemes": {
         "title": "カスタムテーマ",
-        "description": "リストで <code>スタイル: 海</code> と入力してテーマを変更"
+        "description": "リストで {code} と入力してテーマを変更"
       },
       "aiTransform": {
         "title": "AI変換",
-        "description": "<code>!</code> を使ってリストを再編成・変換"
+        "description": "{code} を使ってリストを再編成・変換"
       }
     },
     "done": "完了",

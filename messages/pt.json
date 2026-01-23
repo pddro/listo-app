@@ -297,7 +297,7 @@
     "gotIt": "Entendi, vamos lá!",
     "aiPowered": {
       "title": "Listas com IA",
-      "description": "Comece com <code>...</code> e descreva o que você precisa.",
+      "description": "Comece com {code} e descreva o que você precisa.",
       "example": "Experimente: ...lista de mala para férias na praia"
     },
     "instantSharing": {
@@ -347,7 +347,7 @@
       "title": "Dicas",
       "aiGenerate": {
         "title": "Gerar com IA",
-        "description": "Comece com <code>...</code> para gerar itens a partir de uma descrição"
+        "description": "Comece com {code} para gerar itens a partir de uma descrição"
       },
       "multipleItems": {
         "title": "Vários itens",
@@ -355,11 +355,11 @@
       },
       "customThemes": {
         "title": "Temas personalizados",
-        "description": "Digite <code>estilo: oceano</code> em uma lista para personalizar"
+        "description": "Digite {code} em uma lista para personalizar"
       },
       "aiTransform": {
         "title": "Transformar com IA",
-        "description": "Use <code>!</code> para reorganizar ou transformar sua lista"
+        "description": "Use {code} para reorganizar ou transformar sua lista"
       }
     },
     "done": "Pronto",

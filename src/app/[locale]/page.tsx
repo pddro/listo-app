@@ -1023,7 +1023,11 @@ export default function Home() {
               <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('birthday')}</span>
             </div>
           </div>
-          <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '8px' }} dangerouslySetInnerHTML={{ __html: t('customStyles.instruction').replace('<code>', '<code class="font-semibold px-1 py-0.5 rounded" style="background-color: var(--bg-hover); color: var(--text-secondary)">') }} />
+          <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '8px' }}>
+            {t.rich('customStyles.instruction', {
+              code: (chunks) => <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-hover)', color: 'var(--text-secondary)' }}>{chunks}</code>
+            })}
+          </div>
         </div>
 
         {/* Privacy note */}

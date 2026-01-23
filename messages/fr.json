@@ -36,7 +36,7 @@
     "customStyles": {
       "title": "Styles personnalisés infinis",
       "description": "Décrivez n'importe quel style et il sera créé automatiquement",
-      "instruction": "Tapez <code>style: coucher de soleil à la plage</code> dans votre liste pour personnaliser"
+      "instruction": "Tapez <code>style: coucher de soleil</code> dans votre liste pour personnaliser"
     },
     "tips": {
       "title": "Conseils",
@@ -297,7 +297,7 @@
     "gotIt": "Compris, allons-y !",
     "aiPowered": {
       "title": "Listes Propulsées par l'IA",
-      "description": "Commencez par <code>...</code> et décrivez ce dont vous avez besoin.",
+      "description": "Commencez par {code} et décrivez ce dont vous avez besoin.",
       "example": "Essayez : ...liste de valise pour vacances à la plage"
     },
     "instantSharing": {
@@ -347,7 +347,7 @@
       "title": "Astuces",
       "aiGenerate": {
         "title": "Génération IA",
-        "description": "Commencez par <code>...</code> pour générer des éléments à partir d'une description"
+        "description": "Commencez par {code} pour générer des éléments à partir d'une description"
       },
       "multipleItems": {
         "title": "Plusieurs éléments",
@@ -355,11 +355,11 @@
       },
       "customThemes": {
         "title": "Thèmes personnalisés",
-        "description": "Tapez <code>style: océan</code> dans une liste pour la personnaliser"
+        "description": "Tapez {code} dans une liste pour la personnaliser"
       },
       "aiTransform": {
         "title": "Transformation IA",
-        "description": "Utilisez <code>!</code> pour réorganiser ou transformer votre liste"
+        "description": "Utilisez {code} pour réorganiser ou transformer votre liste"
       }
     },
     "done": "Terminé",

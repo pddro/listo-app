@@ -297,7 +297,7 @@
     "gotIt": "Verstanden, los geht's!",
     "aiPowered": {
       "title": "KI-gestützte Listen",
-      "description": "Beginne mit <code>...</code> und beschreibe, was du brauchst.",
+      "description": "Beginne mit {code} und beschreibe, was du brauchst.",
       "example": "Probiere: ...Packliste für Strandurlaub"
     },
     "instantSharing": {
@@ -347,7 +347,7 @@
       "title": "Tipps",
       "aiGenerate": {
         "title": "KI-Generierung",
-        "description": "Beginne mit <code>...</code> um Einträge aus einer Beschreibung zu generieren"
+        "description": "Beginne mit {code} um Einträge aus einer Beschreibung zu generieren"
       },
       "multipleItems": {
         "title": "Mehrere Einträge",
@@ -355,11 +355,11 @@
       },
       "customThemes": {
         "title": "Individuelle Designs",
-        "description": "Tippe <code>stil: ozean</code> in einer Liste für ein individuelles Design"
+        "description": "Tippe {code} in einer Liste für ein individuelles Design"
       },
       "aiTransform": {
         "title": "KI-Transformation",
-        "description": "Verwende <code>!</code> um deine Liste zu reorganisieren oder umzuwandeln"
+        "description": "Verwende {code} um deine Liste zu reorganisieren oder umzuwandeln"
       }
     },
     "done": "Fertig",

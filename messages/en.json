@@ -297,7 +297,7 @@
     "gotIt": "Got it, let's go!",
     "aiPowered": {
       "title": "AI-Powered Lists",
-      "description": "Start with <code>...</code> and describe what you need.",
+      "description": "Start with {code} and describe what you need.",
       "example": "Try: ...packing list for beach vacation"
     },
     "instantSharing": {
@@ -347,7 +347,7 @@
       "title": "Tips",
       "aiGenerate": {
         "title": "AI Generate",
-        "description": "Start with <code>...</code> to generate items from a prompt"
+        "description": "Start with {code} to generate items from a prompt"
       },
       "multipleItems": {
         "title": "Multiple Items",
@@ -355,11 +355,11 @@
       },
       "customThemes": {
         "title": "Custom Themes",
-        "description": "Type <code>style: ocean</code> in a list to theme it"
+        "description": "Type {code} in a list to theme it"
       },
       "aiTransform": {
         "title": "AI Transform",
-        "description": "Use <code>!</code> to reorganize or transform your list"
+        "description": "Use {code} to reorganize or transform your list"
       }
     },
     "done": "Done",
