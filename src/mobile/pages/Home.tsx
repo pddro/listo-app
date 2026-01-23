@@ -273,7 +273,7 @@ export default function HomePage() {
   const [duplicateConfirmList, setDuplicateConfirmList] = useState<SavedList | null>(null);
   const [platform, setPlatform] = useState<'ios' | 'android' | 'web'>('web');
   const navigate = useNavigate();
-  const { generateItems } = useAI();
+  const { generateItems, processDictation } = useAI();
   const { lists: recentLists, archivedLists, addList, archiveList, restoreList, deleteList } = useRecentLists();
   const [showArchived, setShowArchived] = useState(false);
   const { theme: homeTheme, description: homeThemeDescription, setHomeTheme, clearHomeTheme, isLoading: isHomeThemeLoading } = useHomeTheme();
@@ -776,18 +776,20 @@ export default function HomePage() {
     try {
       const listId = generateListId();
 
+      // Process dictation to extract title and items
+      const { title, items } = await processDictation(transcription);
+
+      // Create list with extracted title (if any)
       const { error: listError } = await supabase
         .from('lists')
-        .insert({ id: listId, title: null, theme: homeTheme || null });
+        .insert({ id: listId, title: title || null, theme: homeTheme || null });
 
       if (listError) throw listError;
 
-      const result = await generateItems(transcription);
-
-      if (isCategorizedResult(result)) {
+      if (isCategorizedResult(items)) {
         const idMapping: Record<string, string> = {};
 
-        const headers = result.filter(item => !item.parent_id);
+        const headers = items.filter(item => !item.parent_id);
         for (const header of headers) {
           const { data } = await supabase
             .from('items')
@@ -806,7 +808,7 @@ export default function HomePage() {
           }
         }
 
-        const children = result.filter(item => item.parent_id);
+        const children = items.filter(item => item.parent_id);
         for (const child of children) {
           const realParentId = child.parent_id ? idMapping[child.parent_id] : null;
 
@@ -820,8 +822,8 @@ export default function HomePage() {
               position: child.position,
             });
         }
-      } else if (result.length > 0) {
-        const itemInserts = result.map((content, index) => ({
+      } else if (items.length > 0) {
+        const itemInserts = (items as string[]).map((content, index) => ({
           list_id: listId,
           content,
           position: index,
@@ -830,7 +832,8 @@ export default function HomePage() {
         await supabase.from('items').insert(itemInserts);
       }
 
-      addList(listId);
+      // Save to recent lists with title
+      addList(listId, title || null, homeTheme?.bgPrimary || null, homeTheme?.primary || null);
       analytics.listCreated('dictation');
       navigate(`/${listId}`);
     } catch (err) {

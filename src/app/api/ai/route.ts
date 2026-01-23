@@ -3,8 +3,10 @@ import {
   manipulateList,
   generateListSuggestions,
   generateItemsFromPrompt,
+  generateFromDictation,
   ListItem,
-  ManipulatedItem
+  ManipulatedItem,
+  DictationResult
 } from '@/lib/gemini';
 
 export async function POST(request: NextRequest) {
@@ -53,6 +55,17 @@ export async function POST(request: NextRequest) {
           context
         );
         return NextResponse.json({ result: suggestions });
+      }
+
+      case 'dictation': {
+        if (!prompt) {
+          return NextResponse.json(
+            { error: 'Prompt (transcription) is required for dictation action' },
+            { status: 400 }
+          );
+        }
+        const dictationResult = await generateFromDictation(prompt);
+        return NextResponse.json({ result: dictationResult });
       }
 
       default:

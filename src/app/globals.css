@@ -180,3 +180,15 @@ input::placeholder {
   text-decoration: line-through;
   color: var(--text-muted);
 }
+
+/* Error toast fade in up animation */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

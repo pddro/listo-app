@@ -4,12 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { Preferences } from '@capacitor/preferences';
 import { Device } from '@capacitor/device';
 import { useList } from '@/lib/hooks/useList';
-import { useAI, ManipulatedItem } from '@/lib/hooks/useAI';
+import { useAI, ManipulatedItem, isCategorizedResult } from '@/lib/hooks/useAI';
 import { useRecentLists } from '@/lib/hooks/useRecentLists';
 import { ListContainer } from '@/components/ListContainer';
 import { NewItemInput } from '@/components/NewItemInput';
 import { DictateButton } from '@/components/DictateButton';
-import { isCategorizedResult } from '@/lib/hooks/useAI';
 import { ThemeColors } from '@/lib/gemini';
 import { API } from '@/lib/api';
 import { useAppState } from '@/mobile/context/AppStateContext';
@@ -135,7 +134,7 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
     onItemsChange: handleItemsChange,
   });
 
-  const { manipulateList, generateItems } = useAI();
+  const { manipulateList, generateItems, processDictation } = useAI();
   const { lists: savedLists, isLoading: isLoadingSavedLists, addList: addSavedList, updateList: updateSavedList } = useRecentLists();
 
   // Check if this list is already saved
@@ -500,15 +499,21 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
     if (!transcription.trim()) return;
 
     try {
-      const result = await generateItems(transcription);
+      const { title, titleCommand, items } = await processDictation(transcription);
 
-      if (result.length > 0) {
-        if (isCategorizedResult(result)) {
-          await handleCategorizedGenerate(result, 'dictation');
+      // Set title if it's a title command OR if list doesn't have a title yet
+      if (title && (titleCommand || !list?.title)) {
+        await updateTitle(title);
+        if (listId) updateSavedList(listId, { title });
+      }
+
+      if (items.length > 0) {
+        if (isCategorizedResult(items)) {
+          await handleCategorizedGenerate(items, 'dictation');
         } else {
-          await addItems(result);
+          await addItems(items as string[]);
           // Track each item created via dictation
-          for (let i = 0; i < result.length; i++) {
+          for (let i = 0; i < items.length; i++) {
             analytics.itemCreated('dictation');
           }
         }

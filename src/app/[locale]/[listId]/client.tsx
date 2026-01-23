@@ -62,7 +62,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
     toggleEmojifyMode,
   } = useList(listId);
 
-  const { manipulateList, generateItems } = useAI();
+  const { manipulateList, generateItems, processDictation } = useAI();
 
   // Track page visit
   useEffect(() => {
@@ -465,14 +465,21 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
     if (!transcription.trim()) return;
 
     try {
-      const result = await generateItems(transcription);
+      console.log('[List] Processing dictation:', transcription);
+      const { title, titleCommand, items } = await processDictation(transcription);
+      console.log('[List] Dictation result:', { title, titleCommand, itemCount: items.length });
 
-      if (result.length > 0) {
-        if (isCategorizedResult(result)) {
-          await handleCategorizedGenerate(result);
+      // Set title if it's a title command OR if list doesn't have a title yet
+      if (title && (titleCommand || !list?.title)) {
+        await updateTitle(title);
+      }
+
+      if (items.length > 0) {
+        if (isCategorizedResult(items)) {
+          await handleCategorizedGenerate(items);
         } else {
           // Simple string array - use bulk add
-          await addItems(result);
+          await addItems(items as string[]);
         }
       }
     } catch (err) {

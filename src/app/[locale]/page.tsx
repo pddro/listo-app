@@ -102,7 +102,7 @@ export default function Home() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [welcomeAnimating, setWelcomeAnimating] = useState(false);
   const router = useRouter();
-  const { generateItems } = useAI();
+  const { generateItems, processDictation } = useAI();
   const { lists: recentLists, archivedLists, addList, updateList, archiveList, restoreList } = useRecentListsWeb();
 
   // Track page visit
@@ -467,7 +467,7 @@ export default function Home() {
     }
   };
 
-  // Handle dictation - create list with AI-generated items
+  // Handle dictation - create list with AI-generated items and optional title
   const handleDictation = async (transcription: string) => {
     if (!transcription.trim() || isCreating) return;
 
@@ -477,21 +477,21 @@ export default function Home() {
     try {
       const listId = generateListId();
 
-      // Create the list
+      // Process dictation to extract title and items
+      const { title, items } = await processDictation(transcription);
+
+      // Create the list with extracted title
       const { error: listError } = await supabase
         .from('lists')
-        .insert({ id: listId, title: null });
+        .insert({ id: listId, title: title || null });
 
       if (listError) throw listError;
 
-      // Generate items from transcription using AI
-      const result = await generateItems(transcription);
-
-      if (isCategorizedResult(result)) {
+      if (isCategorizedResult(items)) {
         // Handle categorized items
         const idMapping: Record<string, string> = {};
 
-        const headers = result.filter(item => !item.parent_id);
+        const headers = items.filter(item => !item.parent_id);
         for (const header of headers) {
           const { data } = await supabase
             .from('items')
@@ -510,7 +510,7 @@ export default function Home() {
           }
         }
 
-        const children = result.filter(item => item.parent_id);
+        const children = items.filter(item => item.parent_id);
         for (const child of children) {
           const realParentId = child.parent_id ? idMapping[child.parent_id] : null;
 
@@ -524,9 +524,9 @@ export default function Home() {
               position: child.position,
             });
         }
-      } else if (result.length > 0) {
+      } else if (items.length > 0) {
         // Handle simple string array
-        const itemInserts = result.map((content, index) => ({
+        const itemInserts = (items as string[]).map((content, index) => ({
           list_id: listId,
           content,
           position: index,
@@ -536,7 +536,7 @@ export default function Home() {
       }
 
       // Navigate to the new list
-      addList(listId);
+      addList(listId, title || null);
       router.push(`/${listId}`);
     } catch (err) {
       console.error('Failed to create list from dictation:', err);

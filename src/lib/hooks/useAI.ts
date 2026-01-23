@@ -14,6 +14,12 @@ export interface ManipulatedItem {
 
 export type GenerateResult = string[] | ManipulatedItem[];
 
+export interface DictationResult {
+  title: string | null;
+  titleCommand: boolean;
+  items: string[] | ManipulatedItem[];
+}
+
 // Type guard to check if result is categorized (ManipulatedItem[])
 export function isCategorizedResult(result: GenerateResult): result is ManipulatedItem[] {
   return result.length > 0 && typeof result[0] === 'object' && 'id' in result[0];
@@ -136,11 +142,43 @@ export function useAI() {
     }
   };
 
+  const processDictation = async (transcription: string): Promise<DictationResult> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Use local API route for dictation (Edge Function doesn't support it yet)
+      const response = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'dictation',
+          prompt: transcription,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to process dictation');
+      }
+
+      const data = await response.json();
+      return data.result;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'AI request failed';
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     loading,
     error,
     generateItems,
     manipulateList,
     getSuggestions,
+    processDictation,
   };
 }

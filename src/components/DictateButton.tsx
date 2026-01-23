@@ -49,6 +49,16 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
     };
   }, []);
 
+  // Auto-dismiss error after 5 seconds
+  useEffect(() => {
+    if (error) {
+      const timeout = setTimeout(() => {
+        setError(null);
+      }, 5000);
+      return () => clearTimeout(timeout);
+    }
+  }, [error]);
+
   // Analyze audio levels for visualization
   const analyzeAudio = useCallback(() => {
     if (!analyserRef.current) return;
@@ -420,12 +430,34 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
       {error && (
         <div
           className={`
-            text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-pulse
-            ${isFloating ? 'fixed bottom-28 right-6' : 'absolute mt-2'}
+            flex items-center gap-3 text-white px-5 py-3.5 rounded-2xl shadow-xl z-50
+            ${isFloating ? 'fixed left-1/2 -translate-x-1/2' : 'mt-4'}
           `}
-          style={{ backgroundColor: 'var(--error)' }}
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            bottom: isFloating ? 'calc(env(safe-area-inset-bottom, 0px) + 110px)' : undefined,
+            animation: 'fadeInUp 0.3s ease-out',
+          }}
         >
-          {error}
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ backgroundColor: 'var(--error)' }}
+          >
+            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+            </svg>
+          </div>
+          <span className="text-sm font-medium flex-1">{error}</span>
+          <button
+            onClick={() => setError(null)}
+            className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 hover:bg-white/10 transition-colors"
+          >
+            <svg className="w-4 h-4 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
       )}
     </>
