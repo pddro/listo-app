@@ -30,6 +30,13 @@
       "每周餐食计划",
       "梦想旅行清单"
     ],
+    "templates": {
+      "browse": "浏览模板",
+      "browseCommunity": "浏览社区模板",
+      "browseCommunityCount": "浏览 {count} 个社区模板",
+      "browseDescription": "从预制清单开始",
+      "myTemplates": "我的模板"
+    },
     "recentLists": "你的清单",
     "noRecentLists": "没有最近的清单",
     "untitledList": "无标题清单",
@@ -85,7 +92,8 @@
       "sendEmail": "发送邮件",
       "exportTodoist": "导出到 Todoist",
       "csvSubtitle": "可导入任何 Todoist 项目的 CSV 文件",
-      "instruction": "任何拥有此链接的人都可以实时查看和编辑清单。"
+      "instruction": "任何拥有此链接的人都可以实时查看和编辑清单。",
+      "saveAsTemplate": "Save as Template"
     },
     "footer": {
       "createdWith": "由 Listo 创建",
@@ -273,8 +281,16 @@
     }
   },
   "commandTriggers": {
-    "theme": ["风格:", "主题:", "style:", "theme:"],
-    "note": ["备注:", "note:"]
+    "theme": [
+      "风格:",
+      "主题:",
+      "style:",
+      "theme:"
+    ],
+    "note": [
+      "备注:",
+      "note:"
+    ]
   },
   "themes": {
     "sunset": "日落",
@@ -313,7 +329,61 @@
     "delete": "删除",
     "edit": "编辑",
     "close": "关闭",
-    "link": "链接"
+    "link": "链接",
+    "backToHome": "Back to Home"
+  },
+  "templates": {
+    "title": "Templates",
+    "pageTitle": "List Templates",
+    "pageDescription": "Start with a pre-made list and customize it to your needs",
+    "searchPlaceholder": "Search templates...",
+    "noTemplates": "No templates found",
+    "usedTimes": "uses",
+    "useTemplate": "Use This Template",
+    "using": "Creating list...",
+    "preview": "预览",
+    "backToTemplates": "返回模板",
+    "allCategories": "全部",
+    "categories": {
+      "all": "All",
+      "travel": "Travel",
+      "shopping": "Shopping",
+      "productivity": "Productivity",
+      "cooking": "Cooking",
+      "events": "Events",
+      "health": "Health",
+      "home": "Home",
+      "work": "Work",
+      "education": "Education",
+      "other": "Other"
+    },
+    "editTemplate": {
+      "title": "编辑模板",
+      "titleLabel": "标题",
+      "descriptionLabel": "描述",
+      "categoryLabel": "类别",
+      "save": "保存更改"
+    },
+    "saveAsTemplate": {
+      "title": "Save as Template",
+      "titleLabel": "Template Title",
+      "titlePlaceholder": "Give your template a name",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "What is this template good for?",
+      "categoryLabel": "Category",
+      "publishLabel": "Submit for community review",
+      "publishHint": "Your template will be reviewed before appearing in the public gallery",
+      "save": "Save Template",
+      "saving": "Saving...",
+      "success": "Template saved!",
+      "successPublish": "Template submitted for review!"
+    },
+    "meta": {
+      "title": "Free List Templates | Listo",
+      "description": "Browse free list templates for travel, shopping, productivity, and more. Start your list instantly - no signup required.",
+      "ogTitle": "Listo Templates",
+      "ogDescription": "Pre-made lists for every occasion. Start instantly."
+    }
   },
   "appBanner": {
     "appName": "Listo",

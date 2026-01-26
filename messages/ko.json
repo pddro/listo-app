@@ -30,6 +30,13 @@
       "주간 식단 아이디어",
       "꿈의 여행지 리스트"
     ],
+    "templates": {
+      "browse": "템플릿 둘러보기",
+      "browseCommunity": "커뮤니티 템플릿 둘러보기",
+      "browseCommunityCount": "{count}개의 커뮤니티 템플릿 둘러보기",
+      "browseDescription": "미리 만들어진 리스트로 시작하기",
+      "myTemplates": "내 템플릿"
+    },
     "recentLists": "내 리스트",
     "noRecentLists": "최근 리스트 없음",
     "untitledList": "제목 없는 리스트",
@@ -85,7 +92,8 @@
       "sendEmail": "이메일로 보내기",
       "exportTodoist": "Todoist로 내보내기",
       "csvSubtitle": "모든 Todoist 프로젝트에 가져올 수 있는 CSV 파일",
-      "instruction": "이 링크를 가진 모든 사람이 실시간으로 리스트를 보고 편집할 수 있습니다."
+      "instruction": "이 링크를 가진 모든 사람이 실시간으로 리스트를 보고 편집할 수 있습니다.",
+      "saveAsTemplate": "Save as Template"
     },
     "footer": {
       "createdWith": "Listo로 만듦",
@@ -273,8 +281,16 @@
     }
   },
   "commandTriggers": {
-    "theme": ["스타일:", "테마:", "style:", "theme:"],
-    "note": ["메모:", "note:"]
+    "theme": [
+      "스타일:",
+      "테마:",
+      "style:",
+      "theme:"
+    ],
+    "note": [
+      "메모:",
+      "note:"
+    ]
   },
   "themes": {
     "sunset": "석양",
@@ -313,7 +329,61 @@
     "delete": "삭제",
     "edit": "편집",
     "close": "닫기",
-    "link": "링크"
+    "link": "링크",
+    "backToHome": "Back to Home"
+  },
+  "templates": {
+    "title": "Templates",
+    "pageTitle": "List Templates",
+    "pageDescription": "Start with a pre-made list and customize it to your needs",
+    "searchPlaceholder": "Search templates...",
+    "noTemplates": "No templates found",
+    "usedTimes": "uses",
+    "useTemplate": "Use This Template",
+    "using": "Creating list...",
+    "preview": "미리보기",
+    "backToTemplates": "템플릿으로 돌아가기",
+    "allCategories": "전체",
+    "categories": {
+      "all": "All",
+      "travel": "Travel",
+      "shopping": "Shopping",
+      "productivity": "Productivity",
+      "cooking": "Cooking",
+      "events": "Events",
+      "health": "Health",
+      "home": "Home",
+      "work": "Work",
+      "education": "Education",
+      "other": "Other"
+    },
+    "editTemplate": {
+      "title": "템플릿 편집",
+      "titleLabel": "제목",
+      "descriptionLabel": "설명",
+      "categoryLabel": "카테고리",
+      "save": "저장"
+    },
+    "saveAsTemplate": {
+      "title": "Save as Template",
+      "titleLabel": "Template Title",
+      "titlePlaceholder": "Give your template a name",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "What is this template good for?",
+      "categoryLabel": "Category",
+      "publishLabel": "Submit for community review",
+      "publishHint": "Your template will be reviewed before appearing in the public gallery",
+      "save": "Save Template",
+      "saving": "Saving...",
+      "success": "Template saved!",
+      "successPublish": "Template submitted for review!"
+    },
+    "meta": {
+      "title": "Free List Templates | Listo",
+      "description": "Browse free list templates for travel, shopping, productivity, and more. Start your list instantly - no signup required.",
+      "ogTitle": "Listo Templates",
+      "ogDescription": "Pre-made lists for every occasion. Start instantly."
+    }
   },
   "appBanner": {
     "appName": "Listo",

@@ -39,6 +39,57 @@ body {
   color: var(--text-primary);
 }
 
+/* ==========================================================================
+   UX RULES
+   ========================================================================== */
+
+/*
+ * RULE: All interactive elements with backgrounds must have horizontal padding.
+ * Buttons, tags, badges, and pills should never have text touching the edges.
+ * Minimum horizontal padding: 12px (0.75rem) for buttons, 8px (0.5rem) for tags/badges.
+ */
+
+/*
+ * UX RULE 1: Text Buttons & Tags
+ * Do NOT apply blanket padding rules to button elements (breaks checkboxes).
+ * Instead, always explicitly add padding classes to text buttons and tags.
+ *
+ * Minimum recommended padding:
+ * - Text buttons: px-4 py-2 (16px horizontal, 8px vertical)
+ * - Tags/badges: px-3 py-1 (12px horizontal, 4px vertical)
+ * - Icon-only buttons: p-2 (8px) for touch targets
+ */
+
+/*
+ * UX RULE 2: Containers with Backgrounds
+ * Any element with a background color or border MUST have internal padding.
+ * Content should NEVER touch the edges of its container.
+ *
+ * Minimum recommended padding:
+ * - Cards/panels: p-4 (16px) or p-5 (20px) or p-6 (24px)
+ * - Small containers: p-3 (12px)
+ * - List items in cards: py-3 (12px vertical)
+ *
+ * EXCEPTION: Checkboxes and form inputs have their own styling.
+ */
+
+/* Apply minimum padding to common container patterns (excluding checkboxes) */
+.card,
+.panel,
+.container-padded,
+[class*="rounded-"][class*="bg-"]:not(.checkbox):not([class*="w-5"]):not([class*="w-4"]):not([class*="h-5"]):not([class*="h-4"]) {
+  padding: 16px;
+}
+
+/* Ensure bordered containers also get padding */
+[class*="rounded-"][class*="border"]:not(.checkbox):not([class*="w-5"]):not([class*="w-4"]):not([class*="h-5"]):not([class*="h-4"]):not(input) {
+  padding: 16px;
+}
+
+/* ==========================================================================
+   END UX RULES
+   ========================================================================== */
+
 /* Focus styles */
 input:focus,
 button:focus {

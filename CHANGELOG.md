@@ -9,6 +9,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- **Templates Feature**
+  - Community templates gallery at `/templates` with category filtering and search
+  - Individual template landing pages with SEO metadata for Google discovery
+  - "Use Template" creates a fresh copy with all items unchecked
+  - "Save as Template" from any list to submit for community review
+  - Admin review page at `/admin/templates?secret=xxx` for approve/reject workflow
+  - AI translation endpoint to translate official templates to all 9 languages
+  - Templates tracked by `use_count` to show popularity
+  - Browse Templates link on home page
+  - Full i18n support for templates UI in all 9 locales
+  - Database: New `templates` and `template_items` tables with migration SQL
+
 - **Delightful UX Architecture (Mobile)**
   - Added `AppStateContext` for global state management and list caching
   - Persistent background layer prevents white flash during navigation

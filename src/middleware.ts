@@ -22,8 +22,8 @@ export const config = {
   // - Public files (images, etc.)
   matcher: [
     // Match all pathnames except for
-    // - … if they start with `/api`, `/_next` or `/_vercel`
+    // - … if they start with `/api`, `/_next`, `/_vercel`, or `/admin`
     // - … if they contain a dot (e.g. `favicon.ico`)
-    '/((?!api|_next|_vercel|.*\\..*).*)',
+    '/((?!api|admin|_next|_vercel|.*\\..*).*)',
   ],
 };

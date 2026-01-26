@@ -30,6 +30,13 @@
       "idées de repas de la semaine",
       "liste de voyages de rêve"
     ],
+    "templates": {
+      "browse": "Parcourir les modèles",
+      "browseCommunity": "Parcourir les modèles de la communauté",
+      "browseCommunityCount": "Parcourir {count} modèles de la communauté",
+      "browseDescription": "Commencez avec une liste préfaite",
+      "myTemplates": "Mes modèles"
+    },
     "recentLists": "Vos Listes",
     "noRecentLists": "Aucune liste récente",
     "untitledList": "Liste sans titre",
@@ -85,7 +92,8 @@
       "sendEmail": "Envoyer par e-mail",
       "exportTodoist": "Exporter vers Todoist",
       "csvSubtitle": "Fichier CSV à importer dans n'importe quel projet Todoist",
-      "instruction": "Toute personne avec ce lien peut voir et modifier la liste en temps réel."
+      "instruction": "Toute personne avec ce lien peut voir et modifier la liste en temps réel.",
+      "saveAsTemplate": "Save as Template"
     },
     "footer": {
       "createdWith": "Créé avec Listo",
@@ -273,8 +281,14 @@
     }
   },
   "commandTriggers": {
-    "theme": ["style:", "thème:", "theme:"],
-    "note": ["note:"]
+    "theme": [
+      "style:",
+      "thème:",
+      "theme:"
+    ],
+    "note": [
+      "note:"
+    ]
   },
   "themes": {
     "sunset": "coucher de soleil",
@@ -313,7 +327,61 @@
     "delete": "Supprimer",
     "edit": "Modifier",
     "close": "Fermer",
-    "link": "lien"
+    "link": "lien",
+    "backToHome": "Back to Home"
+  },
+  "templates": {
+    "title": "Templates",
+    "pageTitle": "List Templates",
+    "pageDescription": "Start with a pre-made list and customize it to your needs",
+    "searchPlaceholder": "Search templates...",
+    "noTemplates": "No templates found",
+    "usedTimes": "uses",
+    "useTemplate": "Use This Template",
+    "using": "Creating list...",
+    "preview": "Aperçu",
+    "backToTemplates": "Retour aux modèles",
+    "allCategories": "Tous",
+    "categories": {
+      "all": "All",
+      "travel": "Travel",
+      "shopping": "Shopping",
+      "productivity": "Productivity",
+      "cooking": "Cooking",
+      "events": "Events",
+      "health": "Health",
+      "home": "Home",
+      "work": "Work",
+      "education": "Education",
+      "other": "Other"
+    },
+    "editTemplate": {
+      "title": "Modifier le Modèle",
+      "titleLabel": "Titre",
+      "descriptionLabel": "Description",
+      "categoryLabel": "Catégorie",
+      "save": "Enregistrer"
+    },
+    "saveAsTemplate": {
+      "title": "Save as Template",
+      "titleLabel": "Template Title",
+      "titlePlaceholder": "Give your template a name",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "What is this template good for?",
+      "categoryLabel": "Category",
+      "publishLabel": "Submit for community review",
+      "publishHint": "Your template will be reviewed before appearing in the public gallery",
+      "save": "Save Template",
+      "saving": "Saving...",
+      "success": "Template saved!",
+      "successPublish": "Template submitted for review!"
+    },
+    "meta": {
+      "title": "Free List Templates | Listo",
+      "description": "Browse free list templates for travel, shopping, productivity, and more. Start your list instantly - no signup required.",
+      "ogTitle": "Listo Templates",
+      "ogDescription": "Pre-made lists for every occasion. Start instantly."
+    }
   },
   "appBanner": {
     "appName": "Listo",

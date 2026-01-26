@@ -11,6 +11,9 @@ import { LanguageSwitcherCompact } from '@/components/LanguageSwitcher';
 import { analytics } from '@/lib/analytics';
 import { API } from '@/lib/api';
 import { useRecentListsWeb } from '@/lib/hooks/useRecentListsWeb';
+import { usePersonalTemplates, PersonalTemplate } from '@/lib/hooks/usePersonalTemplates';
+import { EditTemplateModal } from '@/components/templates/EditTemplateModal';
+import { TemplateCategory } from '@/types';
 
 type InputMode = 'single' | 'multiple' | 'ai';
 
@@ -74,7 +77,6 @@ export default function Home() {
   const t = useTranslations('home');
   const tCommon = useTranslations('common');
   const tInput = useTranslations('input');
-  const tThemes = useTranslations('themes');
   const tWelcome = useTranslations('welcome');
   const tTutorial = useTranslations('tutorial');
 
@@ -104,10 +106,34 @@ export default function Home() {
   const router = useRouter();
   const { generateItems, processDictation } = useAI();
   const { lists: recentLists, archivedLists, addList, updateList, archiveList, restoreList } = useRecentListsWeb();
+  const { templates: personalTemplates, deleteTemplate, updateTemplate } = usePersonalTemplates();
+  const [usingTemplateId, setUsingTemplateId] = useState<string | null>(null);
+  const [editingTemplate, setEditingTemplate] = useState<PersonalTemplate | null>(null);
+  const [communityTemplateCount, setCommunityTemplateCount] = useState<number>(0);
 
   // Track page visit
   useEffect(() => {
     analytics.pageVisit('/');
+  }, []);
+
+  // Fetch community template count
+  useEffect(() => {
+    const fetchTemplateCount = async () => {
+      try {
+        const { count } = await supabase
+          .from('lists')
+          .select('*', { count: 'exact', head: true })
+          .eq('is_template', true)
+          .eq('status', 'approved');
+
+        if (count !== null) {
+          setCommunityTemplateCount(count);
+        }
+      } catch (err) {
+        console.error('Failed to fetch template count:', err);
+      }
+    };
+    fetchTemplateCount();
   }, []);
 
   // Show welcome popup for first-time visitors
@@ -191,6 +217,83 @@ export default function Home() {
       console.error('Failed to create tutorial list:', err);
       setError('Failed to create tutorial list');
       setIsCreating(false);
+    }
+  };
+
+  // Use a personal template - create new list with copied items
+  const usePersonalTemplate = async (template: PersonalTemplate) => {
+    if (usingTemplateId) return;
+    setUsingTemplateId(template.id);
+
+    try {
+      const newListId = generateListId();
+
+      // Fetch items from the original list
+      const { data: sourceItems, error: fetchError } = await supabase
+        .from('items')
+        .select('*')
+        .eq('list_id', template.listId)
+        .order('position', { ascending: true });
+
+      if (fetchError) throw fetchError;
+
+      // Create the new list with template's theme
+      const { error: listError } = await supabase.from('lists').insert({
+        id: newListId,
+        title: template.title,
+        theme: template.theme,
+      });
+
+      if (listError) throw listError;
+
+      // Copy items to new list (all unchecked, preserving structure)
+      if (sourceItems && sourceItems.length > 0) {
+        const idMapping: Record<string, string> = {};
+
+        // First pass: create headers (items without parent_id)
+        const headers = sourceItems.filter(item => !item.parent_id);
+        for (const header of headers) {
+          const { data, error } = await supabase
+            .from('items')
+            .insert({
+              list_id: newListId,
+              content: header.content,
+              completed: false,
+              parent_id: null,
+              position: header.position,
+            })
+            .select()
+            .single();
+
+          if (error) throw error;
+          if (data) {
+            idMapping[header.id] = data.id;
+          }
+        }
+
+        // Second pass: create child items with mapped parent_ids
+        const children = sourceItems.filter(item => item.parent_id);
+        for (const child of children) {
+          const newParentId = idMapping[child.parent_id] || null;
+          await supabase
+            .from('items')
+            .insert({
+              list_id: newListId,
+              content: child.content,
+              completed: false,
+              parent_id: newParentId,
+              position: child.position,
+            });
+        }
+      }
+
+      // Add to recent lists and navigate
+      addList(newListId, template.title, template.themeColor);
+      router.push(`/${newListId}`);
+    } catch (err) {
+      console.error('Failed to use template:', err);
+      setError('Failed to create list from template');
+      setUsingTemplateId(null);
     }
   };
 
@@ -697,7 +800,7 @@ export default function Home() {
         </div>
 
 
-        {/* Recent Lists */}
+        {/* Your Lists */}
         <div style={{ marginTop: '32px' }}>
           <div className="font-bold uppercase tracking-wide text-xs mb-3 text-left" style={{ color: 'var(--text-muted)' }}>
             {t('recentLists')}
@@ -855,180 +958,112 @@ export default function Home() {
           </div>
         )}
 
-        {/* Infinite Custom Styles */}
-        <div
-          className="rounded-lg"
+        {/* My Templates */}
+        {personalTemplates.length > 0 && (
+          <div style={{ marginTop: '24px' }}>
+            <div className="font-bold uppercase tracking-wide text-xs mb-3 text-left" style={{ color: 'var(--text-muted)' }}>
+              {t('templates.myTemplates')}
+            </div>
+            <div className="flex flex-col" style={{ gap: '8px' }}>
+              {personalTemplates.map((template) => (
+                <div
+                  key={template.id}
+                  className="flex items-center gap-4 py-4 px-4 rounded-xl cursor-pointer active:bg-gray-100 hover:bg-gray-50 transition-colors"
+                  style={{
+                    border: '1px solid var(--border-light)',
+                    paddingRight: '8px',
+                    opacity: usingTemplateId === template.id ? 0.6 : 1,
+                  }}
+                  onClick={() => usePersonalTemplate(template)}
+                >
+                  {/* Template icon - colored, no background */}
+                  <div
+                    className="flex-shrink-0 flex items-center justify-center"
+                    style={{
+                      width: '56px',
+                      height: '56px',
+                      color: template.themeColor || 'var(--primary)',
+                    }}
+                  >
+                    {usingTemplateId === template.id ? (
+                      <div
+                        className="w-6 h-6 animate-spin rounded-full border-2"
+                        style={{
+                          borderColor: `${template.themeColor || 'var(--primary)'}30`,
+                          borderTopColor: template.themeColor || 'var(--primary)',
+                        }}
+                      />
+                    ) : (
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                      </svg>
+                    )}
+                  </div>
+                  <span className="flex-1 text-base text-left truncate font-medium" style={{ color: 'var(--text-primary)' }}>
+                    {template.title}
+                  </span>
+                  {/* Edit button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingTemplate(template);
+                    }}
+                    className="p-2 transition-colors duration-200 hover:text-[var(--primary)]"
+                    style={{ color: 'var(--text-muted)' }}
+                    title="Edit template"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  {/* Delete button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteTemplate(template.id);
+                    }}
+                    className="p-2 transition-colors duration-200 hover:text-[var(--error)]"
+                    style={{ color: 'var(--text-muted)' }}
+                    title="Delete template"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Browse Community Templates - prominent button */}
+        <button
+          onClick={() => router.push('/templates')}
+          className="w-full flex items-center justify-center gap-2 rounded-xl font-medium transition-all duration-200 active:scale-[0.98] cursor-pointer"
           style={{
-            marginTop: '32px',
-            padding: '16px 20px',
-            border: '1px solid #E5E7EB',
+            marginTop: '24px',
+            padding: '14px 20px',
+            backgroundColor: 'var(--primary-pale)',
+            color: 'var(--primary)',
+            border: '1px solid var(--primary-light)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'var(--primary)';
+            e.currentTarget.style.color = 'white';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'var(--primary-pale)';
+            e.currentTarget.style.color = 'var(--primary)';
           }}
         >
-          <div className="font-bold uppercase tracking-wide text-xs" style={{ color: 'var(--text-muted)' }}>
-            {t('customStyles.title')}
-          </div>
-          <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '4px', marginBottom: '16px' }}>
-            {t('customStyles.description')}
-          </div>
-          <div className="grid grid-cols-4 gap-3">
-            {/* Sunset */}
-            <div className="flex flex-col items-center gap-1.5">
-              <div
-                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
-                style={{ backgroundColor: '#FFF7ED', border: '1px solid #FDBA74' }}
-              >
-                <div
-                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
-                  style={{ borderColor: '#F97316', backgroundColor: '#F97316' }}
-                >
-                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#EA580C' }} />
-              </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('sunset')}</span>
-            </div>
-
-            {/* Ocean */}
-            <div className="flex flex-col items-center gap-1.5">
-              <div
-                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
-                style={{ backgroundColor: '#F0FDFA', border: '1px solid #5EEAD4' }}
-              >
-                <div
-                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
-                  style={{ borderColor: '#14B8A6', backgroundColor: '#14B8A6' }}
-                >
-                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#0D9488' }} />
-              </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('ocean')}</span>
-            </div>
-
-            {/* Forest */}
-            <div className="flex flex-col items-center gap-1.5">
-              <div
-                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
-                style={{ backgroundColor: '#F0FDF4', border: '1px solid #86EFAC' }}
-              >
-                <div
-                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
-                  style={{ borderColor: '#22C55E', backgroundColor: '#22C55E' }}
-                >
-                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#16A34A' }} />
-              </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('forest')}</span>
-            </div>
-
-            {/* Neon */}
-            <div className="flex flex-col items-center gap-1.5">
-              <div
-                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
-                style={{ backgroundColor: '#1A1A2E', border: '1px solid #FF006E' }}
-              >
-                <div
-                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
-                  style={{ borderColor: '#FF006E', backgroundColor: '#FF006E' }}
-                >
-                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#00F5FF' }} />
-              </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('neon')}</span>
-            </div>
-
-            {/* Midnight */}
-            <div className="flex flex-col items-center gap-1.5">
-              <div
-                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
-                style={{ backgroundColor: '#1E1B4B', border: '1px solid #6366F1' }}
-              >
-                <div
-                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
-                  style={{ borderColor: '#818CF8', backgroundColor: '#818CF8' }}
-                >
-                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#A5B4FC' }} />
-              </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('midnight')}</span>
-            </div>
-
-            {/* Rose */}
-            <div className="flex flex-col items-center gap-1.5">
-              <div
-                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
-                style={{ backgroundColor: '#FFF1F2', border: '1px solid #FDA4AF' }}
-              >
-                <div
-                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
-                  style={{ borderColor: '#F43F5E', backgroundColor: '#F43F5E' }}
-                >
-                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#E11D48' }} />
-              </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('rose')}</span>
-            </div>
-
-            {/* Matrix */}
-            <div className="flex flex-col items-center gap-1.5">
-              <div
-                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
-                style={{ backgroundColor: '#022C22', border: '1px solid #10B981' }}
-              >
-                <div
-                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
-                  style={{ borderColor: '#10B981', backgroundColor: '#10B981' }}
-                >
-                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#34D399' }} />
-              </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('matrix')}</span>
-            </div>
-
-            {/* Birthday */}
-            <div className="flex flex-col items-center gap-1.5">
-              <div
-                className="w-14 h-14 rounded-lg flex items-center gap-1.5 justify-center"
-                style={{ backgroundColor: '#FDF4FF', border: '1px solid #E879F9' }}
-              >
-                <div
-                  className="w-4 h-4 rounded border-2 flex items-center justify-center"
-                  style={{ borderColor: '#D946EF', backgroundColor: '#D946EF' }}
-                >
-                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div className="w-6 h-1 rounded" style={{ backgroundColor: '#C026D3' }} />
-              </div>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{tThemes('birthday')}</span>
-            </div>
-          </div>
-          <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '8px' }}>
-            {t.rich('customStyles.instruction', {
-              code: (chunks) => <code className="font-semibold px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-hover)', color: 'var(--text-secondary)' }}>{chunks}</code>
-            })}
-          </div>
-        </div>
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+          </svg>
+          {communityTemplateCount > 0
+            ? t('templates.browseCommunityCount', { count: communityTemplateCount })
+            : t('templates.browseCommunity')
+          }
+        </button>
 
         {/* Privacy note */}
         <div className="text-xs text-center" style={{ marginTop: '48px', color: 'var(--text-muted)' }}>
@@ -1262,6 +1297,17 @@ export default function Home() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Edit Template Modal */}
+      {editingTemplate && (
+        <EditTemplateModal
+          template={editingTemplate}
+          onSave={(updates) => {
+            updateTemplate(editingTemplate.id, updates);
+          }}
+          onClose={() => setEditingTemplate(null)}
+        />
       )}
     </div>
   );

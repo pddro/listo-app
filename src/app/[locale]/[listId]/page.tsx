@@ -33,6 +33,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${title} - Listo`,
       description: `${itemCount} item${itemCount !== 1 ? 's' : ''} in this list. Create and share lists instantly.`,
     },
+    robots: {
+      index: false,
+      follow: false,
+      googleBot: {
+        index: false,
+        follow: false,
+      },
+    },
   };
 }
 

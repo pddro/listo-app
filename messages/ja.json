@@ -30,6 +30,13 @@
       "週間献立アイデア",
       "夢の旅行先リスト"
     ],
+    "templates": {
+      "browse": "テンプレートを見る",
+      "browseCommunity": "コミュニティテンプレートを見る",
+      "browseCommunityCount": "{count}件のコミュニティテンプレートを見る",
+      "browseDescription": "作成済みのリストから始める",
+      "myTemplates": "マイテンプレート"
+    },
     "recentLists": "あなたのリスト",
     "noRecentLists": "最近のリストはありません",
     "untitledList": "無題のリスト",
@@ -85,7 +92,8 @@
       "sendEmail": "メールで送信",
       "exportTodoist": "Todoistにエクスポート",
       "csvSubtitle": "任意のTodoistプロジェクトにインポートできるCSVファイル",
-      "instruction": "このリンクを持つ人は誰でもリアルタイムでリストを閲覧・編集できます。"
+      "instruction": "このリンクを持つ人は誰でもリアルタイムでリストを閲覧・編集できます。",
+      "saveAsTemplate": "Save as Template"
     },
     "footer": {
       "createdWith": "Listoで作成",
@@ -273,8 +281,16 @@
     }
   },
   "commandTriggers": {
-    "theme": ["スタイル:", "テーマ:", "style:", "theme:"],
-    "note": ["メモ:", "note:"]
+    "theme": [
+      "スタイル:",
+      "テーマ:",
+      "style:",
+      "theme:"
+    ],
+    "note": [
+      "メモ:",
+      "note:"
+    ]
   },
   "themes": {
     "sunset": "夕日",
@@ -313,7 +329,61 @@
     "delete": "削除",
     "edit": "編集",
     "close": "閉じる",
-    "link": "リンク"
+    "link": "リンク",
+    "backToHome": "Back to Home"
+  },
+  "templates": {
+    "title": "Templates",
+    "pageTitle": "List Templates",
+    "pageDescription": "Start with a pre-made list and customize it to your needs",
+    "searchPlaceholder": "Search templates...",
+    "noTemplates": "No templates found",
+    "usedTimes": "uses",
+    "useTemplate": "Use This Template",
+    "using": "Creating list...",
+    "preview": "プレビュー",
+    "backToTemplates": "テンプレートに戻る",
+    "allCategories": "すべて",
+    "categories": {
+      "all": "All",
+      "travel": "Travel",
+      "shopping": "Shopping",
+      "productivity": "Productivity",
+      "cooking": "Cooking",
+      "events": "Events",
+      "health": "Health",
+      "home": "Home",
+      "work": "Work",
+      "education": "Education",
+      "other": "Other"
+    },
+    "editTemplate": {
+      "title": "テンプレートを編集",
+      "titleLabel": "タイトル",
+      "descriptionLabel": "説明",
+      "categoryLabel": "カテゴリ",
+      "save": "保存"
+    },
+    "saveAsTemplate": {
+      "title": "Save as Template",
+      "titleLabel": "Template Title",
+      "titlePlaceholder": "Give your template a name",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "What is this template good for?",
+      "categoryLabel": "Category",
+      "publishLabel": "Submit for community review",
+      "publishHint": "Your template will be reviewed before appearing in the public gallery",
+      "save": "Save Template",
+      "saving": "Saving...",
+      "success": "Template saved!",
+      "successPublish": "Template submitted for review!"
+    },
+    "meta": {
+      "title": "Free List Templates | Listo",
+      "description": "Browse free list templates for travel, shopping, productivity, and more. Start your list instantly - no signup required.",
+      "ogTitle": "Listo Templates",
+      "ogDescription": "Pre-made lists for every occasion. Start instantly."
+    }
   },
   "appBanner": {
     "appName": "Listo",
