@@ -930,6 +930,15 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
           onPrefillConsumed={() => setInputPrefillValue(undefined)}
         />
 
+        {/* Share hint */}
+        <button
+          onClick={handleShare}
+          className="text-center text-xs mt-6 w-full active:opacity-60 transition-opacity"
+          style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
+        >
+          {t('list.shareHint')}
+        </button>
+
       </div>
       </div>
 

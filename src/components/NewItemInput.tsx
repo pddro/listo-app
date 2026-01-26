@@ -191,8 +191,8 @@ export function NewItemInput({
       };
     }
 
-    // AI mode: starts with ...
-    if (trimmed.startsWith('...')) {
+    // AI mode: starts with . (single period) or ... (ellipsis)
+    if (trimmed.startsWith('...') || (trimmed.startsWith('.') && !trimmed.startsWith('..'))) {
       return {
         mode: 'ai' as InputMode,
         displayText: t('input.modes.generate')
@@ -419,9 +419,14 @@ export function NewItemInput({
         return;
       }
 
-      // AI mode: ... prefix or Ctrl+Enter
-      if (forceAI || trimmed.startsWith('...')) {
-        const prompt = trimmed.startsWith('...') ? trimmed.slice(3).trim() : trimmed;
+      // AI mode: . or ... prefix or Ctrl+Enter
+      const isAIPrefix = trimmed.startsWith('...') || (trimmed.startsWith('.') && !trimmed.startsWith('..'));
+      if (forceAI || isAIPrefix) {
+        const prompt = trimmed.startsWith('...')
+          ? trimmed.slice(3).trim()
+          : trimmed.startsWith('.')
+            ? trimmed.slice(1).trim()
+            : trimmed;
         if (!prompt) {
           setValue(currentValue);
           return;
@@ -658,14 +663,14 @@ export function NewItemInput({
             <button
               type="button"
               onClick={() => {
-                setValue('...');
+                setValue('.');
                 inputRef.current?.focus();
-                setTimeout(() => inputRef.current?.setSelectionRange(3, 3), 0);
+                setTimeout(() => inputRef.current?.setSelectionRange(1, 1), 0);
               }}
               className="active:opacity-60 transition-opacity rounded px-1 py-0.5"
               style={{ backgroundColor: 'transparent' }}
             >
-              <span style={{ color: 'var(--primary)' }}>...</span> {t('input.hints.generate')}
+              <span style={{ color: 'var(--primary)' }}>.</span> {t('input.hints.generate')}
             </button>
             <button
               type="button"

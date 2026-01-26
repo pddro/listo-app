@@ -92,7 +92,8 @@
       "home": "Inicio",
       "newList": "Nueva Lista"
     },
-    "backToList": "Volver a la lista"
+    "backToList": "Volver a la lista",
+    "shareHint": "Comparte la lista para colaborar en tiempo real"
   },
   "input": {
     "placeholder": "Añadir elementos...",

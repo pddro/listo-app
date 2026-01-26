@@ -92,7 +92,8 @@
       "home": "ホーム",
       "newList": "新規リスト"
     },
-    "backToList": "リストに戻る"
+    "backToList": "リストに戻る",
+    "shareHint": "リストを共有してリアルタイムで共同作業"
   },
   "input": {
     "placeholder": "アイテムを追加...",

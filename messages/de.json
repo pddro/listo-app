@@ -92,7 +92,8 @@
       "home": "Startseite",
       "newList": "Neue Liste"
     },
-    "backToList": "Zurück zur Liste"
+    "backToList": "Zurück zur Liste",
+    "shareHint": "Teile die Liste, um in Echtzeit zusammenzuarbeiten"
   },
   "input": {
     "placeholder": "Einträge hinzufügen...",

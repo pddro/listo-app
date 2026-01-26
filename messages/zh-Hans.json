@@ -92,7 +92,8 @@
       "home": "主页",
       "newList": "新建清单"
     },
-    "backToList": "返回清单"
+    "backToList": "返回清单",
+    "shareHint": "分享清单以实时协作"
   },
   "input": {
     "placeholder": "添加项目...",

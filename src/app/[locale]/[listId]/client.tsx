@@ -758,6 +758,17 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
           />
         )}
 
+        {/* Share hint - only show when not in share view */}
+        {!showShareView && (
+          <button
+            onClick={() => setShowShareView(true)}
+            className="text-center text-xs mt-6 w-full active:opacity-60 transition-opacity"
+            style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            {t('shareHint')}
+          </button>
+        )}
+
         {/* Footer - Created with Listo (hide when sharing) */}
         {!showShareView && (
           <div className="mt-12 mb-8 text-center" style={{ paddingBottom: '60px' }}>

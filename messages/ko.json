@@ -92,7 +92,8 @@
       "home": "홈",
       "newList": "새 리스트"
     },
-    "backToList": "리스트로 돌아가기"
+    "backToList": "리스트로 돌아가기",
+    "shareHint": "리스트를 공유하여 실시간으로 협업하세요"
   },
   "input": {
     "placeholder": "항목 추가...",

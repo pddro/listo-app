@@ -589,8 +589,9 @@ export default function HomePage() {
     const normalized = normalizeInput(value);
     const trimmed = normalized.trim();
 
-    if (trimmed.startsWith('...')) {
-      const prompt = trimmed.slice(3).trim();
+    // AI mode: . (single period) or ... (ellipsis)
+    if (trimmed.startsWith('...') || (trimmed.startsWith('.') && !trimmed.startsWith('..'))) {
+      const prompt = trimmed.startsWith('...') ? trimmed.slice(3).trim() : trimmed.slice(1).trim();
       return {
         mode: 'ai' as InputMode,
         displayText: prompt ? t('input.modes.generate') : ''
@@ -659,8 +660,13 @@ export default function HomePage() {
       let itemsToAdd: string[] = [];
       let categorizedItems: ManipulatedItem[] | null = null;
 
-      if (forceAI || inputWithoutTheme.startsWith('...')) {
-        const prompt = inputWithoutTheme.startsWith('...') ? inputWithoutTheme.slice(3).trim() : inputWithoutTheme;
+      const isAIPrefix = inputWithoutTheme.startsWith('...') || (inputWithoutTheme.startsWith('.') && !inputWithoutTheme.startsWith('..'));
+      if (forceAI || isAIPrefix) {
+        const prompt = inputWithoutTheme.startsWith('...')
+          ? inputWithoutTheme.slice(3).trim()
+          : inputWithoutTheme.startsWith('.')
+            ? inputWithoutTheme.slice(1).trim()
+            : inputWithoutTheme;
         if (prompt) {
           const result = await generateItems(prompt);
           if (isCategorizedResult(result)) {
@@ -749,7 +755,7 @@ export default function HomePage() {
 
       addList(listId);
       // Track with appropriate method
-      const method = (forceAI || inputWithoutTheme.startsWith('...')) ? 'ai' : 'manual';
+      const method = (forceAI || isAIPrefix) ? 'ai' : 'manual';
       analytics.listCreated(method);
       navigate(`/${listId}`);
     } catch (err) {

@@ -92,7 +92,8 @@
       "home": "首頁",
       "newList": "新建清單"
     },
-    "backToList": "返回清單"
+    "backToList": "返回清單",
+    "shareHint": "分享清單以即時協作"
   },
   "input": {
     "placeholder": "新增項目...",

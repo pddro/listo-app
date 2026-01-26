@@ -92,7 +92,8 @@
       "home": "Home",
       "newList": "New List"
     },
-    "backToList": "Back to list"
+    "backToList": "Back to list",
+    "shareHint": "Share the list to collaborate in real-time"
   },
   "input": {
     "placeholder": "Add items...",
