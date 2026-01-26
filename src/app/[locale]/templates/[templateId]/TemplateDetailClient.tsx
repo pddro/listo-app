@@ -46,15 +46,38 @@ export default function TemplateDetailClient({ template }: Props) {
   const primaryPale = template.theme?.primaryPale || 'var(--primary-pale)';
   const bgSecondary = template.theme?.bgSecondary || primaryPale;
 
+  // Build CSS custom properties from template theme
+  const themeStyles: Record<string, string> = {
+    paddingLeft: 'max(16px, env(safe-area-inset-left))',
+    paddingRight: 'max(16px, env(safe-area-inset-right))',
+    paddingTop: 'max(24px, env(safe-area-inset-top, 24px))',
+    paddingBottom: 'max(32px, env(safe-area-inset-bottom))',
+  };
+
+  // Apply template theme colors as CSS custom properties
+  if (template.theme) {
+    const t = template.theme;
+    if (t.primary) themeStyles['--primary'] = t.primary;
+    if (t.primaryDark) themeStyles['--primary-dark'] = t.primaryDark;
+    if (t.primaryLight) themeStyles['--primary-light'] = t.primaryLight;
+    if (t.primaryPale) themeStyles['--primary-pale'] = t.primaryPale;
+    if (t.primaryGlow) themeStyles['--primary-glow'] = t.primaryGlow;
+    if (t.textPrimary) themeStyles['--text-primary'] = t.textPrimary;
+    if (t.textSecondary) themeStyles['--text-secondary'] = t.textSecondary;
+    if (t.textMuted) themeStyles['--text-muted'] = t.textMuted;
+    if (t.textPlaceholder) themeStyles['--text-placeholder'] = t.textPlaceholder;
+    if (t.bgPrimary) themeStyles['--bg-primary'] = t.bgPrimary;
+    if (t.bgSecondary) themeStyles['--bg-secondary'] = t.bgSecondary;
+    if (t.bgHover) themeStyles['--bg-hover'] = t.bgHover;
+    if (t.borderLight) themeStyles['--border-light'] = t.borderLight;
+    if (t.borderMedium) themeStyles['--border-medium'] = t.borderMedium;
+    if (t.error) themeStyles['--error'] = t.error;
+  }
+
   return (
     <div
       className="min-h-screen flex flex-col items-center bg-white"
-      style={{
-        paddingLeft: 'max(16px, env(safe-area-inset-left))',
-        paddingRight: 'max(16px, env(safe-area-inset-right))',
-        paddingTop: 'max(24px, env(safe-area-inset-top, 24px))',
-        paddingBottom: 'max(32px, env(safe-area-inset-bottom))',
-      }}
+      style={themeStyles as React.CSSProperties}
     >
       <div className="w-full max-w-md md:max-w-[540px]">
         {/* Back link */}
