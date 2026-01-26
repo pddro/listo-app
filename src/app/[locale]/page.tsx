@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from '@/i18n/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { supabase } from '@/lib/supabase';
 import { generateListId } from '@/lib/utils/generateId';
 import { useAI, isCategorizedResult, ManipulatedItem } from '@/lib/hooks/useAI';
@@ -79,6 +79,7 @@ export default function Home() {
   const tInput = useTranslations('input');
   const tWelcome = useTranslations('welcome');
   const tTutorial = useTranslations('tutorial');
+  const locale = useLocale();
 
   // Get translated placeholders
   const placeholders = useMemo(() => {
@@ -116,7 +117,7 @@ export default function Home() {
     analytics.pageVisit('/');
   }, []);
 
-  // Fetch community template count
+  // Fetch community template count for current language
   useEffect(() => {
     const fetchTemplateCount = async () => {
       try {
@@ -124,7 +125,8 @@ export default function Home() {
           .from('lists')
           .select('*', { count: 'exact', head: true })
           .eq('is_template', true)
-          .eq('status', 'approved');
+          .eq('status', 'approved')
+          .eq('language', locale);
 
         if (count !== null) {
           setCommunityTemplateCount(count);
@@ -134,7 +136,7 @@ export default function Home() {
       }
     };
     fetchTemplateCount();
-  }, []);
+  }, [locale]);
 
   // Show welcome popup for first-time visitors
   useEffect(() => {
