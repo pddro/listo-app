@@ -97,14 +97,14 @@ export default function TemplateDetailClient({ template }: Props) {
           className="rounded-2xl"
           style={{ backgroundColor: primaryPale, padding: '24px', marginBottom: '32px' }}
         >
-          {/* Title */}
-          <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)', marginBottom: '12px' }}>
+          {/* Title - use dark color for contrast on pale background */}
+          <h1 className="text-2xl font-bold" style={{ color: '#1f2937', marginBottom: '12px' }}>
             {template.title}
           </h1>
 
           {/* Description */}
           {template.template_description && (
-            <p className="text-base" style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>
+            <p className="text-base" style={{ color: '#4b5563', marginBottom: '20px' }}>
               {template.template_description}
             </p>
           )}
@@ -113,13 +113,13 @@ export default function TemplateDetailClient({ template }: Props) {
           <div className="flex flex-wrap justify-center" style={{ gap: '8px', marginBottom: '20px' }}>
             <span
               className="rounded-full text-xs font-medium capitalize"
-              style={{ backgroundColor: 'white', color: 'var(--text-secondary)', padding: '6px 12px' }}
+              style={{ backgroundColor: 'white', color: '#4b5563', padding: '6px 12px' }}
             >
               {t(`categories.${template.template_category}`)}
             </span>
             <span
               className="rounded-full text-xs"
-              style={{ backgroundColor: 'white', color: 'var(--text-muted)', padding: '6px 12px' }}
+              style={{ backgroundColor: 'white', color: '#6b7280', padding: '6px 12px' }}
             >
               {template.use_count.toLocaleString()} {t('usedTimes')}
             </span>
@@ -155,7 +155,7 @@ export default function TemplateDetailClient({ template }: Props) {
             )}
           </button>
 
-          <p className="text-center text-sm" style={{ color: 'var(--text-muted)', marginTop: '12px' }}>
+          <p className="text-center text-sm" style={{ color: '#6b7280', marginTop: '12px' }}>
             A copy will be created for you to customize
           </p>
         </div>
