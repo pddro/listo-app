@@ -126,6 +126,22 @@ export const analytics = {
     await analytics.itemCompleted();
   },
 
+  // Track when a template is used
+  templateUsed: async (templateId: string, category?: string) => {
+    if (isNative && FirebaseAnalytics) {
+      try {
+        await FirebaseAnalytics.logEvent({
+          name: 'template_used',
+          params: { template_id: templateId, category: category || 'unknown' },
+        });
+      } catch (e) {
+        console.warn('[Analytics] Failed to log template_used:', e);
+      }
+    } else {
+      trackEvent("template_used", "engagement", `${templateId}:${category || 'unknown'}`);
+    }
+  },
+
   pageVisit: (page: string) => {
     trackPageView(page);
   },

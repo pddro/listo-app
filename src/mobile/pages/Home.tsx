@@ -999,6 +999,24 @@ export default function HomePage() {
           />
         </div>
 
+        {/* Browse Templates button */}
+        <button
+          onClick={() => navigate('/templates')}
+          className="w-full flex items-center justify-center gap-2 rounded-xl font-medium transition-all active:scale-[0.98]"
+          style={{
+            marginTop: '16px',
+            padding: '14px 20px',
+            backgroundColor: 'var(--bg-secondary)',
+            color: 'var(--primary)',
+            border: '1px solid var(--border-light)',
+          }}
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+          </svg>
+          {t('templates.browseCommunity')}
+        </button>
+
         {/* Your Lists Title */}
         {recentLists.length > 0 && (
           <div

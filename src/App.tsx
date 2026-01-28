@@ -4,6 +4,8 @@ import { App as CapacitorApp } from '@capacitor/app';
 import { Preferences } from '@capacitor/preferences';
 import HomePage from './mobile/pages/Home';
 import ListPage from './mobile/pages/List';
+import TemplatesPage from './mobile/pages/Templates';
+import TemplateDetailPage from './mobile/pages/TemplateDetail';
 import { SwipeBackLayout } from './mobile/components/SwipeBackLayout';
 import { AppStateProvider } from './mobile/context/AppStateContext';
 import { ThemeColors } from '@/lib/gemini';
@@ -117,6 +119,8 @@ function AppContent() {
       <SwipeBackLayout>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/templates" element={<TemplatesPage />} />
+          <Route path="/templates/:templateId" element={<TemplateDetailPage />} />
           <Route path="/:listId" element={<ListPage />} />
         </Routes>
       </SwipeBackLayout>
