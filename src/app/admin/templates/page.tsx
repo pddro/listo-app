@@ -63,6 +63,13 @@ function AdminTemplatesContent() {
     item_count: number;
   } | null>(null);
 
+  // Fix numbering state
+  const [isFixingNumbering, setIsFixingNumbering] = useState(false);
+  const [fixNumberingResult, setFixNumberingResult] = useState<{
+    fixed: number;
+    message: string;
+  } | null>(null);
+
   // Fetch templates by status
   const fetchTemplates = useCallback(async () => {
     if (!secret) {
@@ -209,6 +216,46 @@ function AdminTemplatesContent() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeTab, selectedTemplate]);
 
+  // Fix numbered prefixes in all templates
+  const handleFixNumbering = async () => {
+    if (isFixingNumbering) return;
+
+    if (!confirm('This will remove numbered prefixes (e.g., "1. ", "2. ") from all template items. Continue?')) {
+      return;
+    }
+
+    setIsFixingNumbering(true);
+    setFixNumberingResult(null);
+
+    try {
+      const response = await fetch(
+        `/api/admin/templates/fix-numbering?secret=${encodeURIComponent(secret)}`,
+        { method: 'POST' }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Fix failed');
+      }
+
+      setFixNumberingResult({
+        fixed: data.fixed,
+        message: data.message,
+      });
+
+      // Refresh if viewing a template
+      if (selectedId) {
+        fetchTemplateDetail(selectedId);
+      }
+    } catch (err) {
+      console.error('Fix numbering error:', err);
+      alert(err instanceof Error ? err.message : 'Fix failed');
+    } finally {
+      setIsFixingNumbering(false);
+    }
+  };
+
   // Generate template with AI
   const handleGenerate = async () => {
     if (!aiPrompt.trim() || isGenerating) return;
@@ -277,6 +324,31 @@ function AdminTemplatesContent() {
             <span className="text-xs text-gray-500">
               {activeTab === 'pending' && 'Press A to approve, R to reject'}
             </span>
+            {fixNumberingResult && (
+              <span className="text-xs text-green-400">
+                {fixNumberingResult.message}
+              </span>
+            )}
+            <button
+              onClick={handleFixNumbering}
+              disabled={isFixingNumbering}
+              className="px-3 py-1.5 text-xs rounded-lg bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+              title="Remove numbered prefixes from all template items"
+            >
+              {isFixingNumbering ? (
+                <>
+                  <span className="w-3 h-3 border border-amber-400/30 border-t-amber-400 rounded-full animate-spin" />
+                  Fixing...
+                </>
+              ) : (
+                <>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Fix Numbering
+                </>
+              )}
+            </button>
             <button
               onClick={fetchTemplates}
               className="text-gray-400 hover:text-white transition-colors"
