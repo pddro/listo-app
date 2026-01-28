@@ -53,13 +53,16 @@ function applyThemeToRoot(theme: ThemeColors) {
 // Read-only preview item component that matches ListItem styling exactly
 // Mirrors the exact structure from src/components/ListItem.tsx
 function PreviewItem({ item, depth, theme }: { item: Item; depth: number; theme: ThemeColors }) {
-  const isHeader = item.content.startsWith('#');
-  const isNote = item.content.toLowerCase().startsWith('note:');
+  // Strip numbered list prefix (e.g., "1. ", "12. ") if present
+  const strippedContent = item.content.replace(/^\d+\.\s*/, '');
+
+  const isHeader = strippedContent.startsWith('#');
+  const isNote = strippedContent.toLowerCase().startsWith('note:');
   const displayContent = isHeader
-    ? item.content.slice(1).trim()
+    ? strippedContent.slice(1).trim()
     : isNote
-      ? item.content.slice(5).trim()
-      : item.content;
+      ? strippedContent.slice(5).trim()
+      : strippedContent;
 
   // Header items - matches ListItem header rendering exactly
   if (isHeader) {
