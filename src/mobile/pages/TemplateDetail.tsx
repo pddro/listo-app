@@ -4,10 +4,139 @@ import { useTranslation } from 'react-i18next';
 import { Device } from '@capacitor/device';
 import { supabase } from '@/lib/supabase';
 import { generateListId } from '@/lib/utils/generateId';
-import { TemplateWithItems } from '@/types';
+import { TemplateWithItems, Item } from '@/types';
 import { useRecentLists } from '@/lib/hooks/useRecentLists';
 import { SwipeBackLayout } from '@/mobile/components/SwipeBackLayout';
+import { useAppState } from '@/mobile/context/AppStateContext';
 import { analytics } from '@/lib/analytics';
+import { ThemeColors } from '@/lib/gemini';
+
+// Default theme values (matches globals.css)
+const DEFAULT_THEME: ThemeColors = {
+  primary: '#47A1FF',
+  primaryDark: '#2B8AE8',
+  primaryLight: '#7DBEFF',
+  primaryPale: '#E8F4FF',
+  primaryGlow: 'rgba(71, 161, 255, 0.3)',
+  textPrimary: '#1F2937',
+  textSecondary: '#4B5563',
+  textMuted: '#6B7280',
+  textPlaceholder: '#9CA3AF',
+  bgPrimary: '#FFFFFF',
+  bgSecondary: '#F9FAFB',
+  bgHover: '#F3F4F6',
+  borderLight: '#E5E7EB',
+  borderMedium: '#D1D5DB',
+  error: '#EF4444',
+};
+
+// Apply theme to CSS variables
+function applyThemeToRoot(theme: ThemeColors) {
+  const root = document.documentElement;
+  root.style.setProperty('--primary', theme.primary);
+  root.style.setProperty('--primary-dark', theme.primaryDark);
+  root.style.setProperty('--primary-light', theme.primaryLight);
+  root.style.setProperty('--primary-pale', theme.primaryPale);
+  root.style.setProperty('--primary-glow', theme.primaryGlow);
+  root.style.setProperty('--text-primary', theme.textPrimary);
+  root.style.setProperty('--text-secondary', theme.textSecondary);
+  root.style.setProperty('--text-muted', theme.textMuted);
+  root.style.setProperty('--text-placeholder', theme.textPlaceholder);
+  root.style.setProperty('--bg-primary', theme.bgPrimary);
+  root.style.setProperty('--bg-secondary', theme.bgSecondary);
+  root.style.setProperty('--bg-hover', theme.bgHover);
+  root.style.setProperty('--border-light', theme.borderLight);
+  root.style.setProperty('--border-medium', theme.borderMedium);
+  root.style.setProperty('--error', theme.error);
+}
+
+// Read-only preview item component that matches ListItem styling exactly
+function PreviewItem({ item, depth, theme }: { item: Item; depth: number; theme: ThemeColors }) {
+  const isHeader = item.content.startsWith('#');
+  const isNote = item.content.toLowerCase().startsWith('note:');
+  const displayContent = isHeader
+    ? item.content.slice(1).trim()
+    : isNote
+      ? item.content.slice(5).trim()
+      : item.content;
+
+  // Header items
+  if (isHeader) {
+    return (
+      <div
+        className="flex items-center gap-3 rounded-lg"
+        style={{
+          paddingLeft: `${depth * 24}px`,
+          paddingTop: '12px',
+          paddingBottom: '8px',
+          marginTop: depth === 0 ? '12px' : '0',
+        }}
+      >
+        <div
+          className="w-7 h-7 flex items-center justify-center font-bold text-base"
+          style={{ color: theme.primary }}
+        >
+          #
+        </div>
+        <span
+          className="flex-1 font-semibold uppercase tracking-wide text-sm"
+          style={{ color: theme.primary }}
+        >
+          {displayContent}
+        </span>
+      </div>
+    );
+  }
+
+  // Note items
+  if (isNote) {
+    return (
+      <div
+        className="flex items-start gap-3 rounded-lg"
+        style={{
+          paddingLeft: `${depth * 24}px`,
+          paddingTop: '10px',
+          paddingBottom: '10px',
+        }}
+      >
+        <div
+          className="w-7 h-7 flex items-center justify-center"
+          style={{ color: theme.textMuted }}
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <span
+          className="flex-1 italic text-sm"
+          style={{ color: theme.textSecondary, whiteSpace: 'pre-wrap' }}
+        >
+          {displayContent}
+        </span>
+      </div>
+    );
+  }
+
+  // Regular items
+  return (
+    <div
+      className="flex items-center gap-3 rounded-lg"
+      style={{
+        paddingLeft: `${depth * 24}px`,
+        paddingTop: '8px',
+        paddingBottom: '8px',
+      }}
+    >
+      <div
+        className="w-7 h-7 rounded-md border-2 flex-shrink-0"
+        style={{ borderColor: theme.borderMedium }}
+      />
+      <span style={{ color: theme.textPrimary, fontSize: '16px' }}>
+        {displayContent}
+      </span>
+    </div>
+  );
+}
 
 export default function TemplateDetailPage() {
   const { t } = useTranslation();
@@ -18,6 +147,7 @@ export default function TemplateDetailPage() {
   const [isUsing, setIsUsing] = useState(false);
   const [platform, setPlatform] = useState<'ios' | 'android' | 'web'>('web');
   const { addList } = useRecentLists();
+  const { homeTheme } = useAppState();
 
   // Detect platform
   useEffect(() => {
@@ -25,6 +155,16 @@ export default function TemplateDetailPage() {
       setPlatform(info.platform as 'ios' | 'android' | 'web');
     });
   }, []);
+
+  // Reset to default theme on mount, restore home theme on unmount
+  useEffect(() => {
+    applyThemeToRoot(DEFAULT_THEME);
+    return () => {
+      if (homeTheme) {
+        applyThemeToRoot(homeTheme as ThemeColors);
+      }
+    };
+  }, [homeTheme]);
 
   // Fetch template details
   useEffect(() => {
@@ -185,13 +325,10 @@ export default function TemplateDetailPage() {
     );
   }
 
-  const primaryColor = template.theme?.primary || 'var(--primary)';
-  const primaryPale = template.theme?.primaryPale || 'var(--primary-pale)';
-  const bgSecondary = template.theme?.bgSecondary || primaryPale;
-  const textPrimary = template.theme?.textPrimary || 'var(--text-primary)';
-  const textSecondary = template.theme?.textSecondary || 'var(--text-secondary)';
-  const textMuted = template.theme?.textMuted || 'var(--text-muted)';
-  const borderMedium = template.theme?.borderMedium || 'var(--border-medium)';
+  // Use template theme or default
+  const previewTheme: ThemeColors = template.theme || DEFAULT_THEME;
+  const primaryColor = previewTheme.primary;
+  const primaryPale = previewTheme.primaryPale;
 
   return (
     <SwipeBackLayout>
@@ -229,7 +366,7 @@ export default function TemplateDetailPage() {
             WebkitOverflowScrolling: 'touch',
           }}
         >
-          {/* Hero section */}
+          {/* Hero section - uses hardcoded dark colors for guaranteed contrast on pale backgrounds */}
           <div
             className="rounded-2xl"
             style={{ backgroundColor: primaryPale, padding: '24px', marginBottom: '24px' }}
@@ -295,74 +432,37 @@ export default function TemplateDetailPage() {
             </p>
           </div>
 
-          {/* Preview section */}
+          {/* Preview section - uses template's full theme */}
           <div>
             <div
               className="font-bold uppercase tracking-wide text-xs"
-              style={{ color: textMuted, marginBottom: '12px' }}
+              style={{ color: 'var(--text-muted)', marginBottom: '12px' }}
             >
               {t('templates.preview')}
             </div>
             <div
               className="rounded-2xl"
-              style={{ backgroundColor: bgSecondary, padding: '16px' }}
+              style={{
+                backgroundColor: previewTheme.bgPrimary,
+                padding: '8px 16px',
+                border: `1px solid ${previewTheme.borderLight}`,
+              }}
             >
               {template.items.length === 0 ? (
-                <p className="text-center" style={{ color: textMuted, padding: '32px 0' }}>
+                <p className="text-center" style={{ color: previewTheme.textMuted, padding: '32px 0' }}>
                   {t('templates.noItems')}
                 </p>
               ) : (
                 <div>
                   {template.items.map((item) => {
-                    const isHeader = item.content.startsWith('#');
                     const depth = item.parent_id ? 1 : 0;
-
-                    if (isHeader) {
-                      return (
-                        <div
-                          key={item.id}
-                          className="flex items-center gap-3"
-                          style={{
-                            paddingLeft: `${depth * 24}px`,
-                            paddingTop: '10px',
-                            paddingBottom: '4px',
-                            marginTop: '8px',
-                          }}
-                        >
-                          <div
-                            className="w-5 h-5 flex items-center justify-center font-bold text-sm"
-                            style={{ color: primaryColor }}
-                          >
-                            #
-                          </div>
-                          <span
-                            className="flex-1 font-semibold uppercase tracking-wide text-sm"
-                            style={{ color: primaryColor }}
-                          >
-                            {item.content.slice(1).trim()}
-                          </span>
-                        </div>
-                      );
-                    }
-
                     return (
-                      <div
+                      <PreviewItem
                         key={item.id}
-                        className="flex items-center gap-3"
-                        style={{
-                          paddingLeft: `${depth * 24}px`,
-                          paddingTop: '6px',
-                          paddingBottom: '6px',
-                        }}
-                      >
-                        <div
-                          className="w-5 h-5 rounded-md border-2 flex-shrink-0"
-                          style={{ borderColor: borderMedium }}
-                        />
-                        <span style={{ color: textPrimary, fontSize: '16px' }}>
-                          {item.content}
-                        </span>
-                      </div>
+                        item={item}
+                        depth={depth}
+                        theme={previewTheme}
+                      />
                     );
                   })}
                 </div>

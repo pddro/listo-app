@@ -5,6 +5,46 @@ import { Device } from '@capacitor/device';
 import { supabase } from '@/lib/supabase';
 import { Template, TemplateCategory, TEMPLATE_CATEGORIES } from '@/types';
 import { SwipeBackLayout } from '@/mobile/components/SwipeBackLayout';
+import { useAppState } from '@/mobile/context/AppStateContext';
+
+// Default theme values (matches globals.css)
+const DEFAULT_THEME = {
+  primary: '#47A1FF',
+  primaryDark: '#2B8AE8',
+  primaryLight: '#7DBEFF',
+  primaryPale: '#E8F4FF',
+  primaryGlow: 'rgba(71, 161, 255, 0.3)',
+  textPrimary: '#1F2937',
+  textSecondary: '#4B5563',
+  textMuted: '#6B7280',
+  textPlaceholder: '#9CA3AF',
+  bgPrimary: '#FFFFFF',
+  bgSecondary: '#F9FAFB',
+  bgHover: '#F3F4F6',
+  borderLight: '#E5E7EB',
+  borderMedium: '#D1D5DB',
+  error: '#EF4444',
+};
+
+// Apply theme to CSS variables
+function applyThemeToRoot(theme: typeof DEFAULT_THEME) {
+  const root = document.documentElement;
+  root.style.setProperty('--primary', theme.primary);
+  root.style.setProperty('--primary-dark', theme.primaryDark);
+  root.style.setProperty('--primary-light', theme.primaryLight);
+  root.style.setProperty('--primary-pale', theme.primaryPale);
+  root.style.setProperty('--primary-glow', theme.primaryGlow);
+  root.style.setProperty('--text-primary', theme.textPrimary);
+  root.style.setProperty('--text-secondary', theme.textSecondary);
+  root.style.setProperty('--text-muted', theme.textMuted);
+  root.style.setProperty('--text-placeholder', theme.textPlaceholder);
+  root.style.setProperty('--bg-primary', theme.bgPrimary);
+  root.style.setProperty('--bg-secondary', theme.bgSecondary);
+  root.style.setProperty('--bg-hover', theme.bgHover);
+  root.style.setProperty('--border-light', theme.borderLight);
+  root.style.setProperty('--border-medium', theme.borderMedium);
+  root.style.setProperty('--error', theme.error);
+}
 
 // Category icons
 function CategoryIcon({ category, className }: { category: TemplateCategory; className?: string }) {
@@ -81,6 +121,7 @@ export default function TemplatesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<TemplateCategory | null>(null);
   const [platform, setPlatform] = useState<'ios' | 'android' | 'web'>('web');
+  const { homeTheme } = useAppState();
 
   // Detect platform
   useEffect(() => {
@@ -88,6 +129,16 @@ export default function TemplatesPage() {
       setPlatform(info.platform as 'ios' | 'android' | 'web');
     });
   }, []);
+
+  // Reset to default theme on mount, restore home theme on unmount
+  useEffect(() => {
+    applyThemeToRoot(DEFAULT_THEME);
+    return () => {
+      if (homeTheme) {
+        applyThemeToRoot(homeTheme as typeof DEFAULT_THEME);
+      }
+    };
+  }, [homeTheme]);
 
   // Fetch community templates
   useEffect(() => {
