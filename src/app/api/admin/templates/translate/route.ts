@@ -38,6 +38,8 @@ async function translateTemplate(
 ): Promise<TranslationResult> {
   const prompt = `Translate this checklist template to ${targetLanguage}. Maintain the same structure and meaning. Keep any special characters like # at the start of category headers.
 
+IMPORTANT: Do NOT add numbers or bullet points to the items. Return them exactly as formatted below (without the "- " prefix).
+
 Return ONLY valid JSON in this exact format:
 {
   "title": "translated title",
@@ -49,7 +51,7 @@ Template to translate:
 Title: ${title}
 Description: ${description || 'No description'}
 Items:
-${items.map((item, i) => `${i + 1}. ${item}`).join('\n')}`;
+${items.map((item) => `- ${item}`).join('\n')}`;
 
   const response = await ai.models.generateContent({
     model: MODEL,
