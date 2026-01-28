@@ -51,6 +51,7 @@ function applyThemeToRoot(theme: ThemeColors) {
 }
 
 // Read-only preview item component that matches ListItem styling exactly
+// Mirrors the exact structure from src/components/ListItem.tsx
 function PreviewItem({ item, depth, theme }: { item: Item; depth: number; theme: ThemeColors }) {
   const isHeader = item.content.startsWith('#');
   const isNote = item.content.toLowerCase().startsWith('note:');
@@ -60,80 +61,95 @@ function PreviewItem({ item, depth, theme }: { item: Item; depth: number; theme:
       ? item.content.slice(5).trim()
       : item.content;
 
-  // Header items
+  // Header items - matches ListItem header rendering exactly
   if (isHeader) {
     return (
-      <div
-        className="flex items-center gap-3 rounded-lg"
-        style={{
-          paddingLeft: `${depth * 24}px`,
-          paddingTop: '12px',
-          paddingBottom: '8px',
-          marginTop: depth === 0 ? '12px' : '0',
-        }}
-      >
+      <div className="flex items-center gap-3 rounded-lg">
         <div
-          className="w-7 h-7 flex items-center justify-center font-bold text-base"
-          style={{ color: theme.primary }}
+          className="flex items-center gap-3 flex-1"
+          style={{
+            paddingLeft: `${depth * 24}px`,
+            paddingTop: '12px',
+            paddingBottom: '8px',
+            marginTop: depth === 0 ? '12px' : '0',
+          }}
         >
-          #
+          {/* Header icon - hashtag */}
+          <div
+            className="w-7 h-7 text-base flex items-center justify-center font-bold"
+            style={{ color: theme.primary }}
+          >
+            #
+          </div>
+          {/* Header content */}
+          <span
+            className="flex-1 font-semibold uppercase tracking-wide text-sm"
+            style={{ color: theme.primary }}
+          >
+            {displayContent}
+          </span>
         </div>
-        <span
-          className="flex-1 font-semibold uppercase tracking-wide text-sm"
-          style={{ color: theme.primary }}
-        >
-          {displayContent}
-        </span>
       </div>
     );
   }
 
-  // Note items
+  // Note items - matches ListItem note rendering exactly
   if (isNote) {
     return (
-      <div
-        className="flex items-start gap-3 rounded-lg"
-        style={{
-          paddingLeft: `${depth * 24}px`,
-          paddingTop: '10px',
-          paddingBottom: '10px',
-        }}
-      >
+      <div className="flex items-center gap-3 rounded-lg">
         <div
-          className="w-7 h-7 flex items-center justify-center"
-          style={{ color: theme.textMuted }}
+          className="flex items-start gap-3 flex-1"
+          style={{
+            paddingLeft: `${depth * 24}px`,
+            paddingTop: '10px',
+            paddingBottom: '10px',
+          }}
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
+          {/* Note icon */}
+          <div
+            className="w-7 h-7 flex items-center justify-center"
+            style={{ color: theme.textMuted }}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          {/* Note content */}
+          <span
+            className="flex-1 italic text-sm"
+            style={{ color: theme.textSecondary, whiteSpace: 'pre-wrap' }}
+          >
+            {displayContent}
+          </span>
         </div>
-        <span
-          className="flex-1 italic text-sm"
-          style={{ color: theme.textSecondary, whiteSpace: 'pre-wrap' }}
-        >
-          {displayContent}
-        </span>
       </div>
     );
   }
 
-  // Regular items
+  // Regular items - matches ListItem regular item rendering exactly
   return (
-    <div
-      className="flex items-center gap-3 rounded-lg"
-      style={{
-        paddingLeft: `${depth * 24}px`,
-        paddingTop: '8px',
-        paddingBottom: '8px',
-      }}
-    >
+    <div className="flex items-center gap-3 rounded-lg">
       <div
-        className="w-7 h-7 rounded-md border-2 flex-shrink-0"
-        style={{ borderColor: theme.borderMedium }}
-      />
-      <span style={{ color: theme.textPrimary, fontSize: '16px' }}>
-        {displayContent}
-      </span>
+        className="flex items-center gap-3 flex-1"
+        style={{
+          paddingLeft: `${depth * 24}px`,
+          paddingTop: '8px',
+          paddingBottom: '8px',
+        }}
+      >
+        {/* Checkbox (unchecked, read-only) */}
+        <div
+          className="w-7 h-7 rounded-md border-2 flex-shrink-0 flex items-center justify-center"
+          style={{ borderColor: theme.borderMedium }}
+        />
+        {/* Content */}
+        <span
+          className="flex-1"
+          style={{ color: theme.textPrimary }}
+        >
+          {displayContent}
+        </span>
+      </div>
     </div>
   );
 }
@@ -453,7 +469,7 @@ export default function TemplateDetailPage() {
                   {t('templates.noItems')}
                 </p>
               ) : (
-                <div>
+                <div className="space-y-0" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
                   {template.items.map((item) => {
                     const depth = item.parent_id ? 1 : 0;
                     return (
