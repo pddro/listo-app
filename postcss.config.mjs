@@ -1,6 +1,9 @@
 const config = {
   plugins: {
-    "@tailwindcss/postcss": {},
+    "@tailwindcss/postcss": {
+      // Use lightningcss for better browser compatibility
+      optimize: { minify: true },
+    },
   },
 };
 

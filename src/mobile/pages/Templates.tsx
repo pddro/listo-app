@@ -120,6 +120,7 @@ export default function TemplatesPage() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<TemplateCategory | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [platform, setPlatform] = useState<'ios' | 'android' | 'web'>('web');
   const { homeTheme } = useAppState();
 
@@ -228,6 +229,44 @@ export default function TemplatesPage() {
             {t('templates.pageDescription')}
           </p>
 
+          {/* Search input */}
+          <div className="relative" style={{ marginBottom: '16px' }}>
+            <svg
+              className="absolute left-3 top-1/2 -translate-y-1/2"
+              style={{ width: '18px', height: '18px', color: 'var(--text-muted)' }}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t('templates.searchPlaceholder')}
+              className="w-full rounded-xl outline-none"
+              style={{
+                backgroundColor: 'var(--bg-secondary)',
+                border: '1px solid var(--border-light)',
+                padding: '10px 12px 10px 40px',
+                fontSize: '15px',
+                color: 'var(--text-primary)',
+              }}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 active:opacity-60"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+
           {/* Category filter */}
           <div
             className="flex overflow-x-auto hide-scrollbar"
@@ -272,23 +311,39 @@ export default function TemplatesPage() {
             WebkitOverflowScrolling: 'touch',
           }}
         >
-          {isLoading ? (
-            <div className="flex items-center justify-center" style={{ paddingTop: '60px' }}>
-              <div
-                className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
-                style={{ borderColor: 'var(--primary)', borderTopColor: 'transparent' }}
-              />
-            </div>
-          ) : templates.length === 0 ? (
-            <div
-              className="text-center rounded-2xl"
-              style={{ color: 'var(--text-muted)', padding: '48px 24px', backgroundColor: 'var(--bg-hover)', marginTop: '20px' }}
-            >
-              {t('templates.noTemplates')}
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {templates.map((template) => {
+          {(() => {
+            // Filter templates by search query
+            const filteredTemplates = searchQuery.trim()
+              ? templates.filter(t =>
+                  t.title.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+              : templates;
+
+            if (isLoading) {
+              return (
+                <div className="flex items-center justify-center" style={{ paddingTop: '60px' }}>
+                  <div
+                    className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
+                    style={{ borderColor: 'var(--primary)', borderTopColor: 'transparent' }}
+                  />
+                </div>
+              );
+            }
+
+            if (filteredTemplates.length === 0) {
+              return (
+                <div
+                  className="text-center rounded-2xl"
+                  style={{ color: 'var(--text-muted)', padding: '48px 24px', backgroundColor: 'var(--bg-hover)', marginTop: '20px' }}
+                >
+                  {t('templates.noTemplates')}
+                </div>
+              );
+            }
+
+            return (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {filteredTemplates.map((template) => {
                 const primaryColor = template.theme?.primary || 'var(--primary)';
                 const primaryPale = template.theme?.primaryPale || 'var(--primary-pale)';
 
@@ -324,19 +379,20 @@ export default function TemplatesPage() {
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div
-                        className="font-semibold truncate"
-                        style={{ color: 'var(--text-primary)', fontSize: '17px', marginBottom: '4px' }}
+                        className="font-semibold"
+                        style={{
+                          color: 'var(--text-primary)',
+                          fontSize: '15px',
+                          marginBottom: '6px',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          lineHeight: '1.35',
+                        }}
                       >
                         {template.title}
                       </div>
-                      {template.template_description && (
-                        <div
-                          className="text-sm truncate"
-                          style={{ color: 'var(--text-muted)', marginBottom: '8px' }}
-                        >
-                          {template.template_description}
-                        </div>
-                      )}
                       <div className="flex items-center" style={{ gap: '8px' }}>
                         <span
                           className="text-xs rounded-full font-medium capitalize"
@@ -363,8 +419,9 @@ export default function TemplatesPage() {
                   </button>
                 );
               })}
-            </div>
-          )}
+              </div>
+            );
+          })()}
         </div>
       </div>
     </SwipeBackLayout>

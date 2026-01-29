@@ -330,7 +330,8 @@
     "edit": "編集",
     "close": "閉じる",
     "link": "リンク",
-    "backToHome": "Back to Home"
+    "back": "戻る",
+    "backToHome": "ホームに戻る"
   },
   "templates": {
     "title": "Templates",

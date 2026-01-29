@@ -15,6 +15,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    cssMinify: 'lightningcss',
   },
   server: {
     port: 5173,

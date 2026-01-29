@@ -11,11 +11,82 @@ import { API } from '@/lib/api';
 import { useRecentLists, SavedList } from '@/lib/hooks/useRecentLists';
 import { useHomeTheme } from '@/lib/hooks/useHomeTheme';
 import { HomeThemeModal } from '@/mobile/components/HomeThemeModal';
+import { SaveAsTemplateModal } from '@/mobile/components/SaveAsTemplateModal';
 import { ThemeColors } from '@/lib/gemini';
 import { useAppState } from '@/mobile/context/AppStateContext';
+import { usePersonalTemplates, PersonalTemplate } from '@/mobile/hooks/usePersonalTemplates';
+import { TemplateCategory } from '@/types';
 import { analytics } from '@/lib/analytics';
 
 const TUTORIAL_COMPLETED_KEY = 'listo_tutorial_completed';
+
+// Category icons for templates
+function CategoryIcon({ category, style }: { category: TemplateCategory; style?: React.CSSProperties }) {
+  const props = { style: style || { width: '20px', height: '20px' }, fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' };
+
+  switch (category) {
+    case 'travel':
+      return (
+        <svg {...props}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+        </svg>
+      );
+    case 'shopping':
+      return (
+        <svg {...props}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>
+      );
+    case 'productivity':
+      return (
+        <svg {...props}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      );
+    case 'cooking':
+      return (
+        <svg {...props}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      );
+    case 'events':
+      return (
+        <svg {...props}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      );
+    case 'health':
+      return (
+        <svg {...props}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+      );
+    case 'home':
+      return (
+        <svg {...props}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+      );
+    case 'work':
+      return (
+        <svg {...props}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      );
+    case 'education':
+      return (
+        <svg {...props}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+        </svg>
+      );
+    default:
+      return (
+        <svg {...props}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+        </svg>
+      );
+  }
+}
 
 // Tutorial list theme (same as web)
 const TUTORIAL_THEME: ThemeColors = {
@@ -65,10 +136,11 @@ interface SwipeableListRowProps {
   onDelete: () => void;
   onShare: () => void;
   onDuplicate: () => void;
+  onSaveAsTemplate: () => void;
   untitledLabel: string;
 }
 
-function SwipeableListRow({ list, onNavigate, onDelete, onShare, onDuplicate, untitledLabel }: SwipeableListRowProps) {
+function SwipeableListRow({ list, onNavigate, onDelete, onShare, onDuplicate, onSaveAsTemplate, untitledLabel }: SwipeableListRowProps) {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwipeActive, setIsSwipeActive] = useState(false);
   const touchStartX = useRef(0);
@@ -77,7 +149,7 @@ function SwipeableListRow({ list, onNavigate, onDelete, onShare, onDuplicate, un
   const rowRef = useRef<HTMLDivElement>(null);
 
   const ACTION_WIDTH = 56; // Width of each action button
-  const TOTAL_ACTIONS_WIDTH = ACTION_WIDTH * 3; // Duplicate + Share + Delete
+  const TOTAL_ACTIONS_WIDTH = ACTION_WIDTH * 4; // Template + Duplicate + Share + Delete
   const SNAP_THRESHOLD = ACTION_WIDTH / 2;
 
   // Get theme color for icons (use list's theme or default primary)
@@ -150,6 +222,16 @@ function SwipeableListRow({ list, onNavigate, onDelete, onShare, onDuplicate, un
     <div className="relative overflow-hidden">
       {/* Action buttons (behind the row) */}
       <div className="absolute right-0 top-0 bottom-0 flex items-center">
+        {/* Template */}
+        <button
+          onClick={() => { onSaveAsTemplate(); closeSwipe(); }}
+          className="flex items-center justify-center active:opacity-60"
+          style={{ width: `${ACTION_WIDTH}px`, height: '100%', color: iconColor }}
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+          </svg>
+        </button>
         {/* Duplicate */}
         <button
           onClick={() => { onDuplicate(); closeSwipe(); }}
@@ -240,6 +322,176 @@ function SwipeableListRow({ list, onNavigate, onDelete, onShare, onDuplicate, un
   );
 }
 
+// Swipeable Template Row Component
+interface SwipeableTemplateRowProps {
+  template: PersonalTemplate;
+  onUse: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  onDuplicate: () => void;
+}
+
+function SwipeableTemplateRow({ template, onUse, onEdit, onDelete, onDuplicate }: SwipeableTemplateRowProps) {
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isSwipeActive, setIsSwipeActive] = useState(false);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const swipeDirection = useRef<'horizontal' | 'vertical' | null>(null);
+  const rowRef = useRef<HTMLDivElement>(null);
+
+  const ACTION_WIDTH = 56;
+  const TOTAL_ACTIONS_WIDTH = ACTION_WIDTH * 3; // Edit + Duplicate + Delete
+  const SNAP_THRESHOLD = ACTION_WIDTH / 2;
+
+  const primaryColor = template.theme?.primary || 'var(--primary)';
+  const bgColor = template.theme?.primaryPale || 'var(--primary-pale)';
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartX.current = touch.clientX;
+    touchStartY.current = touch.clientY;
+    swipeDirection.current = null;
+    setIsSwipeActive(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isSwipeActive) return;
+
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - touchStartX.current;
+    const deltaY = touch.clientY - touchStartY.current;
+
+    if (swipeDirection.current === null && (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10)) {
+      swipeDirection.current = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+    }
+
+    if (swipeDirection.current !== 'horizontal') return;
+
+    e.preventDefault();
+
+    let newOffset = swipeOffset + deltaX;
+    newOffset = Math.min(0, Math.max(-TOTAL_ACTIONS_WIDTH - 20, newOffset));
+
+    if (newOffset < -TOTAL_ACTIONS_WIDTH) {
+      const overSwipe = -TOTAL_ACTIONS_WIDTH - newOffset;
+      newOffset = -TOTAL_ACTIONS_WIDTH - (overSwipe * 0.3);
+    }
+
+    setSwipeOffset(newOffset);
+    touchStartX.current = touch.clientX;
+  };
+
+  const handleTouchEnd = () => {
+    setIsSwipeActive(false);
+    swipeDirection.current = null;
+
+    if (swipeOffset < -SNAP_THRESHOLD) {
+      setSwipeOffset(-TOTAL_ACTIONS_WIDTH);
+    } else {
+      setSwipeOffset(0);
+    }
+  };
+
+  const handleClick = () => {
+    if (swipeOffset < -10) {
+      setSwipeOffset(0);
+    } else {
+      onUse();
+    }
+  };
+
+  const closeSwipe = () => setSwipeOffset(0);
+
+  return (
+    <div className="relative overflow-hidden">
+      {/* Action buttons (behind the row) */}
+      <div className="absolute right-0 top-0 bottom-0 flex items-center">
+        {/* Edit */}
+        <button
+          onClick={() => { onEdit(); closeSwipe(); }}
+          className="flex items-center justify-center active:opacity-60"
+          style={{ width: `${ACTION_WIDTH}px`, height: '100%', color: primaryColor }}
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </button>
+        {/* Duplicate */}
+        <button
+          onClick={() => { onDuplicate(); closeSwipe(); }}
+          className="flex items-center justify-center active:opacity-60"
+          style={{ width: `${ACTION_WIDTH}px`, height: '100%', color: primaryColor }}
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+        </button>
+        {/* Delete */}
+        <button
+          onClick={() => { onDelete(); closeSwipe(); }}
+          className="flex items-center justify-center active:opacity-60"
+          style={{ width: `${ACTION_WIDTH}px`, height: '100%', color: '#FF3B30' }}
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Main row content */}
+      <div
+        ref={rowRef}
+        className="flex items-center active:opacity-70 transition-opacity relative"
+        style={{
+          padding: '12px 0',
+          transform: `translateX(${swipeOffset}px)`,
+          transition: isSwipeActive ? 'none' : 'transform 0.25s ease-out',
+          backgroundColor: 'var(--bg-primary)',
+        }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onClick={handleClick}
+      >
+        {/* Category icon badge */}
+        <div
+          className="flex-shrink-0 rounded-lg flex items-center justify-center"
+          style={{
+            width: '44px',
+            height: '44px',
+            backgroundColor: bgColor,
+            border: '1px solid var(--border-light)',
+            color: primaryColor,
+          }}
+        >
+          <CategoryIcon category={template.category} style={{ width: '20px', height: '20px' }} />
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0" style={{ marginLeft: '14px' }}>
+          <div
+            className="font-medium truncate"
+            style={{ color: 'var(--text-primary)', fontSize: '17px' }}
+          >
+            {template.title}
+          </div>
+        </div>
+
+        {/* Plus icon - indicates creating a new list */}
+        <svg
+          className="flex-shrink-0"
+          style={{ width: '22px', height: '22px', color: 'var(--primary)', marginLeft: '8px' }}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 type InputMode = 'single' | 'multiple' | 'ai';
 
 // Normalize iOS smart punctuation to standard characters
@@ -280,6 +532,13 @@ export default function HomePage() {
   const { preloadList, getCachedList, setHomeTheme: setAppHomeTheme } = useAppState();
   const [isCreatingTutorial, setIsCreatingTutorial] = useState(false);
   const [tutorialCompleted, setTutorialCompleted] = useState(true); // Default to true to hide until loaded
+  const [templateModalList, setTemplateModalList] = useState<SavedList | null>(null);
+  const { templates: personalTemplates, addTemplate, removeTemplate, updateTemplate, isLoading: isTemplatesLoading } = usePersonalTemplates();
+
+  // Template action states
+  const [useTemplateConfirm, setUseTemplateConfirm] = useState<PersonalTemplate | null>(null);
+  const [editingTemplate, setEditingTemplate] = useState<PersonalTemplate | null>(null);
+  const [deleteTemplateConfirm, setDeleteTemplateConfirm] = useState<PersonalTemplate | null>(null);
 
   // Sync home theme with AppStateContext for synchronous access from List page
   useEffect(() => {
@@ -568,6 +827,172 @@ export default function HomePage() {
     } catch (err) {
       console.error('Duplicate failed:', err);
     }
+  };
+
+  // Save list as template
+  const handleSaveAsTemplate = async (
+    list: SavedList,
+    data: { title: string; description: string; category: TemplateCategory; shareWithCommunity: boolean }
+  ) => {
+    // Fetch item count from Supabase
+    const { count } = await supabase
+      .from('items')
+      .select('*', { count: 'exact', head: true })
+      .eq('list_id', list.id);
+
+    // Fetch full theme from Supabase if list has a theme color
+    let theme: ThemeColors | null = null;
+    if (list.themeColor) {
+      const { data: listData } = await supabase
+        .from('lists')
+        .select('theme')
+        .eq('id', list.id)
+        .single();
+      theme = listData?.theme || null;
+    }
+
+    // Save to personal templates locally
+    await addTemplate({
+      title: data.title,
+      description: data.description,
+      category: data.category,
+      listId: list.id,
+      theme: theme,
+      itemCount: count || 0,
+    });
+
+    // If sharing with community, also submit to the review queue
+    if (data.shareWithCommunity) {
+      try {
+        const response = await fetch('/api/templates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            list_id: list.id,
+            title: data.title,
+            description: data.description,
+            category: data.category,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to submit template');
+        }
+      } catch (error) {
+        console.error('Failed to submit template to community:', error);
+        // Still saved locally, so don't throw
+      }
+    }
+
+    analytics.templateCreated(data.shareWithCommunity ? 'community' : 'personal');
+    setTemplateModalList(null);
+  };
+
+  // Use template - create a new list from template
+  const handleUseTemplate = async (template: PersonalTemplate) => {
+    try {
+      const newListId = generateListId();
+
+      // Create the new list (empty title so user can name it)
+      const { error: listError } = await supabase
+        .from('lists')
+        .insert({
+          id: newListId,
+          title: '',
+          theme: template.theme || null,
+        });
+
+      if (listError) throw listError;
+
+      // Fetch all items from source list
+      const { data: sourceItems, error: fetchError } = await supabase
+        .from('items')
+        .select('*')
+        .eq('list_id', template.listId)
+        .order('position', { ascending: true });
+
+      if (fetchError) throw fetchError;
+
+      if (sourceItems && sourceItems.length > 0) {
+        const idMapping: Record<string, string> = {};
+        sourceItems.forEach((item) => {
+          idMapping[item.id] = crypto.randomUUID();
+        });
+
+        const newItems = sourceItems.map((item) => ({
+          id: idMapping[item.id],
+          list_id: newListId,
+          content: item.content,
+          completed: false,
+          parent_id: item.parent_id ? idMapping[item.parent_id] : null,
+          position: item.position,
+        }));
+
+        const { error: itemsError } = await supabase
+          .from('items')
+          .insert(newItems);
+
+        if (itemsError) throw itemsError;
+      }
+
+      // Add to recent lists
+      const themeColor = template.theme?.primaryPale || null;
+      addList(newListId, '', themeColor);
+
+      // Navigate to new list
+      navigate(`/${newListId}`);
+    } catch (err) {
+      console.error('Use template failed:', err);
+    }
+    setUseTemplateConfirm(null);
+  };
+
+  // Edit template - update template details
+  const handleEditTemplate = async (
+    template: PersonalTemplate,
+    data: { title: string; description: string; category: TemplateCategory; shareWithCommunity: boolean }
+  ) => {
+    await updateTemplate(template.id, {
+      title: data.title,
+      description: data.description,
+      category: data.category,
+    });
+
+    // If sharing with community, submit to review queue
+    if (data.shareWithCommunity) {
+      try {
+        const response = await fetch('/api/templates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            list_id: template.listId,
+            title: data.title,
+            description: data.description,
+            category: data.category,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to submit template');
+        }
+      } catch (error) {
+        console.error('Failed to submit template to community:', error);
+      }
+    }
+
+    setEditingTemplate(null);
+  };
+
+  // Duplicate template - create a copy of the template
+  const handleDuplicateTemplate = async (template: PersonalTemplate) => {
+    await addTemplate({
+      title: `${template.title} (Copy)`,
+      description: template.description,
+      category: template.category,
+      listId: template.listId,
+      theme: template.theme,
+      itemCount: template.itemCount,
+    });
   };
 
   // Rotate placeholders every 2.5 seconds
@@ -999,24 +1424,6 @@ export default function HomePage() {
           />
         </div>
 
-        {/* Browse Templates button */}
-        <button
-          onClick={() => navigate('/templates')}
-          className="w-full flex items-center justify-center gap-2 rounded-xl font-medium transition-all active:scale-[0.98]"
-          style={{
-            marginTop: '16px',
-            padding: '14px 20px',
-            backgroundColor: 'var(--bg-secondary)',
-            color: 'var(--primary)',
-            border: '1px solid var(--border-light)',
-          }}
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-          </svg>
-          {t('templates.browseCommunity')}
-        </button>
-
         {/* Your Lists Title */}
         {recentLists.length > 0 && (
           <div
@@ -1113,6 +1520,7 @@ export default function HomePage() {
                 onDelete={() => setDeleteConfirmList(list)}
                 onShare={() => handleShare(list.id, list.title)}
                 onDuplicate={() => setDuplicateConfirmList(list)}
+                onSaveAsTemplate={() => setTemplateModalList(list)}
                 untitledLabel={t('home.untitledList')}
               />
             ))}
@@ -1192,6 +1600,55 @@ export default function HomePage() {
             )}
           </div>
         )}
+
+        {/* My Templates Section */}
+        {personalTemplates.length > 0 && (
+          <div style={{ marginTop: '24px' }}>
+            <div
+              className="font-semibold uppercase tracking-wide text-left"
+              style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '8px' }}
+            >
+              {t('mobile.myTemplates')}
+            </div>
+            <div>
+              {personalTemplates.map((template) => (
+                <SwipeableTemplateRow
+                  key={template.id}
+                  template={template}
+                  onUse={() => setUseTemplateConfirm(template)}
+                  onEdit={() => setEditingTemplate(template)}
+                  onDelete={() => setDeleteTemplateConfirm(template)}
+                  onDuplicate={() => handleDuplicateTemplate(template)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Community Templates Section */}
+        <div style={{ marginTop: '32px' }}>
+          <div
+            className="font-semibold uppercase tracking-wide text-left"
+            style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '12px' }}
+          >
+            {t('templates.communityTemplates')}
+          </div>
+          <button
+            onClick={() => navigate('/templates')}
+            className="w-full flex items-center justify-center gap-2 rounded-xl font-medium transition-all active:scale-[0.98]"
+            style={{
+              padding: '14px 20px',
+              backgroundColor: 'var(--bg-secondary)',
+              color: 'var(--primary)',
+              border: '1px solid var(--border-light)',
+            }}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+            </svg>
+            {t('home.templates.browseCommunity')}
+          </button>
+        </div>
 
         {/* Privacy note - at the bottom, pushed by content */}
         <div className="text-center" style={{ marginTop: '48px', paddingBottom: '20px' }}>
@@ -1377,6 +1834,17 @@ export default function HomePage() {
         hasTheme={!!homeTheme}
       />
 
+      {/* Save as Template Modal */}
+      {templateModalList && (
+        <SaveAsTemplateModal
+          isOpen={true}
+          onClose={() => setTemplateModalList(null)}
+          onSave={(data) => handleSaveAsTemplate(templateModalList, data)}
+          listTitle={templateModalList.title || ''}
+          theme={null}
+        />
+      )}
+
       {/* Delete Confirmation Modal */}
       {deleteConfirmList && (
         <div
@@ -1457,6 +1925,102 @@ export default function HomePage() {
                 style={{ color: 'var(--primary)', padding: '16px' }}
               >
                 {t('mobile.duplicate')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Use Template Confirmation Modal */}
+      {useTemplateConfirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
+          onClick={() => setUseTemplateConfirm(null)}
+        >
+          <div
+            className="rounded-2xl mx-6 overflow-hidden"
+            style={{ maxWidth: '300px', width: '100%', backgroundColor: 'var(--bg-primary)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ padding: '24px 24px 20px' }}>
+              <h3 className="text-lg font-semibold text-center" style={{ color: 'var(--text-primary)' }}>
+                {t('mobile.useTemplate.title')}
+              </h3>
+              <p className="text-center" style={{ color: 'var(--text-muted)', fontSize: '14px', marginTop: '8px' }}>
+                {t('mobile.useTemplate.message')}
+              </p>
+            </div>
+            <div style={{ borderTop: '1px solid var(--border-light)' }} className="flex">
+              <button
+                onClick={() => setUseTemplateConfirm(null)}
+                className="flex-1 font-medium active:opacity-60"
+                style={{ color: 'var(--text-muted)', padding: '16px', borderRight: '1px solid var(--border-light)' }}
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={() => handleUseTemplate(useTemplateConfirm)}
+                className="flex-1 font-medium active:opacity-60"
+                style={{ color: 'var(--primary)', padding: '16px' }}
+              >
+                {t('mobile.useTemplate.create')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Template Modal */}
+      {editingTemplate && (
+        <SaveAsTemplateModal
+          isOpen={true}
+          onClose={() => setEditingTemplate(null)}
+          onSave={(data) => handleEditTemplate(editingTemplate, data)}
+          listTitle={editingTemplate.title}
+          listDescription={editingTemplate.description}
+          listCategory={editingTemplate.category}
+          theme={editingTemplate.theme}
+        />
+      )}
+
+      {/* Delete Template Confirmation Modal */}
+      {deleteTemplateConfirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
+          onClick={() => setDeleteTemplateConfirm(null)}
+        >
+          <div
+            className="rounded-2xl mx-6 overflow-hidden"
+            style={{ maxWidth: '300px', width: '100%', backgroundColor: 'var(--bg-primary)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ padding: '24px 24px 20px' }}>
+              <h3 className="text-lg font-semibold text-center" style={{ color: 'var(--text-primary)' }}>
+                {t('mobile.deleteTemplate.title')}
+              </h3>
+              <p className="text-center" style={{ color: 'var(--text-muted)', fontSize: '14px', marginTop: '8px' }}>
+                {t('mobile.deleteTemplate.message', { title: deleteTemplateConfirm.title })}
+              </p>
+            </div>
+            <div style={{ borderTop: '1px solid var(--border-light)' }} className="flex">
+              <button
+                onClick={() => setDeleteTemplateConfirm(null)}
+                className="flex-1 font-medium active:opacity-60"
+                style={{ color: 'var(--text-muted)', padding: '16px', borderRight: '1px solid var(--border-light)' }}
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={() => {
+                  removeTemplate(deleteTemplateConfirm.id);
+                  setDeleteTemplateConfirm(null);
+                }}
+                className="flex-1 font-medium active:opacity-60"
+                style={{ color: '#FF3B30', padding: '16px' }}
+              >
+                {t('common.delete')}
               </button>
             </div>
           </div>

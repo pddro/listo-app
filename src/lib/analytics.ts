@@ -142,6 +142,22 @@ export const analytics = {
     }
   },
 
+  // Track when a template is created
+  templateCreated: async (type: 'personal' | 'community' = 'personal') => {
+    if (isNative && FirebaseAnalytics) {
+      try {
+        await FirebaseAnalytics.logEvent({
+          name: 'template_created',
+          params: { type },
+        });
+      } catch (e) {
+        console.warn('[Analytics] Failed to log template_created:', e);
+      }
+    } else {
+      trackEvent("template_created", "engagement", type);
+    }
+  },
+
   pageVisit: (page: string) => {
     trackPageView(page);
   },

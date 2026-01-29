@@ -322,6 +322,7 @@
     "edit": "Edit",
     "close": "Close",
     "link": "link",
+    "back": "Back",
     "backToHome": "Back to Home"
   },
   "templates": {
@@ -440,6 +441,22 @@
     "listTitle": "List Title",
     "goHome": "Go Home",
     "addToMyLists": "Add to My Lists",
-    "addedToLists": "Added to your lists!"
+    "addedToLists": "Added to your lists!",
+    "convertToTemplate": "Convert to Template",
+    "myTemplates": "My Templates",
+    "noTemplates": "No templates yet",
+    "templateSaved": "Template saved!",
+    "templateSubmitted": "Submitted for review!",
+    "useTemplate": {
+      "title": "Use Template",
+      "message": "Create a fresh list from this template?",
+      "create": "Create List"
+    },
+    "deleteTemplate": {
+      "title": "Delete Template?",
+      "message": "\"{title}\" will be removed from your templates."
+    },
+    "editTemplate": "Edit Template",
+    "duplicateTemplate": "Duplicate Template"
   }
 }

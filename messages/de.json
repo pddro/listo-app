@@ -330,7 +330,8 @@
     "edit": "Bearbeiten",
     "close": "Schließen",
     "link": "Link",
-    "backToHome": "Back to Home"
+    "back": "Zurück",
+    "backToHome": "Zurück zur Startseite"
   },
   "templates": {
     "title": "Templates",

@@ -330,7 +330,8 @@
     "edit": "편집",
     "close": "닫기",
     "link": "링크",
-    "backToHome": "Back to Home"
+    "back": "뒤로",
+    "backToHome": "홈으로 돌아가기"
   },
   "templates": {
     "title": "Templates",

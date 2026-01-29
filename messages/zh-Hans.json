@@ -330,7 +330,8 @@
     "edit": "编辑",
     "close": "关闭",
     "link": "链接",
-    "backToHome": "Back to Home"
+    "back": "返回",
+    "backToHome": "返回首页"
   },
   "templates": {
     "title": "Templates",

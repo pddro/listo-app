@@ -675,10 +675,11 @@ export function ListContainer({
             if (!isHeader) {
               return (
                 <div
-                  className="bg-[var(--bg-primary)] rounded-lg px-4 py-2 shadow-xl"
+                  className="bg-[var(--bg-primary)] rounded-lg shadow-xl"
                   style={{
                     boxShadow: '0 20px 40px rgba(0,0,0,0.15), 0 8px 16px rgba(0,0,0,0.1)',
                     maxWidth: '400px',
+                    padding: '8px 8px',
                   }}
                 >
                   <div className="flex items-center gap-3">
