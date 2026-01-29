@@ -419,7 +419,7 @@ export default function TemplateDetailPage() {
                   className="rounded-full text-xs font-medium"
                   style={{ backgroundColor: primaryColor, color: 'white', padding: '6px 12px' }}
                 >
-                  ✓ Official
+                  ✓ {t('templates.official')}
                 </span>
               )}
             </div>

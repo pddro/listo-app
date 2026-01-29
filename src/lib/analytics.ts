@@ -93,7 +93,7 @@ export const analytics = {
   },
 
   // Track when a list is shared
-  listShared: async (method: 'native_share' | 'copy_link' = 'native_share') => {
+  listShared: async (method: 'native_share' | 'copy_link' | 'share_click' = 'native_share') => {
     if (isNative && FirebaseAnalytics) {
       try {
         await FirebaseAnalytics.logEvent({

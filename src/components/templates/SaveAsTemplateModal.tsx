@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { TemplateCategory, TEMPLATE_CATEGORIES } from '@/types';
 import { ThemeColors } from '@/lib/gemini';
 import { usePersonalTemplates } from '@/lib/hooks/usePersonalTemplates';
+import { analytics } from '@/lib/analytics';
 
 interface SaveAsTemplateModalProps {
   listId: string;
@@ -84,6 +85,9 @@ export function SaveAsTemplateModal({
           publicTemplateId: data.template_id,
         });
       }
+
+      // Track analytics
+      analytics.templateCreated(makePublic ? 'community' : 'personal');
 
       onSuccess?.();
       onClose();

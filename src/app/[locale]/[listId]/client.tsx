@@ -260,6 +260,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
 
   const handleShareClick = () => {
     setShowShareView(true);
+    analytics.listShared('share_click');
   };
 
   const handleCopyUrl = async () => {

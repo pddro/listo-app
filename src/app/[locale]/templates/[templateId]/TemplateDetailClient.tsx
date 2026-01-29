@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { TemplateWithItems } from '@/types';
 import { useRecentListsWeb } from '@/lib/hooks/useRecentListsWeb';
+import { analytics } from '@/lib/analytics';
 
 interface Props {
   template: TemplateWithItems;
@@ -31,6 +32,9 @@ export default function TemplateDetailClient({ template }: Props) {
       if (!response.ok) {
         throw new Error(data.error || 'Failed to use template');
       }
+
+      // Track analytics
+      analytics.templateUsed(template.id, template.template_category);
 
       // Save to local storage so it appears in recent lists
       addList(data.list_id, template.title, template.theme?.primary || null);
