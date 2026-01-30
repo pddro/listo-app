@@ -12,6 +12,8 @@ import { useRecentLists, SavedList } from '@/lib/hooks/useRecentLists';
 import { useHomeTheme } from '@/lib/hooks/useHomeTheme';
 import { HomeThemeModal } from '@/mobile/components/HomeThemeModal';
 import { SaveAsTemplateModal } from '@/mobile/components/SaveAsTemplateModal';
+import { OnboardingWalkthrough } from '@/mobile/components/OnboardingWalkthrough';
+import { useOnboardingState } from '@/mobile/hooks/useOnboardingState';
 import { ThemeColors } from '@/lib/gemini';
 import { useAppState } from '@/mobile/context/AppStateContext';
 import { usePersonalTemplates, PersonalTemplate } from '@/mobile/hooks/usePersonalTemplates';
@@ -534,6 +536,7 @@ export default function HomePage() {
   const [tutorialCompleted, setTutorialCompleted] = useState(true); // Default to true to hide until loaded
   const [templateModalList, setTemplateModalList] = useState<SavedList | null>(null);
   const { templates: personalTemplates, addTemplate, removeTemplate, updateTemplate, isLoading: isTemplatesLoading } = usePersonalTemplates();
+  const { hasCompletedOnboarding, completeOnboarding } = useOnboardingState();
 
   // Template action states
   const [useTemplateConfirm, setUseTemplateConfirm] = useState<PersonalTemplate | null>(null);
@@ -2025,6 +2028,11 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Onboarding walkthrough - shows on first launch */}
+      {hasCompletedOnboarding === false && (
+        <OnboardingWalkthrough onComplete={completeOnboarding} />
       )}
     </div>
   );

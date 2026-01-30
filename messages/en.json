@@ -392,6 +392,30 @@
     "openGeneric": "Open this list in the Listo app",
     "open": "OPEN"
   },
+  "onboarding": {
+    "shareableLinks": {
+      "title": "Share with anyone",
+      "description": "Send your list link via any app. Recipients can view and edit instantly - no app download required."
+    },
+    "noAppNeeded": {
+      "title": "Works everywhere",
+      "description": "Web or mobile, chat or email. Your lists sync in real-time on any device with a browser."
+    },
+    "dictation": {
+      "title": "Speak your list",
+      "description": "Tap the microphone and dictate in any language. AI transcribes and organizes automatically."
+    },
+    "aiPower": {
+      "title": "AI-powered lists",
+      "description": "Start with a period to generate items from a description. Use ! to reorganize or transform your list."
+    },
+    "themes": {
+      "title": "Make it yours",
+      "description": "Type style: followed by any description to create custom themes for your lists and home screen."
+    },
+    "getStarted": "Get Started",
+    "swipeHint": "Swipe to continue"
+  },
   "mobile": {
     "taglineShort": "Create a list. Share the link.",
     "placeholders": [

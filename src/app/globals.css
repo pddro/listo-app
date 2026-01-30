@@ -232,6 +232,18 @@ input::placeholder {
   color: var(--text-muted);
 }
 
+/* Onboarding button fade in animation */
+@keyframes onboarding-button-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Error toast fade in up animation */
 @keyframes fadeInUp {
   0% {

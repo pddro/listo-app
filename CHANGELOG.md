@@ -26,6 +26,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Mobile: "Browse Community Templates" button on Home screen
   - Analytics tracking for template usage
 
+- **Mobile Onboarding Walkthrough**
+  - Swipeable 5-page intro showcasing Listo's key features
+  - Page 1: Shareable links - no app needed for recipients
+  - Page 2: Works everywhere - web, mobile, any device
+  - Page 3: Voice dictation in any language
+  - Page 4: AI-powered list generation and manipulation
+  - Page 5: Custom themes with simple commands
+  - Shows only on first launch, persisted via Capacitor Preferences
+  - Reusable component architecture for easy page additions/removals
+
 - **Delightful UX Architecture (Mobile)**
   - Added `AppStateContext` for global state management and list caching
   - Persistent background layer prevents white flash during navigation
