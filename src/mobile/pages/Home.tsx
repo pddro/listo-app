@@ -1358,12 +1358,12 @@ export default function HomePage() {
               {!value && (
                 <div
                   className={`
-                    absolute left-4 top-1/2 -translate-y-1/2
+                    absolute left-4 top-0 bottom-0
                     text-gray-400 pointer-events-none
-                    transition-opacity duration-200
+                    transition-opacity duration-200 flex items-center
                     ${isPlaceholderFading ? 'opacity-0' : 'opacity-100'}
                   `}
-                  style={{ fontSize: '17px' }}
+                  style={{ fontSize: '17px', lineHeight: '1' }}
                 >
                   {placeholders[placeholderIndex] || '...'}
                 </div>

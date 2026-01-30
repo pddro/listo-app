@@ -46,7 +46,7 @@
       "instruction": "Escribe <code>estilo: atardecer en el mar</code> en tu lista para personalizarla"
     },
     "tips": {
-      "title": "Consejos",
+      "title": "Tips",
       "items": [
         "Escribe ... para generar elementos con IA",
         "Escribe ! para transformar tu lista",
@@ -302,6 +302,38 @@
     "matrix": "matrix",
     "birthday": "cumpleaños"
   },
+  "themeSuggestions": [
+    "Atardecer oceánico",
+    "Mañana boscosa",
+    "Neón cyberpunk",
+    "Jazz nocturno",
+    "Flor cerezo",
+    "Oro desértico",
+    "Escarcha ártica",
+    "Sueños lavanda",
+    "Paraíso tropical",
+    "Sepia vintage",
+    "Algodón dulce",
+    "Ciudad esmeralda",
+    "Hojas otoñales",
+    "Arrecife coral",
+    "Noche tormentosa",
+    "Limón fresco",
+    "Jardín rosas",
+    "Nebulosa espacial",
+    "Menta fresca",
+    "Playa atardecer",
+    "Niebla montaña",
+    "Violeta eléctrico",
+    "Café cálido",
+    "Pradera primaveral",
+    "Plata lunar",
+    "Durazno dulce",
+    "Hormigón urbano",
+    "Arcoíris brillante",
+    "Armonía salvia",
+    "Brillo luciérnaga"
+  ],
   "welcome": {
     "title": "¡Bienvenido a Listo!",
     "subtitle": "La forma más sencilla de crear y compartir listas",
@@ -422,7 +454,7 @@
     },
     "duplicate": "Duplicar",
     "tips": {
-      "title": "Consejos",
+      "title": "Tips",
       "aiGenerate": {
         "title": "Generar con IA",
         "description": "Comienza con {code} para generar elementos desde un texto"
