@@ -7,99 +7,104 @@ export default function PrivacyPage() {
   const t = useTranslations('home');
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary,#FAFAFA)]">
-      <div className="max-w-2xl mx-auto px-6 py-12">
-        {/* Header */}
-        <div className="mb-8">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-[var(--text-secondary,#6B7280)] hover:text-[var(--text-primary,#1F2937)] transition-colors mb-6"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            <span>Listo</span>
-          </Link>
-          <h1 className="text-3xl font-bold text-[var(--text-primary,#1F2937)] mb-2">
-            {t('privacy.title')}
-          </h1>
-          <p className="text-sm text-[var(--text-secondary,#6B7280)]">
-            {t('privacy.lastUpdated')}
-          </p>
-        </div>
-
-        {/* Content */}
-        <div className="space-y-8 text-[var(--text-primary,#1F2937)]">
-          {/* Introduction */}
-          <div className="space-y-4">
-            <p className="leading-relaxed">{t('privacy.content')}</p>
-            <p className="text-[var(--text-secondary,#6B7280)] italic">
-              {t('privacy.note')}
+    <div style={{ minHeight: '100vh', backgroundColor: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px' }}>
+      <div style={{ width: '100%', maxWidth: '672px' }}>
+        {/* Card Container */}
+        <div style={{ backgroundColor: 'white', borderRadius: '16px', boxShadow: '0 10px 40px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
+          {/* Header */}
+          <div style={{ backgroundColor: '#3B82F6', padding: '48px 40px', color: 'white' }}>
+            <Link
+              href="/"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.8)', marginBottom: '32px', fontSize: '14px', textDecoration: 'none' }}
+            >
+              <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span>Back to Listo</span>
+            </Link>
+            <h1 style={{ fontSize: '30px', fontWeight: 'bold', marginBottom: '12px', letterSpacing: '-0.025em' }}>
+              {t('privacy.title')}
+            </h1>
+            <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)' }}>
+              {t('privacy.lastUpdated')}
             </p>
           </div>
 
-          {/* Public Use Section */}
-          <section>
-            <h2 className="text-xl font-semibold mb-3">
-              {t('privacy.sections.publicUse.title')}
-            </h2>
-            <p className="leading-relaxed text-[var(--text-secondary,#374151)]">
-              {t('privacy.sections.publicUse.content')}
-            </p>
-          </section>
+          {/* Content */}
+          <div style={{ padding: '48px 40px' }}>
+            {/* Introduction */}
+            <div style={{ marginBottom: '48px' }}>
+              <p style={{ lineHeight: '1.7', color: '#334155' }}>{t('privacy.content')}</p>
+              <div style={{ backgroundColor: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: '8px', padding: '12px 16px', marginTop: '16px' }}>
+                <p style={{ color: '#92400E', fontSize: '14px' }}>
+                  {t('privacy.note')}
+                </p>
+              </div>
+            </div>
 
-          {/* Data Collection Section */}
-          <section>
-            <h2 className="text-xl font-semibold mb-3">
-              {t('privacy.sections.dataCollection.title')}
-            </h2>
-            <p className="leading-relaxed text-[var(--text-secondary,#374151)]">
-              {t('privacy.sections.dataCollection.content')}
-            </p>
-          </section>
+            {/* Public Use Section */}
+            <section style={{ marginBottom: '40px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: '600', color: '#0F172A', marginBottom: '16px', letterSpacing: '-0.025em' }}>
+                {t('privacy.sections.publicUse.title')}
+              </h2>
+              <p style={{ lineHeight: '1.7', color: '#475569' }}>
+                {t('privacy.sections.publicUse.content')}
+              </p>
+            </section>
 
-          {/* Analytics Section */}
-          <section>
-            <h2 className="text-xl font-semibold mb-3">
-              {t('privacy.sections.analytics.title')}
-            </h2>
-            <p className="leading-relaxed text-[var(--text-secondary,#374151)]">
-              {t('privacy.sections.analytics.content')}
-            </p>
-          </section>
+            {/* Data Collection Section */}
+            <section style={{ marginBottom: '40px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: '600', color: '#0F172A', marginBottom: '16px', letterSpacing: '-0.025em' }}>
+                {t('privacy.sections.dataCollection.title')}
+              </h2>
+              <p style={{ lineHeight: '1.7', color: '#475569' }}>
+                {t('privacy.sections.dataCollection.content')}
+              </p>
+            </section>
 
-          {/* Contact Section */}
-          <section>
-            <h2 className="text-xl font-semibold mb-3">
-              {t('privacy.sections.contact.title')}
-            </h2>
-            <p className="leading-relaxed text-[var(--text-secondary,#374151)]">
-              {t('privacy.sections.contact.content')}{' '}
-              <a
-                href="mailto:pedro@listo.to"
-                className="text-[var(--primary,#3B82F6)] hover:underline"
-              >
-                pedro@listo.to
-              </a>
-            </p>
-          </section>
+            {/* Analytics Section */}
+            <section style={{ marginBottom: '40px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: '600', color: '#0F172A', marginBottom: '16px', letterSpacing: '-0.025em' }}>
+                {t('privacy.sections.analytics.title')}
+              </h2>
+              <p style={{ lineHeight: '1.7', color: '#475569' }}>
+                {t('privacy.sections.analytics.content')}
+              </p>
+            </section>
 
-          {/* Changes Notice */}
-          <section className="border-t border-[var(--border-light,#E5E7EB)] pt-6">
-            <p className="text-sm text-[var(--text-secondary,#6B7280)] leading-relaxed">
-              {t('privacy.sections.changes')}
-            </p>
-          </section>
-        </div>
+            {/* Contact Section */}
+            <section style={{ marginBottom: '40px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: '600', color: '#0F172A', marginBottom: '16px', letterSpacing: '-0.025em' }}>
+                {t('privacy.sections.contact.title')}
+              </h2>
+              <p style={{ lineHeight: '1.7', color: '#475569' }}>
+                {t('privacy.sections.contact.content')}{' '}
+                <a
+                  href="mailto:hello@listo.to"
+                  style={{ color: '#3B82F6', fontWeight: '500' }}
+                >
+                  hello@listo.to
+                </a>
+              </p>
+            </section>
 
-        {/* Footer */}
-        <div className="mt-12 pt-8 border-t border-[var(--border-light,#E5E7EB)]">
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center px-6 py-3 bg-[var(--primary,#3B82F6)] text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
-          >
-            Back to Listo
-          </Link>
+            {/* Changes Notice */}
+            <section style={{ borderTop: '1px solid #E2E8F0', paddingTop: '32px' }}>
+              <p style={{ fontSize: '14px', color: '#64748B', lineHeight: '1.7' }}>
+                {t('privacy.sections.changes')}
+              </p>
+            </section>
+          </div>
+
+          {/* Footer */}
+          <div style={{ padding: '32px 40px', backgroundColor: '#F8FAFC', borderTop: '1px solid #F1F5F9' }}>
+            <Link
+              href="/"
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '12px 32px', backgroundColor: '#3B82F6', color: 'white', fontWeight: '500', borderRadius: '12px', textDecoration: 'none' }}
+            >
+              Back to Listo
+            </Link>
+          </div>
         </div>
       </div>
     </div>
