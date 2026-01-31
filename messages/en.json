@@ -33,7 +33,7 @@
     "templates": {
       "browse": "Browse Templates",
       "browseCommunity": "Browse Community Templates",
-      "browseCommunityCount": "Browse {count} Community Templates",
+      "browseCommunityCount": "Browse {{count}} Community Templates",
       "browseDescription": "Start with a pre-made list",
       "myTemplates": "My Templates"
     },
@@ -110,7 +110,7 @@
       "generate": "AI will generate items",
       "transform": "AI will transform list",
       "theme": "AI will generate theme",
-      "addingItems": "Adding {count} items",
+      "addingItems": "Adding {{count}} items",
       "emoji": "Trigger emoji mode",
       "title": "Generate list title",
       "newList": "Create new list in new tab",
@@ -420,7 +420,7 @@
   },
   "appBanner": {
     "appName": "Listo",
-    "openWithTitle": "Open \"{title}\" in the app",
+    "openWithTitle": "Open \"{{title}}\" in the app",
     "openGeneric": "Open this list in the Listo app",
     "open": "OPEN"
   },
@@ -464,11 +464,11 @@
     ],
     "deleteList": {
       "title": "Delete List?",
-      "message": "\"{title}\" will be removed from your lists."
+      "message": "\"{{title}}\" will be removed from your lists."
     },
     "duplicateList": {
       "title": "Duplicate List?",
-      "message": "A copy of \"{title}\" will be created and opened."
+      "message": "A copy of \"{{title}}\" will be created and opened."
     },
     "duplicate": "Duplicate",
     "tips": {
@@ -510,7 +510,7 @@
     },
     "deleteTemplate": {
       "title": "Delete Template?",
-      "message": "\"{title}\" will be removed from your templates."
+      "message": "\"{{title}}\" will be removed from your templates."
     },
     "editTemplate": "Edit Template",
     "duplicateTemplate": "Duplicate Template"

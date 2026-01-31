@@ -33,7 +33,7 @@
     "templates": {
       "browse": "瀏覽範本",
       "browseCommunity": "瀏覽社群範本",
-      "browseCommunityCount": "瀏覽 {count} 個社群範本",
+      "browseCommunityCount": "瀏覽 {{count}} 個社群範本",
       "browseDescription": "從預製清單開始",
       "myTemplates": "我的範本"
     },
@@ -110,7 +110,7 @@
       "generate": "AI 將生成項目",
       "transform": "AI 將轉換清單",
       "theme": "AI 將生成主題",
-      "addingItems": "正在新增 {count} 個項目",
+      "addingItems": "正在新增 {{count}} 個項目",
       "emoji": "啟用表情符號模式",
       "title": "生成清單標題",
       "newList": "在新分頁建立新清單",
@@ -334,6 +334,30 @@
     "鼠尾草韻",
     "螢火蟲光"
   ],
+  "onboarding": {
+    "shareableLinks": {
+      "title": "與任何人分享",
+      "description": "透過任何應用程式傳送清單連結。收件人無需下載應用程式即可立即檢視和編輯。"
+    },
+    "noAppNeeded": {
+      "title": "隨處可用",
+      "description": "網頁或手機，聊天或郵件。你的清單在任何有瀏覽器的裝置上即時同步。"
+    },
+    "dictation": {
+      "title": "語音輸入清單",
+      "description": "點擊麥克風，用任何語言口述。AI 自動轉錄並整理。"
+    },
+    "aiPower": {
+      "title": "AI 驅動的清單",
+      "description": "以句號開頭，從描述生成項目。使用 ! 重新組織或轉換你的清單。"
+    },
+    "themes": {
+      "title": "個性化訂製",
+      "description": "輸入 風格: 加任意描述，為你的清單和主畫面建立自訂主題。"
+    },
+    "getStarted": "開始使用",
+    "swipeHint": "滑動繼續"
+  },
   "welcome": {
     "title": "歡迎使用 Listo！",
     "subtitle": "建立和分享清單的最簡單方式",
@@ -426,7 +450,7 @@
   },
   "appBanner": {
     "appName": "Listo",
-    "openWithTitle": "在應用程式中開啟「{title}」",
+    "openWithTitle": "在應用程式中開啟「{{title}}」",
     "openGeneric": "在 Listo 應用程式中開啟此清單",
     "open": "開啟"
   },
@@ -446,13 +470,17 @@
     ],
     "deleteList": {
       "title": "刪除清單？",
-      "message": "「{title}」將從你的清單中移除。"
+      "message": "「{{title}}」將從你的清單中移除。"
     },
     "duplicateList": {
       "title": "複製清單？",
-      "message": "將建立並開啟「{title}」的副本。"
+      "message": "將建立並開啟「{{title}}」的副本。"
     },
     "duplicate": "複製",
+    "deleteTemplate": {
+      "title": "刪除範本？",
+      "message": "「{{title}}」將從你的範本中移除。"
+    },
     "tips": {
       "title": "小技巧",
       "aiGenerate": {

@@ -33,7 +33,7 @@
     "templates": {
       "browse": "Vorlagen durchsuchen",
       "browseCommunity": "Community-Vorlagen durchsuchen",
-      "browseCommunityCount": "{count} Community-Vorlagen durchsuchen",
+      "browseCommunityCount": "{{count}} Community-Vorlagen durchsuchen",
       "browseDescription": "Mit einer vorgefertigten Liste beginnen",
       "myTemplates": "Meine Vorlagen"
     },
@@ -110,7 +110,7 @@
       "generate": "KI wird Einträge generieren",
       "transform": "KI wird Liste transformieren",
       "theme": "KI wird Design generieren",
-      "addingItems": "{count} Einträge werden hinzugefügt",
+      "addingItems": "{{count}} Einträge werden hinzugefügt",
       "emoji": "Emoji-Modus aktivieren",
       "title": "Listentitel generieren",
       "newList": "Neue Liste in neuem Tab erstellen",
@@ -334,6 +334,30 @@
     "Salbei Harmonie",
     "Glühwürmchen Schein"
   ],
+  "onboarding": {
+    "shareableLinks": {
+      "title": "Mit jedem teilen",
+      "description": "Sende deinen Listenlink über jede App. Empfänger können sofort ansehen und bearbeiten – kein App-Download nötig."
+    },
+    "noAppNeeded": {
+      "title": "Funktioniert überall",
+      "description": "Web oder Mobil, Chat oder E-Mail. Deine Listen synchronisieren in Echtzeit auf jedem Gerät mit Browser."
+    },
+    "dictation": {
+      "title": "Sprich deine Liste",
+      "description": "Tippe auf das Mikrofon und diktiere in jeder Sprache. KI transkribiert und organisiert automatisch."
+    },
+    "aiPower": {
+      "title": "KI-gestützte Listen",
+      "description": "Beginne mit einem Punkt, um Einträge aus einer Beschreibung zu generieren. Nutze ! zum Reorganisieren oder Transformieren."
+    },
+    "themes": {
+      "title": "Mach es zu deinem",
+      "description": "Tippe stil: gefolgt von einer Beschreibung, um individuelle Designs für deine Listen und Startseite zu erstellen."
+    },
+    "getStarted": "Los geht's",
+    "swipeHint": "Wischen zum Fortfahren"
+  },
   "welcome": {
     "title": "Willkommen bei Listo!",
     "subtitle": "Der einfachste Weg, Listen zu erstellen und zu teilen",
@@ -426,7 +450,7 @@
   },
   "appBanner": {
     "appName": "Listo",
-    "openWithTitle": "\"{title}\" in der App öffnen",
+    "openWithTitle": "\"{{title}}\" in der App öffnen",
     "openGeneric": "Diese Liste in der Listo-App öffnen",
     "open": "ÖFFNEN"
   },
@@ -446,13 +470,17 @@
     ],
     "deleteList": {
       "title": "Liste löschen?",
-      "message": "\"{title}\" wird aus deinen Listen entfernt."
+      "message": "\"{{title}}\" wird aus deinen Listen entfernt."
     },
     "duplicateList": {
       "title": "Liste duplizieren?",
-      "message": "Eine Kopie von \"{title}\" wird erstellt und geöffnet."
+      "message": "Eine Kopie von \"{{title}}\" wird erstellt und geöffnet."
     },
     "duplicate": "Duplizieren",
+    "deleteTemplate": {
+      "title": "Vorlage löschen?",
+      "message": "\"{{title}}\" wird aus deinen Vorlagen entfernt."
+    },
     "tips": {
       "title": "Tipps",
       "aiGenerate": {

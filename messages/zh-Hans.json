@@ -33,7 +33,7 @@
     "templates": {
       "browse": "浏览模板",
       "browseCommunity": "浏览社区模板",
-      "browseCommunityCount": "浏览 {count} 个社区模板",
+      "browseCommunityCount": "浏览 {{count}} 个社区模板",
       "browseDescription": "从预制清单开始",
       "myTemplates": "我的模板"
     },
@@ -110,7 +110,7 @@
       "generate": "AI 将生成项目",
       "transform": "AI 将转换清单",
       "theme": "AI 将生成主题",
-      "addingItems": "正在添加 {count} 个项目",
+      "addingItems": "正在添加 {{count}} 个项目",
       "emoji": "启用表情符号模式",
       "title": "生成清单标题",
       "newList": "在新标签页创建新清单",
@@ -334,6 +334,30 @@
     "鼠尾草韵",
     "萤火虫光"
   ],
+  "onboarding": {
+    "shareableLinks": {
+      "title": "与任何人分享",
+      "description": "通过任何应用发送清单链接。接收者无需下载应用即可立即查看和编辑。"
+    },
+    "noAppNeeded": {
+      "title": "随处可用",
+      "description": "网页或手机，聊天或邮件。你的清单在任何有浏览器的设备上实时同步。"
+    },
+    "dictation": {
+      "title": "语音输入清单",
+      "description": "点击麦克风，用任何语言口述。AI 自动转录并整理。"
+    },
+    "aiPower": {
+      "title": "AI 驱动的清单",
+      "description": "以句号开头，从描述生成项目。使用 ! 重新组织或转换你的清单。"
+    },
+    "themes": {
+      "title": "个性化定制",
+      "description": "输入 风格: 加任意描述，为你的清单和主屏幕创建自定义主题。"
+    },
+    "getStarted": "开始使用",
+    "swipeHint": "滑动继续"
+  },
   "welcome": {
     "title": "欢迎使用 Listo！",
     "subtitle": "创建和分享清单的最简单方式",
@@ -425,7 +449,7 @@
   },
   "appBanner": {
     "appName": "Listo",
-    "openWithTitle": "在应用中打开「{title}」",
+    "openWithTitle": "在应用中打开「{{title}}」",
     "openGeneric": "在 Listo 应用中打开此清单",
     "open": "打开"
   },
@@ -445,13 +469,17 @@
     ],
     "deleteList": {
       "title": "删除清单？",
-      "message": "「{title}」将从你的清单中移除。"
+      "message": "「{{title}}」将从你的清单中移除。"
     },
     "duplicateList": {
       "title": "复制清单？",
-      "message": "将创建并打开「{title}」的副本。"
+      "message": "将创建并打开「{{title}}」的副本。"
     },
     "duplicate": "复制",
+    "deleteTemplate": {
+      "title": "删除模板？",
+      "message": "「{{title}}」将从你的模板中移除。"
+    },
     "tips": {
       "title": "小技巧",
       "aiGenerate": {

@@ -33,7 +33,7 @@
     "templates": {
       "browse": "テンプレートを見る",
       "browseCommunity": "コミュニティテンプレートを見る",
-      "browseCommunityCount": "{count}件のコミュニティテンプレートを見る",
+      "browseCommunityCount": "{{count}}件のコミュニティテンプレートを見る",
       "browseDescription": "作成済みのリストから始める",
       "myTemplates": "マイテンプレート"
     },
@@ -110,7 +110,7 @@
       "generate": "AIがアイテムを生成します",
       "transform": "AIがリストを変換します",
       "theme": "AIがテーマを生成します",
-      "addingItems": "{count}件のアイテムを追加中",
+      "addingItems": "{{count}}件のアイテムを追加中",
       "emoji": "絵文字モードをオン",
       "title": "リストタイトルを生成",
       "newList": "新しいタブで新規リストを作成",
@@ -334,6 +334,30 @@
     "セージ調和",
     "蛍の光"
   ],
+  "onboarding": {
+    "shareableLinks": {
+      "title": "誰とでも共有",
+      "description": "リストのリンクをどのアプリからでも送信。受信者はアプリのダウンロードなしで即座に閲覧・編集できます。"
+    },
+    "noAppNeeded": {
+      "title": "どこでも動作",
+      "description": "WebでもモバイルでもOK。チャットでもメールでも。ブラウザがあればどのデバイスでもリアルタイム同期。"
+    },
+    "dictation": {
+      "title": "声でリスト作成",
+      "description": "マイクをタップしてどの言語でも音声入力。AIが自動で文字起こしして整理します。"
+    },
+    "aiPower": {
+      "title": "AI搭載リスト",
+      "description": "ピリオドで始めて説明からアイテムを生成。!を使ってリストを再編成・変換。"
+    },
+    "themes": {
+      "title": "自分らしくカスタマイズ",
+      "description": "スタイル: に続けて説明を入力し、リストとホーム画面にカスタムテーマを作成。"
+    },
+    "getStarted": "はじめる",
+    "swipeHint": "スワイプして続ける"
+  },
   "welcome": {
     "title": "Listoへようこそ！",
     "subtitle": "リストを作成・共有する最も簡単な方法",
@@ -425,7 +449,7 @@
   },
   "appBanner": {
     "appName": "Listo",
-    "openWithTitle": "アプリで「{title}」を開く",
+    "openWithTitle": "アプリで「{{title}}」を開く",
     "openGeneric": "Listoアプリでこのリストを開く",
     "open": "開く"
   },
@@ -445,13 +469,17 @@
     ],
     "deleteList": {
       "title": "リストを削除しますか？",
-      "message": "「{title}」がリストから削除されます。"
+      "message": "「{{title}}」がリストから削除されます。"
     },
     "duplicateList": {
       "title": "リストを複製しますか？",
-      "message": "「{title}」のコピーが作成され、開きます。"
+      "message": "「{{title}}」のコピーが作成され、開きます。"
     },
     "duplicate": "複製",
+    "deleteTemplate": {
+      "title": "テンプレートを削除しますか？",
+      "message": "「{{title}}」がテンプレートから削除されます。"
+    },
     "tips": {
       "title": "ヒント",
       "aiGenerate": {

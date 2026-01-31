@@ -33,7 +33,7 @@
     "templates": {
       "browse": "Parcourir les modèles",
       "browseCommunity": "Parcourir les modèles de la communauté",
-      "browseCommunityCount": "Parcourir {count} modèles de la communauté",
+      "browseCommunityCount": "Parcourir {{count}} modèles de la communauté",
       "browseDescription": "Commencez avec une liste préfaite",
       "myTemplates": "Mes modèles"
     },
@@ -110,7 +110,7 @@
       "generate": "L'IA va générer des éléments",
       "transform": "L'IA va transformer la liste",
       "theme": "L'IA va générer un thème",
-      "addingItems": "Ajout de {count} éléments",
+      "addingItems": "Ajout de {{count}} éléments",
       "emoji": "Activer le mode emoji",
       "title": "Générer le titre de la liste",
       "newList": "Créer une nouvelle liste dans un nouvel onglet",
@@ -332,6 +332,30 @@
     "Harmonie sauge",
     "Lueur luciole"
   ],
+  "onboarding": {
+    "shareableLinks": {
+      "title": "Partagez avec n'importe qui",
+      "description": "Envoyez le lien de votre liste via n'importe quelle app. Les destinataires peuvent voir et modifier instantanément – sans télécharger d'app."
+    },
+    "noAppNeeded": {
+      "title": "Fonctionne partout",
+      "description": "Web ou mobile, chat ou e-mail. Vos listes se synchronisent en temps réel sur tout appareil avec un navigateur."
+    },
+    "dictation": {
+      "title": "Dictez votre liste",
+      "description": "Touchez le microphone et dictez dans n'importe quelle langue. L'IA transcrit et organise automatiquement."
+    },
+    "aiPower": {
+      "title": "Listes propulsées par l'IA",
+      "description": "Commencez par un point pour générer des éléments à partir d'une description. Utilisez ! pour réorganiser ou transformer votre liste."
+    },
+    "themes": {
+      "title": "Personnalisez-la",
+      "description": "Tapez style: suivi d'une description pour créer des thèmes personnalisés pour vos listes et écran d'accueil."
+    },
+    "getStarted": "Commencer",
+    "swipeHint": "Glissez pour continuer"
+  },
   "welcome": {
     "title": "Bienvenue sur Listo !",
     "subtitle": "La façon la plus simple de créer et partager des listes",
@@ -423,7 +447,7 @@
   },
   "appBanner": {
     "appName": "Listo",
-    "openWithTitle": "Ouvrir \"{title}\" dans l'app",
+    "openWithTitle": "Ouvrir \"{{title}}\" dans l'app",
     "openGeneric": "Ouvrir cette liste dans l'app Listo",
     "open": "OUVRIR"
   },
@@ -443,13 +467,17 @@
     ],
     "deleteList": {
       "title": "Supprimer la liste ?",
-      "message": "« {title} » sera supprimée de vos listes."
+      "message": "« {{title}} » sera supprimée de vos listes."
     },
     "duplicateList": {
       "title": "Dupliquer la liste ?",
-      "message": "Une copie de « {title} » sera créée et ouverte."
+      "message": "Une copie de « {{title}} » sera créée et ouverte."
     },
     "duplicate": "Dupliquer",
+    "deleteTemplate": {
+      "title": "Supprimer le modèle ?",
+      "message": "« {{title}} » sera supprimé de vos modèles."
+    },
     "tips": {
       "title": "Astuces",
       "aiGenerate": {

@@ -33,7 +33,7 @@
     "templates": {
       "browse": "Explorar Modelos",
       "browseCommunity": "Explorar Modelos da Comunidade",
-      "browseCommunityCount": "Explorar {count} Modelos da Comunidade",
+      "browseCommunityCount": "Explorar {{count}} Modelos da Comunidade",
       "browseDescription": "Comece com uma lista pronta",
       "myTemplates": "Meus Modelos"
     },
@@ -110,7 +110,7 @@
       "generate": "IA vai gerar itens",
       "transform": "IA vai transformar a lista",
       "theme": "IA vai gerar tema",
-      "addingItems": "Adicionando {count} itens",
+      "addingItems": "Adicionando {{count}} itens",
       "emoji": "Ativar modo emoji",
       "title": "Gerar título da lista",
       "newList": "Criar nova lista em nova aba",
@@ -334,6 +334,30 @@
     "Harmonia sálvia",
     "Brilho vagalume"
   ],
+  "onboarding": {
+    "shareableLinks": {
+      "title": "Compartilhe com qualquer pessoa",
+      "description": "Envie o link da sua lista por qualquer app. Os destinatários podem ver e editar instantaneamente – sem precisar baixar nenhum app."
+    },
+    "noAppNeeded": {
+      "title": "Funciona em qualquer lugar",
+      "description": "Web ou mobile, chat ou e-mail. Suas listas sincronizam em tempo real em qualquer dispositivo com navegador."
+    },
+    "dictation": {
+      "title": "Fale sua lista",
+      "description": "Toque no microfone e dite em qualquer idioma. A IA transcreve e organiza automaticamente."
+    },
+    "aiPower": {
+      "title": "Listas com IA",
+      "description": "Comece com um ponto para gerar itens a partir de uma descrição. Use ! para reorganizar ou transformar sua lista."
+    },
+    "themes": {
+      "title": "Personalize",
+      "description": "Digite estilo: seguido de qualquer descrição para criar temas personalizados para suas listas e tela inicial."
+    },
+    "getStarted": "Começar",
+    "swipeHint": "Deslize para continuar"
+  },
   "welcome": {
     "title": "Bem-vindo ao Listo!",
     "subtitle": "A forma mais simples de criar e compartilhar listas",
@@ -425,7 +449,7 @@
   },
   "appBanner": {
     "appName": "Listo",
-    "openWithTitle": "Abrir \"{title}\" no app",
+    "openWithTitle": "Abrir \"{{title}}\" no app",
     "openGeneric": "Abrir esta lista no app Listo",
     "open": "ABRIR"
   },
@@ -445,13 +469,17 @@
     ],
     "deleteList": {
       "title": "Excluir lista?",
-      "message": "\"{title}\" será removida das suas listas."
+      "message": "\"{{title}}\" será removida das suas listas."
     },
     "duplicateList": {
       "title": "Duplicar lista?",
-      "message": "Uma cópia de \"{title}\" será criada e aberta."
+      "message": "Uma cópia de \"{{title}}\" será criada e aberta."
     },
     "duplicate": "Duplicar",
+    "deleteTemplate": {
+      "title": "Excluir modelo?",
+      "message": "\"{{title}}\" será removido dos seus modelos."
+    },
     "tips": {
       "title": "Dicas",
       "aiGenerate": {
