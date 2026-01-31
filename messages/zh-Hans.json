@@ -33,7 +33,7 @@
     "templates": {
       "browse": "浏览模板",
       "browseCommunity": "浏览社区模板",
-      "browseCommunityCount": "浏览 {{count}} 个社区模板",
+      "browseCommunityCount": "浏览 {count} 个社区模板",
       "browseDescription": "从预制清单开始",
       "myTemplates": "我的模板"
     },

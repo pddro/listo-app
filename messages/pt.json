@@ -33,7 +33,7 @@
     "templates": {
       "browse": "Explorar Modelos",
       "browseCommunity": "Explorar Modelos da Comunidade",
-      "browseCommunityCount": "Explorar {{count}} Modelos da Comunidade",
+      "browseCommunityCount": "Explorar {count} Modelos da Comunidade",
       "browseDescription": "Comece com uma lista pronta",
       "myTemplates": "Meus Modelos"
     },

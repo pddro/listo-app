@@ -33,7 +33,7 @@
     "templates": {
       "browse": "テンプレートを見る",
       "browseCommunity": "コミュニティテンプレートを見る",
-      "browseCommunityCount": "{{count}}件のコミュニティテンプレートを見る",
+      "browseCommunityCount": "{count}件のコミュニティテンプレートを見る",
       "browseDescription": "作成済みのリストから始める",
       "myTemplates": "マイテンプレート"
     },

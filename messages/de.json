@@ -33,7 +33,7 @@
     "templates": {
       "browse": "Vorlagen durchsuchen",
       "browseCommunity": "Community-Vorlagen durchsuchen",
-      "browseCommunityCount": "{{count}} Community-Vorlagen durchsuchen",
+      "browseCommunityCount": "{count} Community-Vorlagen durchsuchen",
       "browseDescription": "Mit einer vorgefertigten Liste beginnen",
       "myTemplates": "Meine Vorlagen"
     },

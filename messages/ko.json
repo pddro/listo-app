@@ -33,7 +33,7 @@
     "templates": {
       "browse": "템플릿 둘러보기",
       "browseCommunity": "커뮤니티 템플릿 둘러보기",
-      "browseCommunityCount": "{{count}}개의 커뮤니티 템플릿 둘러보기",
+      "browseCommunityCount": "{count}개의 커뮤니티 템플릿 둘러보기",
       "browseDescription": "미리 만들어진 리스트로 시작하기",
       "myTemplates": "내 템플릿"
     },

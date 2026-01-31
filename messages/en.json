@@ -33,7 +33,7 @@
     "templates": {
       "browse": "Browse Templates",
       "browseCommunity": "Browse Community Templates",
-      "browseCommunityCount": "Browse {{count}} Community Templates",
+      "browseCommunityCount": "Browse {count} Community Templates",
       "browseDescription": "Start with a pre-made list",
       "myTemplates": "My Templates"
     },

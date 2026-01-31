@@ -33,7 +33,7 @@
     "templates": {
       "browse": "瀏覽範本",
       "browseCommunity": "瀏覽社群範本",
-      "browseCommunityCount": "瀏覽 {{count}} 個社群範本",
+      "browseCommunityCount": "瀏覽 {count} 個社群範本",
       "browseDescription": "從預製清單開始",
       "myTemplates": "我的範本"
     },

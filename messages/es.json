@@ -33,7 +33,7 @@
     "templates": {
       "browse": "Explorar Plantillas",
       "browseCommunity": "Explorar Plantillas de la Comunidad",
-      "browseCommunityCount": "Explorar {{count}} Plantillas de la Comunidad",
+      "browseCommunityCount": "Explorar {count} Plantillas de la Comunidad",
       "browseDescription": "Comienza con una lista prediseñada",
       "myTemplates": "Mis Plantillas"
     },
