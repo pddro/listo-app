@@ -652,8 +652,9 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center bg-white"
+      className="min-h-screen flex flex-col items-center"
       style={{
+        backgroundColor: 'var(--bg-primary)',
         paddingLeft: 'max(16px, env(safe-area-inset-left))',
         paddingRight: 'max(16px, env(safe-area-inset-right))',
         paddingTop: 'max(48px, env(safe-area-inset-top, 48px))',

@@ -2,12 +2,12 @@
 
 /* Theme Colors - These can be overridden by AI-generated themes */
 :root {
-  /* Primary brand colors */
-  --primary: #47A1FF;
-  --primary-dark: #2B8AE8;
-  --primary-light: rgba(71, 161, 255, 0.2);
-  --primary-pale: rgba(71, 161, 255, 0.1);
-  --primary-glow: rgba(71, 161, 255, 0.4);
+  /* Primary brand colors - Mango Orange */
+  --primary: #E75F3E;
+  --primary-dark: #D14E2F;
+  --primary-light: rgba(231, 95, 62, 0.2);
+  --primary-pale: rgba(231, 95, 62, 0.1);
+  --primary-glow: rgba(231, 95, 62, 0.4);
 
   /* Text colors */
   --text-primary: #111827;
