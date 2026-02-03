@@ -1,7 +1,8 @@
 import createMiddleware from 'next-intl/middleware';
+import { NextRequest, NextResponse } from 'next/server';
 import { locales, defaultLocale } from './i18n/config';
 
-export default createMiddleware({
+const intlMiddleware = createMiddleware({
   // List of all supported locales
   locales,
 
@@ -14,6 +15,21 @@ export default createMiddleware({
   // Auto-detect locale from Accept-Language header on first visit
   localeDetection: true,
 });
+
+export default function middleware(request: NextRequest) {
+  const host = request.headers.get('host') || '';
+
+  // Redirect listo.to → listmango.com (preserve path)
+  if (host.includes('listo.to')) {
+    const url = new URL(request.url);
+    url.host = 'listmango.com';
+    url.protocol = 'https:';
+    return NextResponse.redirect(url, 301);
+  }
+
+  // Otherwise, run the i18n middleware
+  return intlMiddleware(request);
+}
 
 export const config = {
   // Match all paths except:
