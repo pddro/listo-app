@@ -13,11 +13,11 @@ import { ThemeColors } from '@/lib/gemini';
 
 // Default theme values (matches globals.css)
 const DEFAULT_THEME: ThemeColors = {
-  primary: '#47A1FF',
-  primaryDark: '#2B8AE8',
-  primaryLight: '#7DBEFF',
-  primaryPale: '#E8F4FF',
-  primaryGlow: 'rgba(71, 161, 255, 0.3)',
+  primary: '#E75F3E',
+  primaryDark: '#D14E2F',
+  primaryLight: '#F08060',
+  primaryPale: '#FDEAE6',
+  primaryGlow: 'rgba(231, 95, 62, 0.3)',
   textPrimary: '#1F2937',
   textSecondary: '#4B5563',
   textMuted: '#6B7280',
