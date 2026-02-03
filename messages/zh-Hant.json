@@ -450,7 +450,7 @@
   },
   "appBanner": {
     "appName": "List Mango",
-    "openWithTitle": "在應用程式中開啟「{{title}}」",
+    "openWithTitle": "在應用程式中開啟「{title}」",
     "openGeneric": "在 List Mango 應用程式中開啟此清單",
     "open": "開啟"
   },
@@ -470,16 +470,16 @@
     ],
     "deleteList": {
       "title": "刪除清單？",
-      "message": "「{{title}}」將從你的清單中移除。"
+      "message": "「{title}」將從你的清單中移除。"
     },
     "duplicateList": {
       "title": "複製清單？",
-      "message": "將建立並開啟「{{title}}」的副本。"
+      "message": "將建立並開啟「{title}」的副本。"
     },
     "duplicate": "複製",
     "deleteTemplate": {
       "title": "刪除範本？",
-      "message": "「{{title}}」將從你的範本中移除。"
+      "message": "「{title}」將從你的範本中移除。"
     },
     "tips": {
       "title": "小技巧",

@@ -420,7 +420,7 @@
   },
   "appBanner": {
     "appName": "List Mango",
-    "openWithTitle": "Open \"{{title}}\" in the app",
+    "openWithTitle": "Open \"{title}\" in the app",
     "openGeneric": "Open this list in the List Mango app",
     "open": "OPEN"
   },
@@ -464,11 +464,11 @@
     ],
     "deleteList": {
       "title": "Delete List?",
-      "message": "\"{{title}}\" will be removed from your lists."
+      "message": "\"{title}\" will be removed from your lists."
     },
     "duplicateList": {
       "title": "Duplicate List?",
-      "message": "A copy of \"{{title}}\" will be created and opened."
+      "message": "A copy of \"{title}\" will be created and opened."
     },
     "duplicate": "Duplicate",
     "tips": {
@@ -510,7 +510,7 @@
     },
     "deleteTemplate": {
       "title": "Delete Template?",
-      "message": "\"{{title}}\" will be removed from your templates."
+      "message": "\"{title}\" will be removed from your templates."
     },
     "editTemplate": "Edit Template",
     "duplicateTemplate": "Duplicate Template"

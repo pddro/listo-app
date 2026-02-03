@@ -450,7 +450,7 @@
   },
   "appBanner": {
     "appName": "List Mango",
-    "openWithTitle": "\"{{title}}\" in der App öffnen",
+    "openWithTitle": "\"{title}\" in der App öffnen",
     "openGeneric": "Diese Liste in der List Mango-App öffnen",
     "open": "ÖFFNEN"
   },
@@ -470,16 +470,16 @@
     ],
     "deleteList": {
       "title": "Liste löschen?",
-      "message": "\"{{title}}\" wird aus deinen Listen entfernt."
+      "message": "\"{title}\" wird aus deinen Listen entfernt."
     },
     "duplicateList": {
       "title": "Liste duplizieren?",
-      "message": "Eine Kopie von \"{{title}}\" wird erstellt und geöffnet."
+      "message": "Eine Kopie von \"{title}\" wird erstellt und geöffnet."
     },
     "duplicate": "Duplizieren",
     "deleteTemplate": {
       "title": "Vorlage löschen?",
-      "message": "\"{{title}}\" wird aus deinen Vorlagen entfernt."
+      "message": "\"{title}\" wird aus deinen Vorlagen entfernt."
     },
     "tips": {
       "title": "Tipps",

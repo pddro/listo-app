@@ -449,7 +449,7 @@
   },
   "appBanner": {
     "appName": "List Mango",
-    "openWithTitle": "앱에서 \"{{title}}\" 열기",
+    "openWithTitle": "앱에서 \"{title}\" 열기",
     "openGeneric": "List Mango 앱에서 이 리스트 열기",
     "open": "열기"
   },
@@ -469,16 +469,16 @@
     ],
     "deleteList": {
       "title": "리스트를 삭제할까요?",
-      "message": "\"{{title}}\"이(가) 리스트에서 삭제됩니다."
+      "message": "\"{title}\"이(가) 리스트에서 삭제됩니다."
     },
     "duplicateList": {
       "title": "리스트를 복제할까요?",
-      "message": "\"{{title}}\"의 사본이 생성되어 열립니다."
+      "message": "\"{title}\"의 사본이 생성되어 열립니다."
     },
     "duplicate": "복제",
     "deleteTemplate": {
       "title": "템플릿을 삭제할까요?",
-      "message": "\"{{title}}\"이(가) 템플릿에서 삭제됩니다."
+      "message": "\"{title}\"이(가) 템플릿에서 삭제됩니다."
     },
     "tips": {
       "title": "팁",

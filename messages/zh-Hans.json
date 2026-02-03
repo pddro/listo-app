@@ -449,7 +449,7 @@
   },
   "appBanner": {
     "appName": "List Mango",
-    "openWithTitle": "在应用中打开「{{title}}」",
+    "openWithTitle": "在应用中打开「{title}」",
     "openGeneric": "在 List Mango 应用中打开此清单",
     "open": "打开"
   },
@@ -469,16 +469,16 @@
     ],
     "deleteList": {
       "title": "删除清单？",
-      "message": "「{{title}}」将从你的清单中移除。"
+      "message": "「{title}」将从你的清单中移除。"
     },
     "duplicateList": {
       "title": "复制清单？",
-      "message": "将创建并打开「{{title}}」的副本。"
+      "message": "将创建并打开「{title}」的副本。"
     },
     "duplicate": "复制",
     "deleteTemplate": {
       "title": "删除模板？",
-      "message": "「{{title}}」将从你的模板中移除。"
+      "message": "「{title}」将从你的模板中移除。"
     },
     "tips": {
       "title": "小技巧",

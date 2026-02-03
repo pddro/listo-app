@@ -449,7 +449,7 @@
   },
   "appBanner": {
     "appName": "List Mango",
-    "openWithTitle": "アプリで「{{title}}」を開く",
+    "openWithTitle": "アプリで「{title}」を開く",
     "openGeneric": "List Mangoアプリでこのリストを開く",
     "open": "開く"
   },
@@ -469,16 +469,16 @@
     ],
     "deleteList": {
       "title": "リストを削除しますか？",
-      "message": "「{{title}}」がリストから削除されます。"
+      "message": "「{title}」がリストから削除されます。"
     },
     "duplicateList": {
       "title": "リストを複製しますか？",
-      "message": "「{{title}}」のコピーが作成され、開きます。"
+      "message": "「{title}」のコピーが作成され、開きます。"
     },
     "duplicate": "複製",
     "deleteTemplate": {
       "title": "テンプレートを削除しますか？",
-      "message": "「{{title}}」がテンプレートから削除されます。"
+      "message": "「{title}」がテンプレートから削除されます。"
     },
     "tips": {
       "title": "ヒント",
