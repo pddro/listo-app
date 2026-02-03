@@ -22,7 +22,8 @@ export default function middleware(request: NextRequest) {
   // Redirect listo.to → listmango.com (preserve path)
   if (host.includes('listo.to')) {
     const url = new URL(request.url);
-    url.host = 'listmango.com';
+    url.hostname = 'listmango.com';
+    url.port = '';
     url.protocol = 'https:';
     return NextResponse.redirect(url, 301);
   }
