@@ -738,7 +738,7 @@ export default function HomePage() {
 
   // Share a list using native share sheet
   const handleShare = async (listId: string, title: string | null) => {
-    const url = `https://listo.to/${listId}`;
+    const url = `https://listmango.com/${listId}`;
     const shareTitle = title || 'My List';
 
     if (navigator.share) {
@@ -1295,14 +1295,9 @@ export default function HomePage() {
       <div className="flex-shrink-0" style={{ backgroundColor: 'var(--bg-primary)' }}>
         {/* Header */}
         <div className="flex items-center justify-between" style={{ padding: '16px 20px 0 20px' }}>
-          <div className="flex items-baseline gap-2">
-            <h1 className="text-xl font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--text-primary)' }}>
-              {t('home.title')}
-            </h1>
-            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-              {t('mobile.taglineShort')}
-            </p>
-          </div>
+          <h1 className="text-xl font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--text-primary)' }}>
+            {t('home.title')}
+          </h1>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowThemeModal(true)}
@@ -1713,7 +1708,7 @@ export default function HomePage() {
                 <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{t('home.privacy.sections.contact.title')}</h3>
                 <p>
                   {t('home.privacy.sections.contact.content')}{' '}
-                  <a href="mailto:hello@listo.to" className="underline" style={{ color: 'var(--primary)' }}>hello@listo.to</a>.
+                  <a href="mailto:hello@listmango.com" className="underline" style={{ color: 'var(--primary)' }}>hello@listmango.com</a>.
                 </p>
               </section>
             </div>

@@ -1,12 +1,12 @@
 {
   "metadata": {
-    "title": "Listo - 即時共享清單 | 無需註冊",
+    "title": "List Mango - 即時共享清單 | 無需註冊",
     "description": "秒速建立和分享清單。無需註冊，無需應用程式。即時協作，AI 生成內容，自訂主題。只需分享連結。",
-    "ogTitle": "Listo - 即時共享清單",
+    "ogTitle": "List Mango - 即時共享清單",
     "ogDescription": "秒速建立和分享清單。無需註冊。與任何人即時協作。"
   },
   "home": {
-    "title": "Listo",
+    "title": "List Mango 🥭",
     "tagline": "建立清單。分享連結。即時協作。",
     "benefits": {
       "noSignup": "無需註冊",
@@ -57,25 +57,25 @@
     "privacy": {
       "title": "隱私權政策",
       "lastUpdated": "最後更新：2025年1月",
-      "content": "Listo 以隱私為設計理念。你的清單安全儲存，只能透過其唯一 URL 存取。我們不會出售你的資料或用於廣告目的。",
+      "content": "List Mango 以隱私為設計理念。你的清單安全儲存，只能透過其唯一 URL 存取。我們不會出售你的資料或用於廣告目的。",
       "note": "注意：所有清單都是公開 URL。請勿在清單中分享個人資訊。",
       "readPolicy": "閱讀我們的隱私權政策",
       "sections": {
         "publicUse": {
           "title": "公開使用和分享",
-          "content": "LISTO 清單本質上是公開的。一旦你建立清單並分享連結，任何擁有該連結的人都可以檢視和編輯清單。由於清單設計為自由分享，我們建議不要使用 LISTO 儲存或傳輸敏感、機密或任何你不希望公開的個人資訊。"
+          "content": "List Mango 清單本質上是公開的。一旦你建立清單並分享連結，任何擁有該連結的人都可以檢視和編輯清單。由於清單設計為自由分享，我們建議不要使用 List Mango 儲存或傳輸敏感、機密或任何你不希望公開的個人資訊。"
         },
         "dataCollection": {
           "title": "資料收集和使用",
-          "content": "目前，LISTO 不需要用戶註冊，這意味著我們不會收集姓名、電子郵件地址或其他聯絡資訊等個人資料。所有清單都是匿名建立的。"
+          "content": "目前，List Mango 不需要用戶註冊，這意味著我們不會收集姓名、電子郵件地址或其他聯絡資訊等個人資料。所有清單都是匿名建立的。"
         },
         "analytics": {
           "title": "分析",
-          "content": "我們使用 Google Analytics 來分析 LISTO 的效能，這有助於我們匿名瞭解流量模式和用戶互動。Google Analytics 可能會收集非個人身份資訊，如裝置類型、瀏覽器類型以及你與 LISTO 的互動方式。這些資料僅用於改善用戶體驗和我們的服務。"
+          "content": "我們使用 Google Analytics 來分析 List Mango 的效能，這有助於我們匿名瞭解流量模式和用戶互動。Google Analytics 可能會收集非個人身份資訊，如裝置類型、瀏覽器類型以及你與 List Mango 的互動方式。這些資料僅用於改善用戶體驗和我們的服務。"
         },
         "contact": {
           "title": "聯絡資訊",
-          "content": "如果你對本隱私權政策或 LISTO 的做法有任何疑問，請隨時透過以下方式聯絡我們"
+          "content": "如果你對本隱私權政策或 List Mango 的做法有任何疑問，請隨時透過以下方式聯絡我們"
         },
         "changes": "請注意，我們的隱私權政策可能會不時更改。我們不會在未通知的情況下減少你在本隱私權政策下的權利，並且預計大多數更改將是次要的。"
       }
@@ -96,7 +96,7 @@
       "saveAsTemplate": "儲存為範本"
     },
     "footer": {
-      "createdWith": "由 Listo 建立",
+      "createdWith": "由 List Mango 建立",
       "home": "首頁",
       "newList": "新建清單"
     },
@@ -245,7 +245,7 @@
     "failedToGenerateList": "生成清單失敗"
   },
   "tutorial": {
-    "listTitle": "歡迎使用 Listo！✨",
+    "listTitle": "歡迎使用 List Mango！✨",
     "gettingStarted": {
       "title": "#開始使用",
       "items": [
@@ -359,7 +359,7 @@
     "swipeHint": "滑動繼續"
   },
   "welcome": {
-    "title": "歡迎使用 Listo！",
+    "title": "歡迎使用 List Mango！",
     "subtitle": "建立和分享清單的最簡單方式",
     "tips": [
       "輸入任何內容並按 Enter 新增項目",
@@ -442,16 +442,16 @@
       "successPublish": "範本已提交審核！"
     },
     "meta": {
-      "title": "免費清單範本 | Listo",
+      "title": "免費清單範本 | List Mango",
       "description": "瀏覽旅行、購物、生產力等免費清單範本。即時開始您的清單 - 無需註冊。",
-      "ogTitle": "Listo 範本",
+      "ogTitle": "List Mango 範本",
       "ogDescription": "適合各種場合的預製清單。即時開始。"
     }
   },
   "appBanner": {
-    "appName": "Listo",
+    "appName": "List Mango",
     "openWithTitle": "在應用程式中開啟「{{title}}」",
-    "openGeneric": "在 Listo 應用程式中開啟此清單",
+    "openGeneric": "在 List Mango 應用程式中開啟此清單",
     "open": "開啟"
   },
   "mobile": {

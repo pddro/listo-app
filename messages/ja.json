@@ -1,12 +1,12 @@
 {
   "metadata": {
-    "title": "Listo - 即座に共有できるリスト | 登録不要",
+    "title": "List Mango - 即座に共有できるリスト | 登録不要",
     "description": "数秒でリストを作成・共有。登録不要、アプリ不要。リアルタイム共同編集、AI生成、カスタムテーマ。リンクを共有するだけ。",
-    "ogTitle": "Listo - 即座に共有できるリスト",
+    "ogTitle": "List Mango - 即座に共有できるリスト",
     "ogDescription": "数秒でリストを作成・共有。登録不要。誰とでもリアルタイムで共同編集。"
   },
   "home": {
-    "title": "Listo",
+    "title": "List Mango 🥭",
     "tagline": "リストを作成。リンクを共有。リアルタイムで共同編集。",
     "benefits": {
       "noSignup": "登録不要",
@@ -57,25 +57,25 @@
     "privacy": {
       "title": "プライバシーポリシー",
       "lastUpdated": "最終更新：2025年1月",
-      "content": "Listoはプライバシーを重視して設計されています。あなたのリストは安全に保存され、固有のURLからのみアクセスできます。データを販売したり広告に使用することはありません。",
+      "content": "List Mangoはプライバシーを重視して設計されています。あなたのリストは安全に保存され、固有のURLからのみアクセスできます。データを販売したり広告に使用することはありません。",
       "note": "注意：すべてのリストは公開URLです。リストに個人情報を共有しないでください。",
       "readPolicy": "プライバシーポリシーを読む",
       "sections": {
         "publicUse": {
           "title": "公開利用と共有",
-          "content": "LISTOリスト（以下「リスト」）は本質的に公開されています。リストを作成してリンクを共有すると、そのリンクにアクセスできる人は誰でもリストを閲覧・編集できます。リストは自由に共有できるように設計されているため、機密性の高い情報や個人情報の保存・送信にはLISTOを使用しないことをお勧めします。"
+          "content": "List Mangoリスト（以下「リスト」）は本質的に公開されています。リストを作成してリンクを共有すると、そのリンクにアクセスできる人は誰でもリストを閲覧・編集できます。リストは自由に共有できるように設計されているため、機密性の高い情報や個人情報の保存・送信にはList Mangoを使用しないことをお勧めします。"
         },
         "dataCollection": {
           "title": "データ収集と使用",
-          "content": "現在、LISTOはユーザー登録を必要としません。つまり、名前、メールアドレス、その他の連絡先情報などの個人データは収集しません。すべてのリストは匿名で作成されます。"
+          "content": "現在、List Mangoはユーザー登録を必要としません。つまり、名前、メールアドレス、その他の連絡先情報などの個人データは収集しません。すべてのリストは匿名で作成されます。"
         },
         "analytics": {
           "title": "分析",
-          "content": "LISTOのパフォーマンスを分析するためにGoogle Analyticsを使用しています。これにより、トラフィックパターンとユーザーの行動を匿名で理解できます。Google Analyticsは、デバイスタイプ、ブラウザタイプ、LISTOとの対話方法など、個人を特定しない情報を収集する場合があります。このデータはユーザー体験とサービスの向上にのみ使用されます。"
+          "content": "List Mangoのパフォーマンスを分析するためにGoogle Analyticsを使用しています。これにより、トラフィックパターンとユーザーの行動を匿名で理解できます。Google Analyticsは、デバイスタイプ、ブラウザタイプ、List Mangoとの対話方法など、個人を特定しない情報を収集する場合があります。このデータはユーザー体験とサービスの向上にのみ使用されます。"
         },
         "contact": {
           "title": "お問い合わせ",
-          "content": "このプライバシーポリシーやLISTOの運営についてご質問がある場合は、お気軽にお問い合わせください"
+          "content": "このプライバシーポリシーやList Mangoの運営についてご質問がある場合は、お気軽にお問い合わせください"
         },
         "changes": "プライバシーポリシーは随時変更される場合があります。事前通知なしにこのプライバシーポリシーに基づくあなたの権利を制限することはなく、ほとんどの変更は軽微なものになると予想されます。"
       }
@@ -96,7 +96,7 @@
       "saveAsTemplate": "Save as Template"
     },
     "footer": {
-      "createdWith": "Listoで作成",
+      "createdWith": "List Mangoで作成",
       "home": "ホーム",
       "newList": "新規リスト"
     },
@@ -245,7 +245,7 @@
     "failedToGenerateList": "リストの生成に失敗しました"
   },
   "tutorial": {
-    "listTitle": "Listoへようこそ！✨",
+    "listTitle": "List Mangoへようこそ！✨",
     "gettingStarted": {
       "title": "#はじめに",
       "items": [
@@ -359,7 +359,7 @@
     "swipeHint": "スワイプして続ける"
   },
   "welcome": {
-    "title": "Listoへようこそ！",
+    "title": "List Mangoへようこそ！",
     "subtitle": "リストを作成・共有する最も簡単な方法",
     "tips": [
       "何でも入力してEnterでアイテムを追加",
@@ -441,16 +441,16 @@
       "successPublish": "テンプレートを審査に提出しました！"
     },
     "meta": {
-      "title": "Free List Templates | Listo",
+      "title": "Free List Templates | List Mango",
       "description": "Browse free list templates for travel, shopping, productivity, and more. Start your list instantly - no signup required.",
-      "ogTitle": "Listo Templates",
+      "ogTitle": "List Mango Templates",
       "ogDescription": "Pre-made lists for every occasion. Start instantly."
     }
   },
   "appBanner": {
-    "appName": "Listo",
+    "appName": "List Mango",
     "openWithTitle": "アプリで「{{title}}」を開く",
-    "openGeneric": "Listoアプリでこのリストを開く",
+    "openGeneric": "List Mangoアプリでこのリストを開く",
     "open": "開く"
   },
   "mobile": {

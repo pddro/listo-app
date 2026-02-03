@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Listo</string>
+	<string>List Mango</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -25,7 +25,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Listo needs microphone access for voice dictation to create list items</string>
+	<string>List Mango needs microphone access for voice dictation to create list items</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -56,6 +56,7 @@
 			<string>app.listo.to</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
+				<string>listmango</string>
 				<string>listo</string>
 			</array>
 		</dict>

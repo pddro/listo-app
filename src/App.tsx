@@ -51,26 +51,32 @@ function AppContent() {
     applyStoredTheme();
   }, []);
 
-  // Handle deep links (listo://listId or https://listo.to/listId)
+  // Handle deep links - supports both old (listo://, listo.to) and new (listmango://, listmango.com)
   useEffect(() => {
-    // Handle app opened via deep link (while app is running)
-    CapacitorApp.addListener('appUrlOpen', (event) => {
-      const url = event.url;
+    // Helper to extract listId from URL
+    const extractListId = (url: string): string | null => {
+      // Handle listmango:// or listo:// custom schemes
+      if (url.startsWith('listmango://') || url.startsWith('listo://')) {
+        const listId = url.replace(/^(listmango|listo):\/\//, '').replace(/^\/+/, '');
+        return listId || null;
+      }
 
-      // Handle listo://listId custom scheme
-      if (url.startsWith('listo://')) {
-        const listId = url.replace('listo://', '').replace(/^\/+/, '');
-        if (listId) {
-          navigate(`/${listId}`);
+      // Handle https://listmango.com/listId or https://listo.to/listId universal links
+      if (url.includes('listmango.com/') || url.includes('listo.to/')) {
+        const match = url.match(/(listmango\.com|listo\.to)\/([a-zA-Z0-9_-]+)/);
+        if (match && match[2]) {
+          return match[2];
         }
       }
 
-      // Handle https://listo.to/listId universal links
-      if (url.includes('listo.to/')) {
-        const match = url.match(/listo\.to\/([a-zA-Z0-9_-]+)/);
-        if (match && match[1]) {
-          navigate(`/${match[1]}`);
-        }
+      return null;
+    };
+
+    // Handle app opened via deep link (while app is running)
+    CapacitorApp.addListener('appUrlOpen', (event) => {
+      const listId = extractListId(event.url);
+      if (listId) {
+        navigate(`/${listId}`);
       }
     });
 
@@ -80,20 +86,9 @@ function AppContent() {
 
       CapacitorApp.getLaunchUrl().then((result) => {
         if (result?.url) {
-          const url = result.url;
-
-          if (url.startsWith('listo://')) {
-            const listId = url.replace('listo://', '').replace(/^\/+/, '');
-            if (listId) {
-              navigate(`/${listId}`);
-            }
-          }
-
-          if (url.includes('listo.to/')) {
-            const match = url.match(/listo\.to\/([a-zA-Z0-9_-]+)/);
-            if (match && match[1]) {
-              navigate(`/${match[1]}`);
-            }
+          const listId = extractListId(result.url);
+          if (listId) {
+            navigate(`/${listId}`);
           }
         }
       });

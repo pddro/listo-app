@@ -80,10 +80,10 @@ export default function PrivacyPage() {
               <p style={{ lineHeight: '1.7', color: '#475569' }}>
                 {t('privacy.sections.contact.content')}{' '}
                 <a
-                  href="mailto:hello@listo.to"
+                  href="mailto:hello@listmango.com"
                   style={{ color: '#3B82F6', fontWeight: '500' }}
                 >
-                  hello@listo.to
+                  hello@listmango.com
                 </a>
               </p>
             </section>

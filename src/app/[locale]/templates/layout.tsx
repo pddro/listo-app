@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const t = await getTranslations({ locale, namespace: 'templates.meta' });
-  const baseUrl = 'https://listo.to';
+  const baseUrl = 'https://listmango.com';
 
   // Build language alternates
   const languages: Record<string, string> = {

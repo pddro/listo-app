@@ -1277,7 +1277,7 @@ export default function Home() {
                 <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{t('privacy.sections.contact.title')}</h3>
                 <p>
                   {t('privacy.sections.contact.content')}{' '}
-                  <a href="mailto:hello@listo.to" className="underline" style={{ color: 'var(--primary)' }}>hello@listo.to</a>.
+                  <a href="mailto:hello@listmango.com" className="underline" style={{ color: 'var(--primary)' }}>hello@listmango.com</a>.
                 </p>
               </section>
 

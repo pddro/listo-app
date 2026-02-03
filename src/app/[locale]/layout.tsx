@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const t = await getTranslations({ locale, namespace: 'metadata' });
-  const baseUrl = 'https://listo.to';
+  const baseUrl = 'https://listmango.com';
 
   // Build language alternates including x-default
   const languages: Record<string, string> = {
@@ -65,9 +65,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       'collaborative task list',
       'free online checklist',
     ],
-    authors: [{ name: 'Listo' }],
-    creator: 'Listo',
-    publisher: 'Listo',
+    authors: [{ name: 'List Mango' }],
+    creator: 'List Mango',
+    publisher: 'List Mango',
     robots: {
       index: true,
       follow: true,
@@ -86,7 +86,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         .filter((l) => l !== locale)
         .map((l) => ogLocaleMap[l]),
       url: `${baseUrl}/${locale}`,
-      siteName: 'Listo',
+      siteName: 'List Mango',
       title: t('ogTitle'),
       description: t('ogDescription'),
       images: [
@@ -94,7 +94,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: '/og-image.png',
           width: 1200,
           height: 630,
-          alt: 'Listo - Instant Shareable Lists',
+          alt: 'List Mango - Instant Shareable Lists',
         },
       ],
     },
@@ -117,24 +117,24 @@ const GA_MEASUREMENT_ID = 'G-3N0JE969VW';
 // JSON-LD structured data for rich search results
 function getJsonLd(locale: Locale) {
   const localizedNames: Record<Locale, string> = {
-    en: 'Listo - Instant Shareable Lists',
-    es: 'Listo - Listas Compartibles al Instante',
-    fr: 'Listo - Listes Partageables Instantanées',
-    de: 'Listo - Sofort Teilbare Listen',
-    pt: 'Listo - Listas Compartilháveis Instantâneas',
-    ja: 'Listo - 瞬時に共有できるリスト',
-    'zh-Hans': 'Listo - 即时可分享的清单',
-    'zh-Hant': 'Listo - 即時可分享的清單',
-    ko: 'Listo - 즉시 공유 가능한 리스트',
+    en: 'List Mango - Instant Shareable Lists',
+    es: 'List Mango - Listas Compartibles al Instante',
+    fr: 'List Mango - Listes Partageables Instantanées',
+    de: 'List Mango - Sofort Teilbare Listen',
+    pt: 'List Mango - Listas Compartilháveis Instantâneas',
+    ja: 'List Mango - 瞬時に共有できるリスト',
+    'zh-Hans': 'List Mango - 即时可分享的清单',
+    'zh-Hant': 'List Mango - 即時可分享的清單',
+    ko: 'List Mango - 즉시 공유 가능한 리스트',
   };
 
   return {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: localizedNames[locale] || 'Listo',
+    name: localizedNames[locale] || 'List Mango',
     description:
       'Create and share lists in seconds. No signup, no app needed. Real-time collaboration, AI-powered item generation, and custom themes.',
-    url: `https://listo.to/${locale}`,
+    url: `https://listmango.com/${locale}`,
     inLanguage: locale,
     applicationCategory: 'ProductivityApplication',
     operatingSystem: 'Any',
@@ -151,7 +151,7 @@ function getJsonLd(locale: Locale) {
       'Custom AI-generated themes',
       'Instant URL sharing',
     ],
-    screenshot: 'https://listo.to/og-image.png',
+    screenshot: 'https://listmango.com/og-image.png',
     availableLanguage: locales.map((loc) => ({
       '@type': 'Language',
       name: loc,

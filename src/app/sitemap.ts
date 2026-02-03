@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { locales } from '@/i18n/config';
 import { supabaseServer } from '@/lib/supabase-server';
 
-const baseUrl = 'https://listo.to';
+const baseUrl = 'https://listmango.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Generate language alternates for each locale

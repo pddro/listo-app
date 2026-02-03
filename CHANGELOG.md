@@ -1,12 +1,24 @@
 # Changelog
 
-All notable changes to Listo will be documented in this file.
+All notable changes to List Mango will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
 ## [Unreleased]
+
+### Changed
+- **Rebranding: Listo → List Mango**
+  - App name changed from "Listo" to "List Mango" across all platforms
+  - Domain changed from listo.to to listmango.com
+  - Email changed from hello@listo.to to hello@listmango.com
+  - All 9 language translations updated (en, es, fr, de, pt, ja, zh-Hans, zh-Hant, ko)
+  - Deep linking supports both old (listo://, listo.to) and new (listmango://, listmango.com) schemes for backwards compatibility
+  - iOS: Added listmango URL scheme and applinks:listmango.com (kept listo for backwards compat)
+  - Android: Updated app_name to "List Mango"
+  - Bundle IDs preserved (app.listo.to, com.listo.app) to maintain App Store presence
+  - Storage keys (listo_*) unchanged to preserve existing user data
 
 ### Added
 - **Templates Feature**

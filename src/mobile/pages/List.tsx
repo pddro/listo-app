@@ -375,7 +375,7 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
   };
 
   const handleShare = async () => {
-    const url = `https://listo.to/${listId}`;
+    const url = `https://listmango.com/${listId}`;
     const shareTitle = list?.title || 'My List';
 
     if (navigator.share) {

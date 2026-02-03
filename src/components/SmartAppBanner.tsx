@@ -39,8 +39,8 @@ export function SmartAppBanner({ listId, listTitle }: SmartAppBannerProps) {
 
   const handleOpenInApp = () => {
     // Use custom URL scheme to open the app with the specific list
-    // Format: listo://listId (app strips prefix and navigates to /listId)
-    const appUrl = `listo://${listId}`;
+    // Format: listmango://listId (app strips prefix and navigates to /listId)
+    const appUrl = `listmango://${listId}`;
 
     // Create a temporary anchor and click it - more reliable on iOS Safari
     const link = document.createElement('a');
@@ -75,7 +75,7 @@ export function SmartAppBanner({ listId, listTitle }: SmartAppBannerProps) {
         {/* App icon */}
         <img
           src="/app-icon.png"
-          alt="Listo"
+          alt="List Mango"
           className="w-10 h-10 rounded-xl flex-shrink-0"
         />
 

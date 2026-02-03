@@ -5,7 +5,7 @@ import { locales, type Locale } from '@/i18n/config';
 import { TemplateWithItems } from '@/types';
 import TemplateDetailClient from './TemplateDetailClient';
 
-const baseUrl = 'https://listo.to';
+const baseUrl = 'https://listmango.com';
 
 // Map locale codes to OpenGraph locale format
 const ogLocaleMap: Record<Locale, string> = {

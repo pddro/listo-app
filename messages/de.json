@@ -1,12 +1,12 @@
 {
   "metadata": {
-    "title": "Listo - Sofort teilbare Listen | Keine Anmeldung",
+    "title": "List Mango - Sofort teilbare Listen | Keine Anmeldung",
     "description": "Erstelle und teile Listen in Sekunden. Keine Anmeldung, keine App. Echtzeit-Zusammenarbeit, KI-generierte Inhalte und individuelle Designs. Einfach den Link teilen.",
-    "ogTitle": "Listo - Sofort teilbare Listen",
+    "ogTitle": "List Mango - Sofort teilbare Listen",
     "ogDescription": "Erstelle und teile Listen in Sekunden. Keine Anmeldung erforderlich. Arbeite in Echtzeit mit anderen zusammen."
   },
   "home": {
-    "title": "Listo",
+    "title": "List Mango 🥭",
     "tagline": "Liste erstellen. Link teilen. In Echtzeit zusammenarbeiten.",
     "benefits": {
       "noSignup": "Keine Anmeldung",
@@ -57,25 +57,25 @@
     "privacy": {
       "title": "Datenschutzrichtlinie",
       "lastUpdated": "Zuletzt aktualisiert: Januar 2025",
-      "content": "Listo wurde mit Datenschutz im Fokus entwickelt. Deine Listen werden sicher gespeichert und sind nur über ihre eindeutigen URLs zugänglich. Wir verkaufen deine Daten nicht und verwenden sie nicht für Werbezwecke.",
-      "note": "Hinweis: Alle Listos sind öffentliche URLs. Teile niemals persönliche Informationen in einer Liste.",
+      "content": "List Mango wurde mit Datenschutz im Fokus entwickelt. Deine Listen werden sicher gespeichert und sind nur über ihre eindeutigen URLs zugänglich. Wir verkaufen deine Daten nicht und verwenden sie nicht für Werbezwecke.",
+      "note": "Hinweis: Alle List Mangos sind öffentliche URLs. Teile niemals persönliche Informationen in einer Liste.",
       "readPolicy": "Unsere Datenschutzrichtlinie lesen",
       "sections": {
         "publicUse": {
           "title": "Öffentliche Nutzung und Teilen",
-          "content": "LISTO-Listen (im Folgenden \"Listos\") sind von Natur aus öffentlich. Sobald du ein Listo erstellst und den Link teilst, kann jeder mit Zugang zu diesem Link das Listo ansehen und bearbeiten. Da Listos zum freien Teilen gedacht sind, empfehlen wir, LISTO nicht zum Speichern oder Übertragen sensibler, vertraulicher oder persönlicher Informationen zu verwenden."
+          "content": "List Mango-Listen (im Folgenden \"List Mangos\") sind von Natur aus öffentlich. Sobald du ein List Mango erstellst und den Link teilst, kann jeder mit Zugang zu diesem Link das List Mango ansehen und bearbeiten. Da List Mangos zum freien Teilen gedacht sind, empfehlen wir, List Mango nicht zum Speichern oder Übertragen sensibler, vertraulicher oder persönlicher Informationen zu verwenden."
         },
         "dataCollection": {
           "title": "Datenerhebung und -nutzung",
-          "content": "Derzeit erfordert LISTO keine Benutzerregistrierung, was bedeutet, dass wir keine persönlichen Daten wie Namen, E-Mail-Adressen oder andere Kontaktinformationen erfassen. Alle Listos werden anonym erstellt."
+          "content": "Derzeit erfordert List Mango keine Benutzerregistrierung, was bedeutet, dass wir keine persönlichen Daten wie Namen, E-Mail-Adressen oder andere Kontaktinformationen erfassen. Alle List Mangos werden anonym erstellt."
         },
         "analytics": {
           "title": "Analysen",
-          "content": "Wir verwenden Google Analytics zur Analyse der LISTO-Performance, was uns hilft, Verkehrsmuster und Benutzerinteraktionen anonym zu verstehen. Google Analytics kann nicht personenbezogene Informationen wie Gerätetyp, Browsertyp und Art der Interaktion mit LISTO erfassen. Diese Daten werden ausschließlich zur Verbesserung der Benutzererfahrung und unseres Dienstes verwendet."
+          "content": "Wir verwenden Google Analytics zur Analyse der List Mango-Performance, was uns hilft, Verkehrsmuster und Benutzerinteraktionen anonym zu verstehen. Google Analytics kann nicht personenbezogene Informationen wie Gerätetyp, Browsertyp und Art der Interaktion mit List Mango erfassen. Diese Daten werden ausschließlich zur Verbesserung der Benutzererfahrung und unseres Dienstes verwendet."
         },
         "contact": {
           "title": "Kontaktinformationen",
-          "content": "Bei Fragen zu dieser Datenschutzrichtlinie oder den Praktiken von LISTO kontaktiere uns gerne unter"
+          "content": "Bei Fragen zu dieser Datenschutzrichtlinie oder den Praktiken von List Mango kontaktiere uns gerne unter"
         },
         "changes": "Bitte beachte, dass sich unsere Datenschutzrichtlinie von Zeit zu Zeit ändern kann. Wir werden deine Rechte unter dieser Datenschutzrichtlinie nicht ohne vorherige Benachrichtigung einschränken, und wir erwarten, dass die meisten Änderungen geringfügig sein werden."
       }
@@ -96,7 +96,7 @@
       "saveAsTemplate": "Save as Template"
     },
     "footer": {
-      "createdWith": "Erstellt mit Listo",
+      "createdWith": "Erstellt mit List Mango",
       "home": "Startseite",
       "newList": "Neue Liste"
     },
@@ -245,7 +245,7 @@
     "failedToGenerateList": "Listen-Generierung fehlgeschlagen"
   },
   "tutorial": {
-    "listTitle": "Willkommen bei Listo! ✨",
+    "listTitle": "Willkommen bei List Mango! 🥭",
     "gettingStarted": {
       "title": "#Erste Schritte",
       "items": [
@@ -359,7 +359,7 @@
     "swipeHint": "Wischen zum Fortfahren"
   },
   "welcome": {
-    "title": "Willkommen bei Listo!",
+    "title": "Willkommen bei List Mango!",
     "subtitle": "Der einfachste Weg, Listen zu erstellen und zu teilen",
     "tips": [
       "Tippe etwas und drücke Enter, um Einträge hinzuzufügen",
@@ -442,16 +442,16 @@
       "successPublish": "Vorlage zur Überprüfung eingereicht!"
     },
     "meta": {
-      "title": "Free List Templates | Listo",
+      "title": "Free List Templates | List Mango",
       "description": "Browse free list templates for travel, shopping, productivity, and more. Start your list instantly - no signup required.",
-      "ogTitle": "Listo Templates",
+      "ogTitle": "List Mango Templates",
       "ogDescription": "Pre-made lists for every occasion. Start instantly."
     }
   },
   "appBanner": {
-    "appName": "Listo",
+    "appName": "List Mango",
     "openWithTitle": "\"{{title}}\" in der App öffnen",
-    "openGeneric": "Diese Liste in der Listo-App öffnen",
+    "openGeneric": "Diese Liste in der List Mango-App öffnen",
     "open": "ÖFFNEN"
   },
   "mobile": {

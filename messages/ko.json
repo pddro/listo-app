@@ -1,12 +1,12 @@
 {
   "metadata": {
-    "title": "Listo - 즉시 공유 가능한 리스트 | 가입 불필요",
+    "title": "List Mango - 즉시 공유 가능한 리스트 | 가입 불필요",
     "description": "몇 초 만에 리스트를 만들고 공유하세요. 가입 불필요, 앱 불필요. 실시간 협업, AI 생성, 맞춤 테마. 링크만 공유하세요.",
-    "ogTitle": "Listo - 즉시 공유 가능한 리스트",
+    "ogTitle": "List Mango - 즉시 공유 가능한 리스트",
     "ogDescription": "몇 초 만에 리스트를 만들고 공유하세요. 가입 불필요. 누구와도 실시간 협업."
   },
   "home": {
-    "title": "Listo",
+    "title": "List Mango 🥭",
     "tagline": "리스트 만들기. 링크 공유. 실시간 협업.",
     "benefits": {
       "noSignup": "가입 불필요",
@@ -57,25 +57,25 @@
     "privacy": {
       "title": "개인정보 보호정책",
       "lastUpdated": "최종 업데이트: 2025년 1월",
-      "content": "Listo는 개인정보 보호를 염두에 두고 설계되었습니다. 리스트는 안전하게 저장되며 고유 URL을 통해서만 접근할 수 있습니다. 데이터를 판매하거나 광고 목적으로 사용하지 않습니다.",
+      "content": "List Mango는 개인정보 보호를 염두에 두고 설계되었습니다. 리스트는 안전하게 저장되며 고유 URL을 통해서만 접근할 수 있습니다. 데이터를 판매하거나 광고 목적으로 사용하지 않습니다.",
       "note": "참고: 모든 리스트는 공개 URL입니다. 리스트에 개인정보를 공유하지 마세요.",
       "readPolicy": "개인정보 보호정책 읽기",
       "sections": {
         "publicUse": {
           "title": "공개 사용 및 공유",
-          "content": "LISTO 리스트(이하 \"리스트\")는 본질적으로 공개입니다. 리스트를 만들고 링크를 공유하면, 해당 링크에 접근할 수 있는 모든 사람이 리스트를 보고 편집할 수 있습니다. 리스트는 자유롭게 공유하도록 설계되었으므로, LISTO를 민감하거나 기밀 또는 공개하고 싶지 않은 개인정보를 저장하거나 전송하는 데 사용하지 않는 것이 좋습니다."
+          "content": "List Mango 리스트(이하 \"리스트\")는 본질적으로 공개입니다. 리스트를 만들고 링크를 공유하면, 해당 링크에 접근할 수 있는 모든 사람이 리스트를 보고 편집할 수 있습니다. 리스트는 자유롭게 공유하도록 설계되었으므로, List Mango를 민감하거나 기밀 또는 공개하고 싶지 않은 개인정보를 저장하거나 전송하는 데 사용하지 않는 것이 좋습니다."
         },
         "dataCollection": {
           "title": "데이터 수집 및 사용",
-          "content": "현재 LISTO는 사용자 등록이 필요하지 않습니다. 즉, 이름, 이메일 주소 또는 기타 연락처 정보와 같은 개인 데이터를 수집하지 않습니다. 모든 리스트는 익명으로 생성됩니다."
+          "content": "현재 List Mango는 사용자 등록이 필요하지 않습니다. 즉, 이름, 이메일 주소 또는 기타 연락처 정보와 같은 개인 데이터를 수집하지 않습니다. 모든 리스트는 익명으로 생성됩니다."
         },
         "analytics": {
           "title": "분석",
-          "content": "LISTO 성능 분석을 위해 Google Analytics를 사용합니다. 이를 통해 트래픽 패턴과 사용자 상호작용을 익명으로 이해할 수 있습니다. Google Analytics는 기기 유형, 브라우저 유형, LISTO와의 상호작용 방식 등 개인을 식별할 수 없는 정보를 수집할 수 있습니다. 이 데이터는 사용자 경험과 서비스 개선에만 사용됩니다."
+          "content": "List Mango 성능 분석을 위해 Google Analytics를 사용합니다. 이를 통해 트래픽 패턴과 사용자 상호작용을 익명으로 이해할 수 있습니다. Google Analytics는 기기 유형, 브라우저 유형, List Mango와의 상호작용 방식 등 개인을 식별할 수 없는 정보를 수집할 수 있습니다. 이 데이터는 사용자 경험과 서비스 개선에만 사용됩니다."
         },
         "contact": {
           "title": "연락처",
-          "content": "이 개인정보 보호정책이나 LISTO의 관행에 대해 질문이 있으시면 언제든지 연락해 주세요"
+          "content": "이 개인정보 보호정책이나 List Mango의 관행에 대해 질문이 있으시면 언제든지 연락해 주세요"
         },
         "changes": "개인정보 보호정책은 때때로 변경될 수 있습니다. 사전 통지 없이 이 개인정보 보호정책에 따른 귀하의 권리를 줄이지 않을 것이며, 대부분의 변경은 경미할 것으로 예상됩니다."
       }
@@ -96,7 +96,7 @@
       "saveAsTemplate": "Save as Template"
     },
     "footer": {
-      "createdWith": "Listo로 만듦",
+      "createdWith": "List Mango로 만듦",
       "home": "홈",
       "newList": "새 리스트"
     },
@@ -245,7 +245,7 @@
     "failedToGenerateList": "리스트 생성 실패"
   },
   "tutorial": {
-    "listTitle": "Listo에 오신 것을 환영합니다! ✨",
+    "listTitle": "List Mango에 오신 것을 환영합니다! ✨",
     "gettingStarted": {
       "title": "#시작하기",
       "items": [
@@ -359,7 +359,7 @@
     "swipeHint": "스와이프하여 계속"
   },
   "welcome": {
-    "title": "Listo에 오신 것을 환영합니다!",
+    "title": "List Mango에 오신 것을 환영합니다!",
     "subtitle": "리스트를 만들고 공유하는 가장 쉬운 방법",
     "tips": [
       "아무거나 입력하고 Enter로 항목 추가",
@@ -441,16 +441,16 @@
       "successPublish": "템플릿이 검토를 위해 제출되었습니다!"
     },
     "meta": {
-      "title": "Free List Templates | Listo",
+      "title": "Free List Templates | List Mango",
       "description": "Browse free list templates for travel, shopping, productivity, and more. Start your list instantly - no signup required.",
-      "ogTitle": "Listo Templates",
+      "ogTitle": "List Mango Templates",
       "ogDescription": "Pre-made lists for every occasion. Start instantly."
     }
   },
   "appBanner": {
-    "appName": "Listo",
+    "appName": "List Mango",
     "openWithTitle": "앱에서 \"{{title}}\" 열기",
-    "openGeneric": "Listo 앱에서 이 리스트 열기",
+    "openGeneric": "List Mango 앱에서 이 리스트 열기",
     "open": "열기"
   },
   "mobile": {
