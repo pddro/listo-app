@@ -309,7 +309,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
   };
 
   const handleDownloadTodoistCSV = () => {
-    const title = list?.title || 'Listo List';
+    const title = list?.title || 'List Mango List';
 
     // Todoist CSV format headers
     const headers = ['TYPE', 'CONTENT', 'DESCRIPTION', 'PRIORITY', 'INDENT', 'AUTHOR', 'RESPONSIBLE', 'DATE', 'DATE_LANG', 'TIMEZONE'];

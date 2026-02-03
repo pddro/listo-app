@@ -27,10 +27,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const itemCount = count || 0;
 
   return {
-    title: `${title} - Listo`,
-    description: `${itemCount} item${itemCount !== 1 ? 's' : ''} in this list. Listo: Create and share lists instantly with real-time collaboration. No signup required.`,
+    title: `${title} - List Mango`,
+    description: `${itemCount} item${itemCount !== 1 ? 's' : ''} in this list. List Mango: Create and share lists instantly with real-time collaboration. No signup required.`,
     openGraph: {
-      title: `${title} - Listo`,
+      title: `${title} - List Mango`,
       description: `${itemCount} item${itemCount !== 1 ? 's' : ''} in this list. Create and share lists instantly.`,
     },
     robots: {

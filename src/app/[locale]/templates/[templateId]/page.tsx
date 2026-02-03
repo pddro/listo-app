@@ -110,12 +110,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!template) {
     return {
-      title: 'Template Not Found | Listo',
+      title: 'Template Not Found | List Mango',
       robots: { index: false },
     };
   }
 
-  const title = `${template.title} | Free Template | Listo`;
+  const title = `${template.title} | Free Template | List Mango`;
   const description =
     template.template_description ||
     `Use this free ${template.template_category} checklist template. ${template.items.length} items to help you stay organized.`;
@@ -145,7 +145,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         .filter((l) => l !== locale)
         .map((l) => ogLocaleMap[l]),
       url: `${baseUrl}/${locale}/templates/${templateId}`,
-      siteName: 'Listo',
+      siteName: 'List Mango',
       title: template.title,
       description,
       images: [
@@ -202,7 +202,7 @@ function generateJsonLd(template: TemplateWithItems, locale: string) {
     isAccessibleForFree: true,
     author: {
       '@type': 'Organization',
-      name: 'Listo',
+      name: 'List Mango',
       url: baseUrl,
     },
     aggregateRating:

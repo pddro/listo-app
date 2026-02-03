@@ -20,7 +20,7 @@ export default function PrivacyPage() {
               <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              <span>Back to Listo</span>
+              <span>Back to List Mango</span>
             </Link>
             <h1 style={{ fontSize: '30px', fontWeight: 'bold', marginBottom: '12px', letterSpacing: '-0.025em' }}>
               {t('privacy.title')}
@@ -102,7 +102,7 @@ export default function PrivacyPage() {
               href="/"
               style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '12px 32px', backgroundColor: '#3B82F6', color: 'white', fontWeight: '500', borderRadius: '12px', textDecoration: 'none' }}
             >
-              Back to Listo
+              Back to List Mango
             </Link>
           </div>
         </div>

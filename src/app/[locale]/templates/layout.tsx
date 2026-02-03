@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         .filter((l) => l !== locale)
         .map((l) => ogLocaleMap[l]),
       url: `${baseUrl}/${locale}/templates`,
-      siteName: 'Listo',
+      siteName: 'List Mango',
       title: t('ogTitle'),
       description: t('ogDescription'),
       images: [
@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: '/og-image.png',
           width: 1200,
           height: 630,
-          alt: 'Listo Templates',
+          alt: 'List Mango Templates',
         },
       ],
     },
