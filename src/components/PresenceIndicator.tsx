@@ -77,7 +77,8 @@ export default function PresenceIndicator({ count, themeColor, onClick }: Presen
     };
   }, [count, displayCount]);
 
-  if (!isVisible) return null;
+  // Always show if others are present, otherwise respect visibility state
+  if (!isVisible && count === 0) return null;
 
   // Default to primary orange if no theme color
   const color = themeColor || '#E75F3E';
