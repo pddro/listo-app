@@ -13,6 +13,7 @@ import { useHomeTheme } from '@/lib/hooks/useHomeTheme';
 import { HomeThemeModal } from '@/mobile/components/HomeThemeModal';
 import { SaveAsTemplateModal } from '@/mobile/components/SaveAsTemplateModal';
 import { OnboardingWalkthrough } from '@/mobile/components/OnboardingWalkthrough';
+import { BackupModal } from '@/mobile/components/BackupModal';
 import { useOnboardingState } from '@/mobile/hooks/useOnboardingState';
 import { ThemeColors } from '@/lib/gemini';
 import { useAppState } from '@/mobile/context/AppStateContext';
@@ -523,6 +524,7 @@ export default function HomePage() {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showTipsModal, setShowTipsModal] = useState(false);
   const [showThemeModal, setShowThemeModal] = useState(false);
+  const [showBackupModal, setShowBackupModal] = useState(false);
   const [deleteConfirmList, setDeleteConfirmList] = useState<SavedList | null>(null);
   const [duplicateConfirmList, setDuplicateConfirmList] = useState<SavedList | null>(null);
   const [platform, setPlatform] = useState<'ios' | 'android' | 'web'>('web');
@@ -1623,6 +1625,25 @@ export default function HomePage() {
           </div>
         )}
 
+        {/* Backup & Transfer section - only show if user has lists or templates */}
+        {(recentLists.length > 0 || personalTemplates.length > 0) && (
+          <div style={{ marginTop: '32px', textAlign: 'center' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '12px' }}>
+              {t('backup.deviceNotice')}
+            </p>
+            <button
+              onClick={() => setShowBackupModal(true)}
+              className="inline-flex items-center gap-2 font-medium transition-colors active:opacity-70"
+              style={{ color: 'var(--text-secondary)', fontSize: '14px' }}
+            >
+              <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+              </svg>
+              {t('backup.backupAndTransfer')}
+            </button>
+          </div>
+        )}
+
         {/* Community Templates Section */}
         <div style={{ marginTop: '32px' }}>
           <div
@@ -2023,6 +2044,39 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Backup & Transfer Modal */}
+      {showBackupModal && (
+        <BackupModal
+          isOpen={showBackupModal}
+          onClose={() => setShowBackupModal(false)}
+          lists={recentLists}
+          templates={personalTemplates}
+          onImport={(listsToImport, templatesToImport) => {
+            // Import lists
+            for (const list of listsToImport) {
+              addList(list.id, list.title || null, list.themeColor || null);
+            }
+            // Import templates
+            for (const template of templatesToImport) {
+              addTemplate({
+                listId: template.listId,
+                title: template.title,
+                description: template.description || '',
+                category: template.category,
+                theme: template.theme,
+                itemCount: template.itemCount,
+              });
+            }
+          }}
+          onClearAll={async () => {
+            // Clear all local storage
+            await Preferences.remove({ key: 'listo_saved_lists' });
+            await Preferences.remove({ key: 'listo_personal_templates' });
+            window.location.reload();
+          }}
+        />
       )}
 
       {/* Onboarding walkthrough - shows on first launch */}

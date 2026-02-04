@@ -14,6 +14,8 @@ import { useRecentListsWeb } from '@/lib/hooks/useRecentListsWeb';
 import { usePersonalTemplates, PersonalTemplate } from '@/lib/hooks/usePersonalTemplates';
 import { EditTemplateModal } from '@/components/templates/EditTemplateModal';
 import { TemplateCategory } from '@/types';
+import BackupTransferModal from '@/components/BackupTransferModal';
+import { BackupList, BackupTemplate } from '@/lib/backup';
 
 type InputMode = 'single' | 'multiple' | 'ai';
 
@@ -79,6 +81,7 @@ export default function Home() {
   const tInput = useTranslations('input');
   const tWelcome = useTranslations('welcome');
   const tTutorial = useTranslations('tutorial');
+  const tBackup = useTranslations('backup');
   const locale = useLocale();
 
   // Get translated placeholders
@@ -107,10 +110,11 @@ export default function Home() {
   const router = useRouter();
   const { generateItems, processDictation } = useAI();
   const { lists: recentLists, archivedLists, addList, updateList, archiveList, restoreList } = useRecentListsWeb();
-  const { templates: personalTemplates, deleteTemplate, updateTemplate } = usePersonalTemplates();
+  const { templates: personalTemplates, deleteTemplate, updateTemplate, addTemplate } = usePersonalTemplates();
   const [usingTemplateId, setUsingTemplateId] = useState<string | null>(null);
   const [editingTemplate, setEditingTemplate] = useState<PersonalTemplate | null>(null);
   const [communityTemplateCount, setCommunityTemplateCount] = useState<number>(0);
+  const [showBackupModal, setShowBackupModal] = useState(false);
 
   // Track page visit
   useEffect(() => {
@@ -1043,6 +1047,25 @@ export default function Home() {
           </div>
         )}
 
+        {/* Backup & Transfer section - only show if user has lists or templates */}
+        {(recentLists.length > 0 || personalTemplates.length > 0) && (
+          <div style={{ marginTop: '24px', textAlign: 'center' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '12px' }}>
+              {tBackup('deviceNotice')}
+            </p>
+            <button
+              onClick={() => setShowBackupModal(true)}
+              className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-[var(--primary)]"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+              </svg>
+              {tBackup('backupAndTransfer')}
+            </button>
+          </div>
+        )}
+
         {/* Browse Community Templates - prominent button */}
         <button
           onClick={() => router.push('/templates')}
@@ -1316,6 +1339,88 @@ export default function Home() {
           onClose={() => setEditingTemplate(null)}
         />
       )}
+
+      {/* Backup & Transfer Modal */}
+      <BackupTransferModal
+        isOpen={showBackupModal}
+        onClose={() => setShowBackupModal(false)}
+        lists={recentLists.map((list) => ({
+          id: list.id,
+          title: list.title,
+          themeColor: list.themeColor,
+          themeTextColor: list.themeTextColor,
+        }))}
+        templates={personalTemplates.map((template) => ({
+          id: template.id,
+          listId: template.listId,
+          title: template.title,
+          description: template.description,
+          category: template.category,
+          theme: template.theme,
+          itemCount: template.itemCount,
+        }))}
+        onImport={(listsToImport, templatesToImport) => {
+          // Import lists
+          for (const list of listsToImport) {
+            addList(list.id, list.title, list.themeColor);
+          }
+          // Import templates
+          for (const template of templatesToImport) {
+            addTemplate({
+              listId: template.listId,
+              title: template.title,
+              description: template.description,
+              category: template.category,
+              themeColor: template.theme?.primary || null,
+              theme: template.theme,
+              itemCount: template.itemCount,
+            });
+          }
+        }}
+        onClearAll={() => {
+          // Clear all local storage
+          localStorage.removeItem('listo_saved_lists');
+          localStorage.removeItem('listo_personal_templates');
+          window.location.reload();
+        }}
+        translations={{
+          exportTab: tBackup('exportTab'),
+          importTab: tBackup('importTab'),
+          selectAll: tBackup('selectAll'),
+          deselectAll: tBackup('deselectAll'),
+          quickTransfer: tBackup('quickTransfer'),
+          quickTransferDescription: tBackup('quickTransferDescription'),
+          fullBackup: tBackup('fullBackup'),
+          fullBackupDescription: tBackup('fullBackupDescription'),
+          yourCode: tBackup('yourCode'),
+          scanOrEnter: tBackup('scanOrEnter'),
+          codePlaceholder: tBackup('codePlaceholder'),
+          preview: tBackup('preview'),
+          importing: tBackup('importing'),
+          importSelected: tBackup('importSelected'),
+          itemsToImport: tBackup('itemsToImport'),
+          alreadyHave: tBackup('alreadyHave'),
+          clearAllData: tBackup('clearAllData'),
+          clearConfirm: tBackup('clearConfirm'),
+          cleared: tBackup('cleared'),
+          codeExpired: tBackup('codeExpired'),
+          invalidBackup: tBackup('invalidBackup'),
+          importSuccess: tBackup('importSuccess'),
+          nothingToExport: tBackup('nothingToExport'),
+          lists: tBackup('lists'),
+          templates: tBackup('templates'),
+          generating: tBackup('generating'),
+          codeCopied: tBackup('codeCopied'),
+          linkCopied: tBackup('linkCopied'),
+          expiresIn: tBackup('expiresIn'),
+          scanWithPhone: tBackup('scanWithPhone'),
+          orEnterCode: tBackup('orEnterCode'),
+          fetch: tBackup('fetch'),
+          fetching: tBackup('fetching'),
+          dangerZone: tBackup('dangerZone'),
+          clearAllDataDescription: tBackup('clearAllDataDescription'),
+        }}
+      />
     </div>
   );
 }

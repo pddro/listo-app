@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- **List Backups Feature**
+  - Backup and transfer lists/templates between devices without accounts
+  - Two backup types: Quick Transfer (24-hour code like `MANGO-7X2K`) and Full Backup (permanent encoded URL)
+  - Web: `/restore` page handles both code redemption and URL hash decoding
+  - Web: `BackupTransferModal` component with Export/Import tabs
+  - Mobile: `BackupModal` component with native share integration
+  - QR codes for easy transfer between devices (web uses `qrcode.react`)
+  - API endpoints: `POST /api/backup` (create code), `GET /api/backup/[code]` (redeem code)
+  - Database: `backup_codes` table with auto-expiry (24 hours) and cleanup function
+  - Danger Zone: Clear all local data option with confirmation
+  - Full i18n support in all 9 languages
+  - Deduplication: Items already on device are shown but cannot be re-imported
+
 ### Changed
 - **Rebranding: Listo → List Mango**
   - App name changed from "Listo" to "List Mango" across all platforms
