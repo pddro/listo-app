@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { List, Item, ItemWithChildren } from '@/types';
 import { ThemeColors } from '@/lib/gemini';
 import { analytics } from '@/lib/analytics';
+import { RealtimeChannel } from '@supabase/supabase-js';
 
 export interface UseListOptions {
   initialList?: List | null;
@@ -12,6 +13,14 @@ export interface UseListOptions {
   onListChange?: (list: List) => void;
   onItemsChange?: (items: Item[]) => void;
 }
+
+// Broadcast event types for instant peer-to-peer sync
+type BroadcastEvent =
+  | { type: 'toggle'; itemId: string; completed: boolean }
+  | { type: 'update'; itemId: string; changes: Partial<Item> }
+  | { type: 'delete'; itemId: string }
+  | { type: 'add'; item: Item }
+  | { type: 'reorder'; items: Array<{ id: string; position: number }> };
 
 export function useList(listId: string, options: UseListOptions = {}) {
   const { initialList, initialItems, onListChange, onItemsChange } = options;
@@ -23,6 +32,9 @@ export function useList(listId: string, options: UseListOptions = {}) {
   const [items, setItems] = useState<Item[]>(initialItems ?? []);
   const [loading, setLoading] = useState(!hasInitialData);
   const [error, setError] = useState<string | null>(null);
+
+  // Presence: track how many others are viewing this list
+  const [presenceCount, setPresenceCount] = useState(0);
 
   // Track pending inserts to correlate temp IDs with real IDs from realtime
   // Key: composite of content|parent_id|position, Value: tempId
@@ -129,16 +141,66 @@ export function useList(listId: string, options: UseListOptions = {}) {
     fetchData();
   }, [listId, hasInitialData, onListChange, onItemsChange]);
 
-  // Real-time subscriptions
+  // Track broadcast channel for sending events
+  const broadcastChannelRef = useRef<RealtimeChannel | null>(null);
+
+  // Helper to broadcast an event to other clients
+  const broadcast = useCallback((event: BroadcastEvent) => {
+    if (broadcastChannelRef.current) {
+      broadcastChannelRef.current.send({
+        type: 'broadcast',
+        event: 'sync',
+        payload: event,
+      });
+    }
+  }, []);
+
+  // Real-time subscriptions (postgres_changes + broadcast)
   useEffect(() => {
-    const listChannel = supabase
+    const channel = supabase
       .channel(`list-${listId}`)
+      // Broadcast channel for instant peer-to-peer sync
+      .on('broadcast', { event: 'sync' }, ({ payload }) => {
+        const event = payload as BroadcastEvent;
+
+        switch (event.type) {
+          case 'toggle':
+            setItems(prev => prev.map(item =>
+              item.id === event.itemId ? { ...item, completed: event.completed } : item
+            ));
+            break;
+          case 'update':
+            setItems(prev => prev.map(item =>
+              item.id === event.itemId ? { ...item, ...event.changes } : item
+            ));
+            break;
+          case 'delete':
+            setItems(prev => prev.filter(item => item.id !== event.itemId));
+            break;
+          case 'add':
+            setItems(prev => {
+              const exists = prev.some(item => item.id === event.item.id);
+              if (exists) return prev;
+              return [event.item, ...prev];
+            });
+            break;
+          case 'reorder':
+            setItems(prev => {
+              const positionMap = new Map(event.items.map(i => [i.id, i.position]));
+              return prev.map(item => {
+                const newPos = positionMap.get(item.id);
+                return newPos !== undefined ? { ...item, position: newPos } : item;
+              });
+            });
+            break;
+        }
+      })
+      // Database changes for persistence confirmation and new client sync
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'lists', filter: `id=eq.${listId}` },
         (payload) => {
           if (payload.eventType === 'UPDATE') {
-            // Merge with existing state to preserve fields not in payload
             setList(prev => prev ? { ...prev, ...(payload.new as List) } : payload.new as List);
           } else if (payload.eventType === 'DELETE') {
             setList(null);
@@ -163,7 +225,7 @@ export function useList(listId: string, options: UseListOptions = {}) {
                 item.id === tempId ? newItem : item
               ));
             } else {
-              // This is from another client or source - add if not already exists
+              // From another client - add if not already exists (broadcast may have added it)
               setItems(prev => {
                 const exists = prev.some(item => item.id === newItem.id);
                 if (exists) return prev;
@@ -171,18 +233,45 @@ export function useList(listId: string, options: UseListOptions = {}) {
               });
             }
           } else if (payload.eventType === 'UPDATE') {
+            // Only update if the item exists and has changed
             setItems(prev => prev.map(item =>
-              item.id === (payload.new as Item).id ? payload.new as Item : item
+              item.id === (payload.new as Item).id ? { ...item, ...(payload.new as Item) } : item
             ));
           } else if (payload.eventType === 'DELETE') {
             setItems(prev => prev.filter(item => item.id !== (payload.old as Item).id));
           }
         }
       )
-      .subscribe();
+      // Presence tracking - see how many others are viewing
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        // Count unique users (excluding self, -1)
+        const count = Object.keys(state).length;
+        setPresenceCount(Math.max(0, count - 1));
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          // Use stable session ID to prevent duplicates on hot reload/reconnect
+          let visitorId = typeof window !== 'undefined'
+            ? sessionStorage.getItem('listo_visitor_id')
+            : null;
+
+          if (!visitorId) {
+            visitorId = `visitor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            if (typeof window !== 'undefined') {
+              sessionStorage.setItem('listo_visitor_id', visitorId);
+            }
+          }
+
+          await channel.track({ visitor_id: visitorId });
+        }
+      });
+
+    broadcastChannelRef.current = channel;
 
     return () => {
-      supabase.removeChannel(listChannel);
+      broadcastChannelRef.current = null;
+      supabase.removeChannel(channel);
     };
   }, [listId]);
 
@@ -217,81 +306,75 @@ export function useList(listId: string, options: UseListOptions = {}) {
   const [newItemId, setNewItemId] = useState<string | null>(null);
   const [newItemIds, setNewItemIds] = useState<string[]>([]);
 
-  // Add multiple items at once (bulk add) - avoids race conditions
+  // Add multiple items at once (bulk add) - uses atomic stored procedure
   const addItems = async (contents: string[], parentId?: string | null) => {
-    console.log('[addItems] Called with:', { contents, parentId, listId });
     if (contents.length === 0) return [];
 
     const targetParentId = parentId || null;
-
-    // Get current siblings at this level
-    const siblings = items.filter(i => i.parent_id === targetParentId && !i.completed);
     const shiftAmount = contents.length;
 
-    // Optimistically shift existing items
-    setItems(prev => prev.map(item => {
-      if (item.parent_id === targetParentId && !item.completed) {
-        return { ...item, position: item.position + shiftAmount };
-      }
-      return item;
-    }));
-
-    // Prepare new items with positions 0, 1, 2, ... (first item at top)
-    const newItems = contents.map((content, index) => ({
+    // Optimistically shift existing items and add placeholders
+    const tempItems: Item[] = contents.map((content, index) => ({
+      id: `temp_batch_${Date.now()}_${index}`,
       list_id: listId,
       content,
+      completed: false,
       parent_id: targetParentId,
       position: index,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     }));
 
-    // Insert all new items in one batch
-    console.log('[addItems] Inserting items:', newItems);
-    const { data, error } = await supabase
-      .from('items')
-      .insert(newItems)
-      .select();
+    setItems(prev => [
+      ...tempItems,
+      ...prev.map(item => {
+        if (item.parent_id === targetParentId && !item.completed) {
+          return { ...item, position: item.position + shiftAmount };
+        }
+        return item;
+      })
+    ]);
 
-    console.log('[addItems] Insert result:', { data, error });
+    // Use atomic stored procedure - shifts siblings AND inserts all items in one transaction
+    const { data, error } = await supabase.rpc('add_items_batch_atomic', {
+      p_list_id: listId,
+      p_contents: contents,
+      p_parent_id: targetParentId,
+    });
+
     if (error) {
       console.error('[addItems] Insert error:', error);
+      // Rollback optimistic update
+      setItems(prev => prev.filter(item => !item.id.startsWith('temp_batch_')));
       throw error;
     }
 
-    // Optimistically add the new items to state immediately
-    // (don't rely solely on real-time subscription which may not work in all environments)
+    // Replace temp items with real items
     if (data && data.length > 0) {
       setItems(prev => {
-        // Add new items, avoiding duplicates (in case real-time already added them)
-        const existingIds = new Set(prev.map(item => item.id));
-        const newItemsToAdd = data.filter(item => !existingIds.has(item.id));
-        return [...newItemsToAdd, ...prev];
+        // Remove temp items
+        const withoutTemp = prev.filter(item => !item.id.startsWith('temp_batch_'));
+        // Add real items, avoiding duplicates
+        const existingIds = new Set(withoutTemp.map(item => item.id));
+        const newItemsToAdd = (data as Item[]).filter(item => !existingIds.has(item.id));
+        return [...newItemsToAdd, ...withoutTemp];
       });
+
+      // Broadcast to other clients
+      (data as Item[]).forEach(item => broadcast({ type: 'add', item }));
     }
 
     // Track these as new items for flash animation
-    const ids = data?.map(d => d.id) || [];
+    const ids = (data as Item[])?.map(d => d.id) || [];
     setNewItemIds(ids);
     setTimeout(() => setNewItemIds([]), 500);
 
-
-    // Update positions of existing siblings in database
-    const updates = siblings.map(sibling =>
-      supabase
-        .from('items')
-        .update({ position: sibling.position + shiftAmount })
-        .eq('id', sibling.id)
-    );
-    await Promise.all(updates);
-
-    return data || [];
+    return (data as Item[]) || [];
   };
 
-  // Add item at the TOP of the list (position 0)
+  // Add item at the TOP of the list (position 0) - uses atomic stored procedure
   const addItem = async (content: string, parentId?: string | null) => {
     const targetParentId = parentId || null;
-
-    // Get siblings and shift their positions up by 1
-    const siblings = items.filter(i => i.parent_id === targetParentId && !i.completed);
 
     // Create temporary ID for optimistic update
     const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -322,60 +405,47 @@ export function useList(listId: string, options: UseListOptions = {}) {
     setNewItemId(tempId);
     setTimeout(() => setNewItemId(null), 500);
 
-
     // Register pending insert so realtime can correlate temp ID with real ID
     const pendingKey = `${content}|${targetParentId}|0`;
     pendingInsertsRef.current.set(pendingKey, tempId);
 
-    // Insert new item in database (don't await - fire and forget for speed)
+    // Use atomic stored procedure - shifts siblings AND inserts in one transaction
     supabase
-      .from('items')
-      .insert({
-        list_id: listId,
-        content,
-        parent_id: targetParentId,
-        position: 0,
+      .rpc('add_item_atomic', {
+        p_list_id: listId,
+        p_content: content,
+        p_parent_id: targetParentId,
       })
-      .select()
-      .single()
       .then(({ data, error }) => {
         if (error) {
           console.error('Failed to add item:', error);
-          // Clean up pending tracking
           pendingInsertsRef.current.delete(pendingKey);
           // Rollback optimistic update on error
           setItems(prev => prev.filter(item => item.id !== tempId));
           return;
         }
 
-        // Clean up pending tracking (realtime may have already handled this)
         pendingInsertsRef.current.delete(pendingKey);
 
-        // Ensure temp item is replaced with real item
-        // (realtime usually handles this, but this is a safety net)
-        setItems(prev => {
-          const hasTempItem = prev.some(item => item.id === tempId);
-          const hasRealItem = prev.some(item => item.id === data.id);
+        // Replace temp item with real item
+        if (data) {
+          const realItem = data as Item;
+          setItems(prev => {
+            const hasTempItem = prev.some(item => item.id === tempId);
+            const hasRealItem = prev.some(item => item.id === realItem.id);
 
-          if (hasTempItem && !hasRealItem) {
-            // Realtime hasn't fired yet - replace temp with real
-            return prev.map(item => item.id === tempId ? data : item);
-          } else if (hasTempItem && hasRealItem) {
-            // Both exist (race condition) - remove temp
-            return prev.filter(item => item.id !== tempId);
-          }
-          // Realtime already handled it, no change needed
-          return prev;
-        });
+            if (hasTempItem && !hasRealItem) {
+              return prev.map(item => item.id === tempId ? realItem : item);
+            } else if (hasTempItem && hasRealItem) {
+              return prev.filter(item => item.id !== tempId);
+            }
+            return prev;
+          });
+
+          // Broadcast to other clients for instant sync
+          broadcast({ type: 'add', item: realItem });
+        }
       });
-
-    // Update positions of existing siblings in database (fire and forget)
-    siblings.forEach(sibling => {
-      supabase
-        .from('items')
-        .update({ position: sibling.position + 1 })
-        .eq('id', sibling.id);
-    });
 
     return optimisticItem;
   };
@@ -408,12 +478,15 @@ export function useList(listId: string, options: UseListOptions = {}) {
     return data;
   };
 
-  // Update item
+  // Update item with broadcast for instant sync
   const updateItem = async (itemId: string, updates: Partial<Item>) => {
     // Optimistic update
     setItems(prev => prev.map(item =>
       item.id === itemId ? { ...item, ...updates } : item
     ));
+
+    // Broadcast immediately for instant sync to other clients
+    broadcast({ type: 'update', itemId, changes: updates });
 
     const { error } = await supabase
       .from('items')
@@ -423,7 +496,7 @@ export function useList(listId: string, options: UseListOptions = {}) {
     if (error) throw error;
   };
 
-  // Toggle item completion (with optimistic update and animation delay)
+  // Toggle item completion (with optimistic update, broadcast, and animation delay)
   const toggleItem = async (itemId: string) => {
     const item = items.find(i => i.id === itemId);
     if (!item) return;
@@ -434,6 +507,9 @@ export function useList(listId: string, options: UseListOptions = {}) {
     setItems(prev => prev.map(i =>
       i.id === itemId ? { ...i, completed: newCompleted } : i
     ));
+
+    // Broadcast immediately for instant sync to other clients
+    broadcast({ type: 'toggle', itemId, completed: newCompleted });
 
     // If completing (not uncompleting), add to completing set to delay the move
     if (newCompleted) {
@@ -454,27 +530,37 @@ export function useList(listId: string, options: UseListOptions = {}) {
       }, 2000);
     }
 
-    // Sync to database
-    await updateItem(itemId, { completed: newCompleted });
-  };
-
-  // Delete item
-  const deleteItem = async (itemId: string) => {
+    // Sync to database (updateItem also broadcasts, but toggle is more specific)
     const { error } = await supabase
       .from('items')
-      .delete()
+      .update({ completed: newCompleted, updated_at: new Date().toISOString() })
       .eq('id', itemId);
 
     if (error) throw error;
   };
 
-  // Reorder items (with optimistic update)
+  // Delete item with broadcast and atomic gap closing
+  const deleteItem = async (itemId: string) => {
+    // Optimistic update
+    setItems(prev => prev.filter(item => item.id !== itemId));
+
+    // Broadcast immediately for instant sync
+    broadcast({ type: 'delete', itemId });
+
+    // Use atomic stored procedure to delete and close gap
+    const { error } = await supabase.rpc('delete_item_atomic', {
+      p_item_id: itemId,
+    });
+
+    if (error) throw error;
+  };
+
+  // Reorder items with atomic stored procedure and broadcast
   const reorderItems = async (activeId: string, overId: string) => {
     const activeItem = items.find(i => i.id === activeId);
     const overItem = items.find(i => i.id === overId);
     if (!activeItem || !overItem) return;
 
-    // For now, only handle reordering within the same parent level
     // Get all siblings at the same level as active item
     const siblings = items
       .filter(i => i.parent_id === activeItem.parent_id)
@@ -485,39 +571,38 @@ export function useList(listId: string, options: UseListOptions = {}) {
 
     if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return;
 
-    // Optimistic update: reorder the array and reassign positions
-    setItems(prev => {
-      const updated = prev.map(item => ({ ...item }));
-      const levelSiblings = updated
-        .filter(i => i.parent_id === activeItem.parent_id)
-        .sort((a, b) => a.position - b.position);
-
-      // Remove from old position and insert at new position
-      const [movedItem] = levelSiblings.splice(oldIndex, 1);
-      levelSiblings.splice(newIndex, 0, movedItem);
-
-      // Reassign positions sequentially
-      levelSiblings.forEach((sibling, index) => {
-        const itemInUpdated = updated.find(i => i.id === sibling.id);
-        if (itemInUpdated) itemInUpdated.position = index;
-      });
-
-      return updated;
-    });
-
-    // Sync to database
+    // Calculate new positions for optimistic update and broadcast
     const reorderedSiblings = [...siblings];
     const [movedItem] = reorderedSiblings.splice(oldIndex, 1);
     reorderedSiblings.splice(newIndex, 0, movedItem);
 
-    const updates = reorderedSiblings.map((sibling, index) =>
-      updateItem(sibling.id, { position: index })
-    );
+    const positionUpdates = reorderedSiblings.map((sibling, index) => ({
+      id: sibling.id,
+      position: index,
+    }));
 
-    await Promise.all(updates);
+    // Optimistic update
+    setItems(prev => {
+      const positionMap = new Map(positionUpdates.map(u => [u.id, u.position]));
+      return prev.map(item => {
+        const newPos = positionMap.get(item.id);
+        return newPos !== undefined ? { ...item, position: newPos } : item;
+      });
+    });
+
+    // Broadcast immediately for instant sync
+    broadcast({ type: 'reorder', items: positionUpdates });
+
+    // Use atomic stored procedure
+    const { error } = await supabase.rpc('reorder_item_atomic', {
+      p_item_id: activeId,
+      p_new_position: newIndex,
+    });
+
+    if (error) throw error;
   };
 
-  // Move item to a new group (header) - optimistic
+  // Move item to a new group (header) - uses atomic stored procedure
   const moveToGroup = async (itemId: string, headerId: string) => {
     const item = items.find(i => i.id === itemId);
     if (!item) return;
@@ -533,11 +618,20 @@ export function useList(listId: string, options: UseListOptions = {}) {
         : i
     ));
 
-    // Sync to database
-    await updateItem(itemId, { parent_id: headerId, position: newPosition });
+    // Broadcast for instant sync
+    broadcast({ type: 'update', itemId, changes: { parent_id: headerId, position: newPosition } });
+
+    // Use atomic stored procedure
+    const { error } = await supabase.rpc('move_item_to_parent_atomic', {
+      p_item_id: itemId,
+      p_new_parent_id: headerId,
+      p_new_position: null, // null = append to end
+    });
+
+    if (error) throw error;
   };
 
-  // Move item out of a group to root level - optimistic
+  // Move item out of a group to root level - uses atomic stored procedure
   const moveToRoot = async (itemId: string, targetPosition?: number) => {
     const item = items.find(i => i.id === itemId);
     if (!item) return;
@@ -560,18 +654,20 @@ export function useList(listId: string, options: UseListOptions = {}) {
       return i;
     }));
 
-    // Sync to database - shift existing items first
-    const itemsToShift = rootItems.filter(i => i.position >= newPosition);
-    const shiftUpdates = itemsToShift.map(i =>
-      updateItem(i.id, { position: i.position + 1 })
-    );
-    await Promise.all(shiftUpdates);
+    // Broadcast for instant sync
+    broadcast({ type: 'update', itemId, changes: { parent_id: null, position: newPosition } });
 
-    // Then update the moved item
-    await updateItem(itemId, { parent_id: null, position: newPosition });
+    // Use atomic stored procedure
+    const { error } = await supabase.rpc('move_item_to_parent_atomic', {
+      p_item_id: itemId,
+      p_new_parent_id: null,
+      p_new_position: newPosition,
+    });
+
+    if (error) throw error;
   };
 
-  // Indent item (make it a child of previous sibling)
+  // Indent item (make it a child of previous sibling) - uses atomic stored procedure
   const indentItem = async (itemId: string) => {
     const item = items.find(i => i.id === itemId);
     if (!item) return;
@@ -587,10 +683,25 @@ export function useList(listId: string, options: UseListOptions = {}) {
     const newSiblings = items.filter(i => i.parent_id === newParent.id);
     const newPosition = newSiblings.length;
 
-    await updateItem(itemId, { parent_id: newParent.id, position: newPosition });
+    // Optimistic update
+    setItems(prev => prev.map(i =>
+      i.id === itemId ? { ...i, parent_id: newParent.id, position: newPosition } : i
+    ));
+
+    // Broadcast for instant sync
+    broadcast({ type: 'update', itemId, changes: { parent_id: newParent.id, position: newPosition } });
+
+    // Use atomic stored procedure
+    const { error } = await supabase.rpc('move_item_to_parent_atomic', {
+      p_item_id: itemId,
+      p_new_parent_id: newParent.id,
+      p_new_position: null, // append to end
+    });
+
+    if (error) throw error;
   };
 
-  // Outdent item (move to parent's level)
+  // Outdent item (move to parent's level) - uses atomic stored procedure
   const outdentItem = async (itemId: string) => {
     const item = items.find(i => i.id === itemId);
     if (!item || !item.parent_id) return; // Can't outdent root items
@@ -605,17 +716,29 @@ export function useList(listId: string, options: UseListOptions = {}) {
     const parentIndex = newSiblings.findIndex(i => i.id === parent.id);
     const newPosition = parentIndex + 1;
 
-    // Shift siblings after new position
-    const updates: Promise<void>[] = [];
-    newSiblings.forEach((sibling, index) => {
-      if (index >= newPosition) {
-        updates.push(updateItem(sibling.id, { position: index + 1 }));
+    // Optimistic update - shift siblings and move item
+    setItems(prev => prev.map(i => {
+      if (i.id === itemId) {
+        return { ...i, parent_id: parent.parent_id, position: newPosition };
       }
+      // Shift items at or after new position
+      if (i.parent_id === parent.parent_id && i.position >= newPosition) {
+        return { ...i, position: i.position + 1 };
+      }
+      return i;
+    }));
+
+    // Broadcast for instant sync
+    broadcast({ type: 'update', itemId, changes: { parent_id: parent.parent_id, position: newPosition } });
+
+    // Use atomic stored procedure
+    const { error } = await supabase.rpc('move_item_to_parent_atomic', {
+      p_item_id: itemId,
+      p_new_parent_id: parent.parent_id,
+      p_new_position: newPosition,
     });
 
-    updates.push(updateItem(itemId, { parent_id: parent.parent_id, position: newPosition }));
-
-    await Promise.all(updates);
+    if (error) throw error;
   };
 
   // Update list theme
@@ -682,7 +805,7 @@ export function useList(listId: string, options: UseListOptions = {}) {
     if (error) throw error;
   };
 
-  // Sort items alphabetically
+  // Sort items alphabetically - uses atomic bulk update
   // sortAll=false: Sort items within each category (and root items among themselves)
   // sortAll=true: Also sort categories/root items, then sort within each category
   const sortItems = async (sortAll: boolean) => {
@@ -740,18 +863,18 @@ export function useList(listId: string, options: UseListOptions = {}) {
       });
     });
 
-    // Update database
-    const dbUpdates = updates.map(({ id, position }) =>
-      supabase
-        .from('items')
-        .update({ position, updated_at: new Date().toISOString() })
-        .eq('id', id)
-    );
+    // Broadcast for instant sync
+    broadcast({ type: 'reorder', items: updates });
 
-    await Promise.all(dbUpdates);
+    // Use atomic bulk update
+    const { error } = await supabase.rpc('bulk_update_positions', {
+      p_updates: JSON.stringify(updates),
+    });
+
+    if (error) throw error;
   };
 
-  // Ungroup all - remove categories and flatten all items to root level
+  // Ungroup all - uses atomic stored procedure
   const ungroupAll = async () => {
     const categories = items.filter(item => item.content.startsWith('#'));
     const nonCategories = items.filter(item => !item.content.startsWith('#'));
@@ -761,43 +884,21 @@ export function useList(listId: string, options: UseListOptions = {}) {
       return;
     }
 
-    // Sort non-category items: incomplete first by position, then completed
+    // Optimistic update - remove categories and flatten
     const incompleteItems = nonCategories.filter(item => !item.completed);
     const completedItems = nonCategories.filter(item => item.completed);
 
-    // Assign new positions - all items become root level
-    const updates: { id: string; position: number; parent_id: null }[] = [];
-    incompleteItems.forEach((item, index) => {
-      updates.push({ id: item.id, position: index, parent_id: null });
+    setItems([
+      ...incompleteItems.map((item, index) => ({ ...item, position: index, parent_id: null })),
+      ...completedItems.map((item, index) => ({ ...item, position: incompleteItems.length + index, parent_id: null })),
+    ]);
+
+    // Use atomic stored procedure
+    const { error } = await supabase.rpc('ungroup_all_atomic', {
+      p_list_id: listId,
     });
-    completedItems.forEach((item, index) => {
-      updates.push({ id: item.id, position: incompleteItems.length + index, parent_id: null });
-    });
 
-    // Optimistic update - remove categories and flatten
-    setItems(nonCategories.map(item => {
-      const update = updates.find(u => u.id === item.id);
-      return update ? { ...item, position: update.position, parent_id: null } : item;
-    }));
-
-    // Delete categories from database
-    if (categories.length > 0) {
-      const categoryIds = categories.map(c => c.id);
-      await supabase
-        .from('items')
-        .delete()
-        .in('id', categoryIds);
-    }
-
-    // Update remaining items - set parent_id to null and new positions
-    const dbUpdates = updates.map(({ id, position }) =>
-      supabase
-        .from('items')
-        .update({ parent_id: null, position, updated_at: new Date().toISOString() })
-        .eq('id', id)
-    );
-
-    await Promise.all(dbUpdates);
+    if (error) throw error;
   };
 
   // Update large mode
@@ -853,6 +954,7 @@ export function useList(listId: string, options: UseListOptions = {}) {
     newItemId,
     newItemIds,
     completingItemIds,
+    presenceCount,
     createList,
     updateTitle,
     updateTheme,

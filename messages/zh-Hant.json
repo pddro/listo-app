@@ -507,6 +507,26 @@
     "listTitle": "清單標題",
     "goHome": "返回首頁",
     "addToMyLists": "新增到我的清單",
-    "addedToLists": "已新增到你的清單！"
+    "addedToLists": "已新增到你的清單！",
+    "convertToTemplate": "轉換為範本",
+    "myTemplates": "我的範本",
+    "noTemplates": "尚無範本",
+    "templateSaved": "範本已儲存！",
+    "templateSubmitted": "已提交審核！",
+    "useTemplate": {
+      "title": "使用範本",
+      "message": "從此範本建立新清單？",
+      "create": "建立清單"
+    },
+    "deleteTemplate": {
+      "title": "刪除範本？",
+      "message": "「{title}」將從你的範本中刪除。"
+    },
+    "editTemplate": "編輯範本",
+    "duplicateTemplate": "複製範本",
+    "shareList": "分享連結",
+    "shareListDescription": "將清單傳送給任何人",
+    "saveAsTemplate": "儲存為範本",
+    "saveAsTemplateDescription": "稍後重複使用此清單佈局"
   }
 }

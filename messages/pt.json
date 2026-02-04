@@ -506,6 +506,26 @@
     "listTitle": "Título da lista",
     "goHome": "Voltar",
     "addToMyLists": "Adicionar às minhas listas",
-    "addedToLists": "Adicionado às suas listas!"
+    "addedToLists": "Adicionado às suas listas!",
+    "convertToTemplate": "Converter em modelo",
+    "myTemplates": "Meus modelos",
+    "noTemplates": "Sem modelos ainda",
+    "templateSaved": "Modelo salvo!",
+    "templateSubmitted": "Enviado para revisão!",
+    "useTemplate": {
+      "title": "Usar modelo",
+      "message": "Criar uma nova lista a partir deste modelo?",
+      "create": "Criar lista"
+    },
+    "deleteTemplate": {
+      "title": "Excluir modelo?",
+      "message": "\"{title}\" será removido dos seus modelos."
+    },
+    "editTemplate": "Editar modelo",
+    "duplicateTemplate": "Duplicar modelo",
+    "shareList": "Compartilhar link",
+    "shareListDescription": "Enviar a lista para qualquer pessoa",
+    "saveAsTemplate": "Salvar como modelo",
+    "saveAsTemplateDescription": "Reutilizar este layout de lista depois"
   }
 }

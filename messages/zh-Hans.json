@@ -506,6 +506,26 @@
     "listTitle": "清单标题",
     "goHome": "返回首页",
     "addToMyLists": "添加到我的清单",
-    "addedToLists": "已添加到你的清单！"
+    "addedToLists": "已添加到你的清单！",
+    "convertToTemplate": "转换为模板",
+    "myTemplates": "我的模板",
+    "noTemplates": "暂无模板",
+    "templateSaved": "模板已保存！",
+    "templateSubmitted": "已提交审核！",
+    "useTemplate": {
+      "title": "使用模板",
+      "message": "从此模板创建新清单？",
+      "create": "创建清单"
+    },
+    "deleteTemplate": {
+      "title": "删除模板？",
+      "message": "「{title}」将从你的模板中删除。"
+    },
+    "editTemplate": "编辑模板",
+    "duplicateTemplate": "复制模板",
+    "shareList": "分享链接",
+    "shareListDescription": "将清单发送给任何人",
+    "saveAsTemplate": "保存为模板",
+    "saveAsTemplateDescription": "稍后重复使用此清单布局"
   }
 }

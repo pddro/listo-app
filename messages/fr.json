@@ -504,6 +504,26 @@
     "listTitle": "Titre de la liste",
     "goHome": "Retour",
     "addToMyLists": "Ajouter à mes listes",
-    "addedToLists": "Ajouté à vos listes !"
+    "addedToLists": "Ajouté à vos listes !",
+    "convertToTemplate": "Convertir en modèle",
+    "myTemplates": "Mes modèles",
+    "noTemplates": "Pas encore de modèles",
+    "templateSaved": "Modèle enregistré !",
+    "templateSubmitted": "Soumis pour examen !",
+    "useTemplate": {
+      "title": "Utiliser le modèle",
+      "message": "Créer une nouvelle liste à partir de ce modèle ?",
+      "create": "Créer la liste"
+    },
+    "deleteTemplate": {
+      "title": "Supprimer le modèle ?",
+      "message": "\"{title}\" sera supprimé de vos modèles."
+    },
+    "editTemplate": "Modifier le modèle",
+    "duplicateTemplate": "Dupliquer le modèle",
+    "shareList": "Partager le lien",
+    "shareListDescription": "Envoyer la liste à n'importe qui",
+    "saveAsTemplate": "Enregistrer comme modèle",
+    "saveAsTemplateDescription": "Réutiliser cette mise en page plus tard"
   }
 }

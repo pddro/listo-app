@@ -506,6 +506,26 @@
     "listTitle": "리스트 제목",
     "goHome": "홈으로",
     "addToMyLists": "내 리스트에 추가",
-    "addedToLists": "리스트에 추가됨!"
+    "addedToLists": "리스트에 추가됨!",
+    "convertToTemplate": "템플릿으로 변환",
+    "myTemplates": "내 템플릿",
+    "noTemplates": "템플릿 없음",
+    "templateSaved": "템플릿 저장됨!",
+    "templateSubmitted": "검토를 위해 제출됨!",
+    "useTemplate": {
+      "title": "템플릿 사용",
+      "message": "이 템플릿으로 새 리스트를 만드시겠습니까?",
+      "create": "리스트 만들기"
+    },
+    "deleteTemplate": {
+      "title": "템플릿 삭제?",
+      "message": "\"{title}\"이(가) 템플릿에서 삭제됩니다."
+    },
+    "editTemplate": "템플릿 편집",
+    "duplicateTemplate": "템플릿 복제",
+    "shareList": "링크 공유",
+    "shareListDescription": "누구에게나 리스트 보내기",
+    "saveAsTemplate": "템플릿으로 저장",
+    "saveAsTemplateDescription": "나중에 이 리스트 레이아웃 재사용"
   }
 }
