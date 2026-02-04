@@ -101,7 +101,27 @@
       "newList": "Nouvelle Liste"
     },
     "backToList": "Retour à la liste",
-    "shareHint": "Partagez la liste pour collaborer en temps réel"
+    "shareHint": "Partagez la liste pour collaborer en temps réel",
+    "presence": {
+      "justYou": "Juste vous",
+      "oneOther": "1 autre personne",
+      "othersHere": "{count} autres personnes"
+    },
+    "collaboration": {
+      "shareTitle": "Partagez la magie !",
+      "shareDescription": "Cette liste se synchronise instantanément avec tous ceux qui y ont accès. Pas d'inscription. Ils cliquent sur le lien et c'est parti.",
+      "featureRealtime": "Les modifications apparaissent en temps réel",
+      "featureViewers": "Voyez qui consulte avec vous",
+      "featureNoAccount": "Aucun compte requis",
+      "shareButton": "Partager cette liste",
+      "activeTitle": "Vous collaborez !",
+      "activeDescription": "{count, plural, one {# personne consulte} other {# personnes consultent}} cette liste avec vous en ce moment.",
+      "featureSync": "Chaque modification se synchronise instantanément",
+      "featureCheckTogether": "Cochez les éléments ensemble",
+      "featureSameList": "Tout le monde voit la même liste",
+      "tryIt": "Cochez un élément et regardez-le se mettre à jour pour tous instantanément !",
+      "gotIt": "Compris !"
+    }
   },
   "input": {
     "placeholder": "Ajouter des éléments...",

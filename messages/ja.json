@@ -101,7 +101,27 @@
       "newList": "新規リスト"
     },
     "backToList": "リストに戻る",
-    "shareHint": "リストを共有してリアルタイムで共同作業"
+    "shareHint": "リストを共有してリアルタイムで共同作業",
+    "presence": {
+      "justYou": "あなただけ",
+      "oneOther": "他1人",
+      "othersHere": "他{count}人"
+    },
+    "collaboration": {
+      "shareTitle": "魔法を共有しよう！",
+      "shareDescription": "このリストは共有した人と即座に同期します。登録不要。リンクをクリックするだけで参加できます。",
+      "featureRealtime": "変更がリアルタイムで反映",
+      "featureViewers": "誰が見ているか確認",
+      "featureNoAccount": "アカウント不要",
+      "shareButton": "このリストを共有",
+      "activeTitle": "コラボ中！",
+      "activeDescription": "{count, plural, one {#人が} other {#人が}}今このリストを一緒に見ています。",
+      "featureSync": "すべての変更が即座に同期",
+      "featureCheckTogether": "一緒にチェック",
+      "featureSameList": "全員が同じリストを見る",
+      "tryIt": "アイテムをチェックしてみて — 全員に即座に反映されます！",
+      "gotIt": "わかりました！"
+    }
   },
   "input": {
     "placeholder": "アイテムを追加...",

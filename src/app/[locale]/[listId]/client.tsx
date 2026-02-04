@@ -810,6 +810,11 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
             count={presenceCount}
             themeColor={list?.theme?.primary}
             onClick={() => setShowCollabModal(true)}
+            translations={{
+              justYou: t('presence.justYou'),
+              oneOther: t('presence.oneOther'),
+              othersHere: (count: number) => t('presence.othersHere', { count }),
+            }}
           />
         )}
 
@@ -820,6 +825,21 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
           presenceCount={presenceCount}
           themeColor={list?.theme?.primary}
           onShare={() => setShowShareView(true)}
+          translations={{
+            shareTitle: t('collaboration.shareTitle'),
+            shareDescription: t('collaboration.shareDescription'),
+            featureRealtime: t('collaboration.featureRealtime'),
+            featureViewers: t('collaboration.featureViewers'),
+            featureNoAccount: t('collaboration.featureNoAccount'),
+            shareButton: t('collaboration.shareButton'),
+            activeTitle: t('collaboration.activeTitle'),
+            activeDescription: (count: number) => t('collaboration.activeDescription', { count }),
+            featureSync: t('collaboration.featureSync'),
+            featureCheckTogether: t('collaboration.featureCheckTogether'),
+            featureSameList: t('collaboration.featureSameList'),
+            tryIt: t('collaboration.tryIt'),
+            gotIt: t('collaboration.gotIt'),
+          }}
         />
 
         {/* Mango Rain Celebration */}

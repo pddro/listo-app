@@ -3,13 +3,46 @@
 import { useEffect, useState } from 'react';
 import './CollaborationModal.css';
 
+interface CollaborationModalTranslations {
+  shareTitle: string;
+  shareDescription: string;
+  featureRealtime: string;
+  featureViewers: string;
+  featureNoAccount: string;
+  shareButton: string;
+  activeTitle: string;
+  activeDescription: (count: number) => string;
+  featureSync: string;
+  featureCheckTogether: string;
+  featureSameList: string;
+  tryIt: string;
+  gotIt: string;
+}
+
 interface CollaborationModalProps {
   isOpen: boolean;
   onClose: () => void;
   presenceCount: number;
   themeColor?: string;
   onShare?: () => void;
+  translations?: CollaborationModalTranslations;
 }
+
+const defaultTranslations: CollaborationModalTranslations = {
+  shareTitle: 'Share the magic!',
+  shareDescription: 'This list syncs instantly with anyone you share it with. No sign-ups needed. They click the link, they\'re in.',
+  featureRealtime: 'Changes appear in real-time',
+  featureViewers: 'See who\'s viewing with you',
+  featureNoAccount: 'No accounts required',
+  shareButton: 'Share this list',
+  activeTitle: 'You\'re collaborating!',
+  activeDescription: (count: number) => `${count} ${count === 1 ? 'person is' : 'people are'} viewing this list with you right now.`,
+  featureSync: 'Every change syncs instantly',
+  featureCheckTogether: 'Check items off together',
+  featureSameList: 'Everyone sees the same list',
+  tryIt: 'Try checking an item — watch it update for everyone instantly!',
+  gotIt: 'Got it!',
+};
 
 // Helper to convert hex to rgba
 function hexToRgba(hex: string, alpha: number): string {
@@ -26,7 +59,9 @@ export default function CollaborationModal({
   presenceCount,
   themeColor,
   onShare,
+  translations,
 }: CollaborationModalProps) {
+  const t = translations || defaultTranslations;
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
@@ -90,23 +125,20 @@ export default function CollaborationModal({
         {/* Content */}
         {isAlone ? (
           <>
-            <h2 className="collab-modal-title">Share the magic!</h2>
-            <p className="collab-modal-text">
-              This list syncs <strong>instantly</strong> with anyone you share it with.
-              No sign-ups needed. They click the link, they're in.
-            </p>
+            <h2 className="collab-modal-title">{t.shareTitle}</h2>
+            <p className="collab-modal-text">{t.shareDescription}</p>
             <div className="collab-features">
               <div className="collab-feature">
                 <span className="collab-feature-icon">⚡</span>
-                <span>Changes appear in real-time</span>
+                <span>{t.featureRealtime}</span>
               </div>
               <div className="collab-feature">
                 <span className="collab-feature-icon">👥</span>
-                <span>See who's viewing with you</span>
+                <span>{t.featureViewers}</span>
               </div>
               <div className="collab-feature">
                 <span className="collab-feature-icon">✨</span>
-                <span>No accounts required</span>
+                <span>{t.featureNoAccount}</span>
               </div>
             </div>
             <button
@@ -117,38 +149,34 @@ export default function CollaborationModal({
                 handleClose();
               }}
             >
-              Share this list
+              {t.shareButton}
             </button>
           </>
         ) : (
           <>
-            <h2 className="collab-modal-title">You're collaborating!</h2>
-            <p className="collab-modal-text">
-              <strong>{presenceCount} {presenceCount === 1 ? 'person is' : 'people are'}</strong> viewing this list with you right now.
-            </p>
+            <h2 className="collab-modal-title">{t.activeTitle}</h2>
+            <p className="collab-modal-text">{t.activeDescription(presenceCount)}</p>
             <div className="collab-features">
               <div className="collab-feature">
                 <span className="collab-feature-icon">🔄</span>
-                <span>Every change syncs instantly</span>
+                <span>{t.featureSync}</span>
               </div>
               <div className="collab-feature">
                 <span className="collab-feature-icon">✓</span>
-                <span>Check items off together</span>
+                <span>{t.featureCheckTogether}</span>
               </div>
               <div className="collab-feature">
                 <span className="collab-feature-icon">🎯</span>
-                <span>Everyone sees the same list</span>
+                <span>{t.featureSameList}</span>
               </div>
             </div>
-            <p className="collab-modal-subtext">
-              Try checking an item — watch it update for everyone instantly!
-            </p>
+            <p className="collab-modal-subtext">{t.tryIt}</p>
             <button
               className="collab-modal-button secondary"
               style={{ color, borderColor: color }}
               onClick={handleClose}
             >
-              Got it!
+              {t.gotIt}
             </button>
           </>
         )}

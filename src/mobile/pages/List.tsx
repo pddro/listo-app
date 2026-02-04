@@ -1018,6 +1018,11 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
         count={presenceCount}
         themeColor={list?.theme?.primary}
         onClick={() => setShowCollabModal(true)}
+        translations={{
+          justYou: t('list.presence.justYou'),
+          oneOther: t('list.presence.oneOther'),
+          othersHere: (count: number) => t('list.presence.othersHere', { count }),
+        }}
       />
 
       {/* Collaboration Modal */}
@@ -1027,6 +1032,21 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
         presenceCount={presenceCount}
         themeColor={list?.theme?.primary}
         onShare={handleShare}
+        translations={{
+          shareTitle: t('list.collaboration.shareTitle'),
+          shareDescription: t('list.collaboration.shareDescription'),
+          featureRealtime: t('list.collaboration.featureRealtime'),
+          featureViewers: t('list.collaboration.featureViewers'),
+          featureNoAccount: t('list.collaboration.featureNoAccount'),
+          shareButton: t('list.collaboration.shareButton'),
+          activeTitle: t('list.collaboration.activeTitle'),
+          activeDescription: (count: number) => t('list.collaboration.activeDescription', { count }),
+          featureSync: t('list.collaboration.featureSync'),
+          featureCheckTogether: t('list.collaboration.featureCheckTogether'),
+          featureSameList: t('list.collaboration.featureSameList'),
+          tryIt: t('list.collaboration.tryIt'),
+          gotIt: t('list.collaboration.gotIt'),
+        }}
       />
 
       {/* Mango Rain Celebration */}

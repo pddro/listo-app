@@ -101,7 +101,27 @@
       "newList": "New List"
     },
     "backToList": "Back to list",
-    "shareHint": "Share the list to collaborate in real-time"
+    "shareHint": "Share the list to collaborate in real-time",
+    "presence": {
+      "justYou": "Just you",
+      "oneOther": "1 other here",
+      "othersHere": "{count} others here"
+    },
+    "collaboration": {
+      "shareTitle": "Share the magic!",
+      "shareDescription": "This list syncs instantly with anyone you share it with. No sign-ups needed. They click the link, they're in.",
+      "featureRealtime": "Changes appear in real-time",
+      "featureViewers": "See who's viewing with you",
+      "featureNoAccount": "No accounts required",
+      "shareButton": "Share this list",
+      "activeTitle": "You're collaborating!",
+      "activeDescription": "{count, plural, one {# person is} other {# people are}} viewing this list with you right now.",
+      "featureSync": "Every change syncs instantly",
+      "featureCheckTogether": "Check items off together",
+      "featureSameList": "Everyone sees the same list",
+      "tryIt": "Try checking an item — watch it update for everyone instantly!",
+      "gotIt": "Got it!"
+    }
   },
   "input": {
     "placeholder": "Add items...",

@@ -101,7 +101,27 @@
       "newList": "新建清单"
     },
     "backToList": "返回清单",
-    "shareHint": "分享清单以实时协作"
+    "shareHint": "分享清单以实时协作",
+    "presence": {
+      "justYou": "只有你",
+      "oneOther": "还有1人",
+      "othersHere": "还有{count}人"
+    },
+    "collaboration": {
+      "shareTitle": "分享魔法！",
+      "shareDescription": "这个清单会与你分享的人即时同步。无需注册。点击链接即可加入。",
+      "featureRealtime": "更改实时显示",
+      "featureViewers": "查看谁在一起查看",
+      "featureNoAccount": "无需账户",
+      "shareButton": "分享此清单",
+      "activeTitle": "正在协作！",
+      "activeDescription": "{count, plural, one {#人} other {#人}}正在与你一起查看此清单。",
+      "featureSync": "每次更改即时同步",
+      "featureCheckTogether": "一起勾选项目",
+      "featureSameList": "所有人看到同一清单",
+      "tryIt": "试试勾选一个项目——看它如何即时为所有人更新！",
+      "gotIt": "明白了！"
+    }
   },
   "input": {
     "placeholder": "添加项目...",

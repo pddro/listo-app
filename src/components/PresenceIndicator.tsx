@@ -7,7 +7,18 @@ interface PresenceIndicatorProps {
   count: number;
   themeColor?: string;
   onClick?: () => void;
+  translations?: {
+    justYou: string;
+    oneOther: string;
+    othersHere: (count: number) => string;
+  };
 }
+
+const defaultTranslations = {
+  justYou: 'Just you',
+  oneOther: '1 other here',
+  othersHere: (count: number) => `${count} others here`,
+};
 
 // Helper to convert hex to rgba
 function hexToRgba(hex: string, alpha: number): string {
@@ -18,7 +29,8 @@ function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-export default function PresenceIndicator({ count, themeColor, onClick }: PresenceIndicatorProps) {
+export default function PresenceIndicator({ count, themeColor, onClick, translations }: PresenceIndicatorProps) {
+  const t = translations || defaultTranslations;
   const [isVisible, setIsVisible] = useState(true);
   const [displayCount, setDisplayCount] = useState(count);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -137,7 +149,7 @@ export default function PresenceIndicator({ count, themeColor, onClick }: Presen
 
       {/* Text label */}
       <span className="presence-text" style={{ color }}>
-        {isAlone ? 'Just you' : displayCount === 1 ? '1 other here' : `${displayCount} others here`}
+        {isAlone ? t.justYou : displayCount === 1 ? t.oneOther : t.othersHere(displayCount)}
       </span>
     </button>
   );
