@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './MangoRain.css';
 
 interface MangoRainProps {
@@ -19,6 +19,12 @@ interface Mango {
 
 export default function MangoRain({ active, onComplete }: MangoRainProps) {
   const [mangos, setMangos] = useState<Mango[]>([]);
+  const onCompleteRef = useRef(onComplete);
+
+  // Keep ref updated
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   useEffect(() => {
     if (active) {
@@ -36,12 +42,12 @@ export default function MangoRain({ active, onComplete }: MangoRainProps) {
       // Clear after animation completes
       const timeout = setTimeout(() => {
         setMangos([]);
-        onComplete?.();
+        onCompleteRef.current?.();
       }, 3000);
 
       return () => clearTimeout(timeout);
     }
-  }, [active, onComplete]);
+  }, [active]);
 
   if (mangos.length === 0) return null;
 
