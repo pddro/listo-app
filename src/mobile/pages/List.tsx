@@ -967,7 +967,7 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
       )}
 
       {/* Main Content */}
-      <div className="w-full max-w-lg mx-auto pb-24" style={{ paddingLeft: '8px', paddingRight: '8px' }}>
+      <div className="w-full max-w-lg mx-auto" style={{ paddingLeft: '8px', paddingRight: '8px', paddingBottom: '180px' }}>
         <ListContainer
           items={itemTree}
           newItemId={newItemId}
