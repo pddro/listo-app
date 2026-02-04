@@ -232,8 +232,15 @@ export default function TemplatesPage() {
           {/* Search input */}
           <div className="relative" style={{ marginBottom: '16px' }}>
             <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2"
-              style={{ width: '18px', height: '18px', color: 'var(--text-muted)' }}
+              style={{
+                position: 'absolute',
+                left: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: '18px',
+                height: '18px',
+                color: 'var(--text-muted)',
+              }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -257,8 +264,14 @@ export default function TemplatesPage() {
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 active:opacity-60"
-                style={{ color: 'var(--text-muted)' }}
+                className="active:opacity-60"
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'var(--text-muted)',
+                }}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
