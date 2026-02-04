@@ -33,6 +33,9 @@ export function useList(listId: string, options: UseListOptions = {}) {
   const [loading, setLoading] = useState(!hasInitialData);
   const [error, setError] = useState<string | null>(null);
 
+  // Presence: track how many others are viewing this list
+  const [presenceCount, setPresenceCount] = useState(0);
+
   // Track pending inserts to correlate temp IDs with real IDs from realtime
   // Key: composite of content|parent_id|position, Value: tempId
   const pendingInsertsRef = useRef<Map<string, string>>(new Map());
@@ -239,7 +242,30 @@ export function useList(listId: string, options: UseListOptions = {}) {
           }
         }
       )
-      .subscribe();
+      // Presence tracking - see how many others are viewing
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        // Count unique users (excluding self, -1)
+        const count = Object.keys(state).length;
+        setPresenceCount(Math.max(0, count - 1));
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          // Use stable session ID to prevent duplicates on hot reload/reconnect
+          let visitorId = typeof window !== 'undefined'
+            ? sessionStorage.getItem('listo_visitor_id')
+            : null;
+
+          if (!visitorId) {
+            visitorId = `visitor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            if (typeof window !== 'undefined') {
+              sessionStorage.setItem('listo_visitor_id', visitorId);
+            }
+          }
+
+          await channel.track({ visitor_id: visitorId });
+        }
+      });
 
     broadcastChannelRef.current = channel;
 
@@ -928,6 +954,7 @@ export function useList(listId: string, options: UseListOptions = {}) {
     newItemId,
     newItemIds,
     completingItemIds,
+    presenceCount,
     createList,
     updateTitle,
     updateTheme,

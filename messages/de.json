@@ -507,6 +507,26 @@
     "listTitle": "Listentitel",
     "goHome": "Zur Startseite",
     "addToMyLists": "Zu meinen Listen hinzufügen",
-    "addedToLists": "Zu deinen Listen hinzugefügt!"
+    "addedToLists": "Zu deinen Listen hinzugefügt!",
+    "convertToTemplate": "Als Vorlage speichern",
+    "myTemplates": "Meine Vorlagen",
+    "noTemplates": "Noch keine Vorlagen",
+    "templateSaved": "Vorlage gespeichert!",
+    "templateSubmitted": "Zur Überprüfung eingereicht!",
+    "useTemplate": {
+      "title": "Vorlage verwenden",
+      "message": "Eine neue Liste aus dieser Vorlage erstellen?",
+      "create": "Liste erstellen"
+    },
+    "deleteTemplate": {
+      "title": "Vorlage löschen?",
+      "message": "\"{title}\" wird aus deinen Vorlagen entfernt."
+    },
+    "editTemplate": "Vorlage bearbeiten",
+    "duplicateTemplate": "Vorlage duplizieren",
+    "shareList": "Link teilen",
+    "shareListDescription": "Liste an beliebige Personen senden",
+    "saveAsTemplate": "Als Vorlage speichern",
+    "saveAsTemplateDescription": "Dieses Listenlayout später wiederverwenden"
   }
 }

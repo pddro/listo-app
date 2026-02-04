@@ -506,6 +506,26 @@
     "listTitle": "リストのタイトル",
     "goHome": "ホームへ",
     "addToMyLists": "マイリストに追加",
-    "addedToLists": "リストに追加しました！"
+    "addedToLists": "リストに追加しました！",
+    "convertToTemplate": "テンプレートに変換",
+    "myTemplates": "マイテンプレート",
+    "noTemplates": "テンプレートなし",
+    "templateSaved": "テンプレートを保存しました！",
+    "templateSubmitted": "審査に送信しました！",
+    "useTemplate": {
+      "title": "テンプレートを使用",
+      "message": "このテンプレートから新しいリストを作成しますか？",
+      "create": "リストを作成"
+    },
+    "deleteTemplate": {
+      "title": "テンプレートを削除しますか？",
+      "message": "「{title}」がテンプレートから削除されます。"
+    },
+    "editTemplate": "テンプレートを編集",
+    "duplicateTemplate": "テンプレートを複製",
+    "shareList": "リンクを共有",
+    "shareListDescription": "誰にでもリストを送信",
+    "saveAsTemplate": "テンプレートとして保存",
+    "saveAsTemplateDescription": "このリストレイアウトを後で再利用"
   }
 }

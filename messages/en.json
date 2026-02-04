@@ -513,6 +513,10 @@
       "message": "\"{title}\" will be removed from your templates."
     },
     "editTemplate": "Edit Template",
-    "duplicateTemplate": "Duplicate Template"
+    "duplicateTemplate": "Duplicate Template",
+    "shareList": "Share Link",
+    "shareListDescription": "Send the list to anyone",
+    "saveAsTemplate": "Save as Template",
+    "saveAsTemplateDescription": "Reuse this list layout later"
   }
 }

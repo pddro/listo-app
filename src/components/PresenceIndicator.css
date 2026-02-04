@@ -1,0 +1,138 @@
+.presence-indicator {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center;
+  z-index: 50;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.presence-indicator.active {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+.presence-indicator:hover {
+  transform: translateX(-50%) scale(1.05);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18), 0 3px 10px rgba(0, 0, 0, 0.12);
+}
+
+.presence-indicator:active {
+  transform: translateX(-50%) scale(0.98);
+}
+
+.presence-indicator.inactive {
+  opacity: 0;
+  transform: translateX(-50%) scale(0.8);
+  pointer-events: none;
+}
+
+.presence-indicator.pop {
+  animation: presencePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.presence-indicator.entrance {
+  animation: presenceEntrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes presencePop {
+  0% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.15); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+
+@keyframes presenceEntrance {
+  0% {
+    transform: translateX(-50%) scale(0) translateY(20px);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.15) translateY(0);
+    opacity: 1;
+  }
+  70% {
+    transform: translateX(-50%) scale(0.95);
+  }
+  85% {
+    transform: translateX(-50%) scale(1.05);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+.presence-dots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.presence-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: presencePulse 2s ease-in-out infinite;
+}
+
+.presence-dot.solo {
+  animation: presenceSoloPulse 3s ease-in-out infinite;
+}
+
+.presence-dot-extra {
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 10px;
+  color: white;
+  min-width: 20px;
+  text-align: center;
+}
+
+@keyframes presencePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.7);
+  }
+}
+
+@keyframes presenceSoloPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.9);
+  }
+}
+
+.presence-text {
+  white-space: nowrap;
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+  .presence-indicator {
+    padding: 5px 12px;
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .presence-dot {
+    width: 6px;
+    height: 6px;
+  }
+}

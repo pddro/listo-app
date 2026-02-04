@@ -18,6 +18,8 @@ import { usePersonalTemplates } from '@/mobile/hooks/usePersonalTemplates';
 import { analytics } from '@/lib/analytics';
 import { supabase } from '@/lib/supabase';
 import { TemplateCategory } from '@/types';
+import PresenceIndicator from '@/components/PresenceIndicator';
+import CollaborationModal from '@/components/CollaborationModal';
 
 // Apply theme to CSS variables
 function applyThemeToRoot(theme: ThemeColors | null) {
@@ -72,6 +74,8 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
   const [justAddedToMyLists, setJustAddedToMyLists] = useState(false);
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [showCollabModal, setShowCollabModal] = useState(false);
+  const [showShareSheet, setShowShareSheet] = useState(false);
   const [platform, setPlatform] = useState<'ios' | 'android' | 'web'>('web');
   const { addTemplate } = usePersonalTemplates();
   const autoTitleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -111,6 +115,7 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
     newItemId,
     newItemIds,
     completingItemIds,
+    presenceCount,
     createList,
     updateTitle,
     updateTheme,
@@ -846,7 +851,7 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
 
           {/* Share Button */}
           <button
-            onClick={handleShare}
+            onClick={() => setShowShareSheet(true)}
             className="active:opacity-60"
             style={{
               color: 'var(--primary)',
@@ -980,29 +985,28 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
           onPrefillConsumed={() => setInputPrefillValue(undefined)}
         />
 
-        {/* Convert to Template button */}
-        <button
-          onClick={() => setShowTemplateModal(true)}
-          className="flex items-center justify-center gap-2 mt-8 mx-auto active:opacity-60 transition-opacity"
-          style={{
-            color: 'var(--text-muted)',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            marginBottom: platform === 'android' ? '80px' : '0',
-          }}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-          </svg>
-          <span className="text-sm">{t('mobile.convertToTemplate')}</span>
-        </button>
 
       </div>
       </div>
 
       {/* Dictate Button */}
       <DictateButton onTranscription={handleDictation} />
+
+      {/* Presence indicator - floating at bottom */}
+      <PresenceIndicator
+        count={presenceCount}
+        themeColor={list?.theme?.primary}
+        onClick={() => setShowCollabModal(true)}
+      />
+
+      {/* Collaboration Modal */}
+      <CollaborationModal
+        isOpen={showCollabModal}
+        onClose={() => setShowCollabModal(false)}
+        presenceCount={presenceCount}
+        themeColor={list?.theme?.primary}
+        onShare={handleShare}
+      />
 
       {/* Theme Modal */}
       <HomeThemeModal
@@ -1022,6 +1026,143 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
         listTitle={list?.title || ''}
         theme={list?.theme}
       />
+
+      {/* Share Action Sheet */}
+      {showShareSheet && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 100,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+          }}
+        >
+          {/* Backdrop */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.4)',
+            }}
+            onClick={() => setShowShareSheet(false)}
+          />
+
+          {/* Sheet */}
+          <div
+            style={{
+              position: 'relative',
+              backgroundColor: 'var(--bg-primary)',
+              borderTopLeftRadius: '16px',
+              borderTopRightRadius: '16px',
+              paddingBottom: `calc(${safeAreaBottom} + 8px)`,
+              animation: 'slideUp 0.25s ease-out',
+            }}
+          >
+            {/* Handle */}
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '12px' }}>
+              <div style={{ width: '36px', height: '4px', backgroundColor: 'var(--border-medium)', borderRadius: '2px' }} />
+            </div>
+
+            {/* Options */}
+            <div style={{ padding: '0 16px 8px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {/* Share Link */}
+              <button
+                onClick={() => {
+                  setShowShareSheet(false);
+                  handleShare();
+                }}
+                className="w-full flex items-center gap-4 py-4 active:opacity-60"
+                style={{ backgroundColor: 'var(--bg-secondary)', borderRadius: '12px', padding: '12px 16px' }}
+              >
+                <div
+                  style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '12px',
+                    backgroundColor: 'var(--primary-pale)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <svg className="w-5 h-5" style={{ color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                </div>
+                <div style={{ textAlign: 'left' }}>
+                  <div style={{ fontSize: '16px', fontWeight: 500, color: 'var(--text-primary)' }}>
+                    {t('mobile.shareList')}
+                  </div>
+                  <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+                    {t('mobile.shareListDescription')}
+                  </div>
+                </div>
+              </button>
+
+              {/* Save as Template */}
+              <button
+                onClick={() => {
+                  setShowShareSheet(false);
+                  setShowTemplateModal(true);
+                }}
+                className="w-full flex items-center gap-4 active:opacity-60"
+                style={{ backgroundColor: 'var(--bg-secondary)', borderRadius: '12px', padding: '12px 16px' }}
+              >
+                <div
+                  style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '12px',
+                    backgroundColor: 'var(--primary-pale)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <svg className="w-5 h-5" style={{ color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                  </svg>
+                </div>
+                <div style={{ textAlign: 'left' }}>
+                  <div style={{ fontSize: '16px', fontWeight: 500, color: 'var(--text-primary)' }}>
+                    {t('mobile.saveAsTemplate')}
+                  </div>
+                  <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+                    {t('mobile.saveAsTemplateDescription')}
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            {/* Cancel Button */}
+            <div style={{ padding: '8px 16px' }}>
+              <button
+                onClick={() => setShowShareSheet(false)}
+                className="w-full active:opacity-60"
+                style={{
+                  backgroundColor: 'var(--bg-secondary)',
+                  borderRadius: '12px',
+                  fontSize: '17px',
+                  fontWeight: 600,
+                  color: 'var(--primary)',
+                  minHeight: '52px',
+                }}
+              >
+                {t('common.cancel')}
+              </button>
+            </div>
+          </div>
+
+          <style>{`
+            @keyframes slideUp {
+              from { transform: translateY(100%); }
+              to { transform: translateY(0); }
+            }
+          `}</style>
+        </div>
+      )}
     </div>
   );
 }

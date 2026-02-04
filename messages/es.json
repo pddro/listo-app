@@ -507,6 +507,26 @@
     "listTitle": "Título de lista",
     "goHome": "Ir al inicio",
     "addToMyLists": "Añadir a mis listas",
-    "addedToLists": "¡Añadido a tus listas!"
+    "addedToLists": "¡Añadido a tus listas!",
+    "convertToTemplate": "Convertir en plantilla",
+    "myTemplates": "Mis plantillas",
+    "noTemplates": "Sin plantillas aún",
+    "templateSaved": "¡Plantilla guardada!",
+    "templateSubmitted": "¡Enviado para revisión!",
+    "useTemplate": {
+      "title": "Usar plantilla",
+      "message": "¿Crear una nueva lista desde esta plantilla?",
+      "create": "Crear lista"
+    },
+    "deleteTemplate": {
+      "title": "¿Eliminar plantilla?",
+      "message": "\"{title}\" se eliminará de tus plantillas."
+    },
+    "editTemplate": "Editar plantilla",
+    "duplicateTemplate": "Duplicar plantilla",
+    "shareList": "Compartir enlace",
+    "shareListDescription": "Enviar la lista a cualquier persona",
+    "saveAsTemplate": "Guardar como plantilla",
+    "saveAsTemplateDescription": "Reutilizar este diseño de lista más tarde"
   }
 }
