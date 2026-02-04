@@ -1295,7 +1295,7 @@ export default function HomePage() {
       <div className="flex-shrink-0" style={{ backgroundColor: 'var(--bg-primary)' }}>
         {/* Header */}
         <div className="flex items-center justify-between" style={{ padding: '16px 20px 0 20px' }}>
-          <h1 className="text-xl font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--text-primary)' }}>
+          <h1 className="text-xl font-bold tracking-[0.02em]" style={{ color: 'var(--text-primary)' }}>
             {t('home.title')}
           </h1>
           <div className="flex items-center gap-3">

@@ -664,7 +664,7 @@ export default function Home() {
       <div className="w-full max-w-md md:max-w-[540px] text-center" style={{ marginTop: 'auto', marginBottom: 'auto' }}>
         {/* Logo/Title */}
         <div className="space-y-3" style={{ marginBottom: '24px' }}>
-          <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-[0.2em]">
+          <h1 className="text-2xl font-bold text-gray-900 tracking-[0.02em]">
             {t('title')}
           </h1>
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
