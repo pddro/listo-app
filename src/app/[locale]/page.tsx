@@ -707,6 +707,10 @@ export default function Home() {
                 onKeyDown={handleKeyDown}
                 disabled={isCreating}
                 autoFocus
+                autoComplete="off"
+                data-1p-ignore
+                data-lpignore="true"
+                data-form-type="other"
                 className={`
                   w-full text-base
                   border border-r-0
