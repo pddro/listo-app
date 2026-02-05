@@ -12,7 +12,7 @@ import { useRecentLists, SavedList } from '@/lib/hooks/useRecentLists';
 import { useHomeTheme } from '@/lib/hooks/useHomeTheme';
 import { HomeThemeModal } from '@/mobile/components/HomeThemeModal';
 import { SaveAsTemplateModal } from '@/mobile/components/SaveAsTemplateModal';
-import { OnboardingWalkthrough } from '@/mobile/components/OnboardingWalkthrough';
+import { OnboardingWalkthrough } from '@/components/OnboardingWalkthrough';
 import { BackupModal } from '@/mobile/components/BackupModal';
 import { useOnboardingState } from '@/mobile/hooks/useOnboardingState';
 import { ThemeColors } from '@/lib/gemini';
@@ -2081,7 +2081,11 @@ export default function HomePage() {
 
       {/* Onboarding walkthrough - shows on first launch */}
       {hasCompletedOnboarding === false && (
-        <OnboardingWalkthrough onComplete={completeOnboarding} />
+        <OnboardingWalkthrough
+          onComplete={completeOnboarding}
+          t={(key: string) => t(`onboarding.${key}`)}
+          platform={platform}
+        />
       )}
     </div>
   );

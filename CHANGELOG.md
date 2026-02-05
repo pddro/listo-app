@@ -9,6 +9,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- **Unified Onboarding Walkthrough**
+  - Rich 5-page onboarding experience now shared between web and mobile
+  - Pages: Shareable links, Works everywhere, Dictation, AI-powered, Themes
+  - Web: Click/keyboard navigation with Skip option
+  - Mobile: Swipe navigation with gesture support
+  - Animated visual examples on each page (floating checkmarks, audio visualizer, etc.)
+  - Full i18n support with `clickHint` and `skip` translations in all 9 languages
+  - Single source of truth: `src/components/OnboardingWalkthrough.tsx`
+
 - **List Backups Feature**
   - Backup and transfer lists/templates between devices without accounts
   - Two backup types: Quick Transfer (24-hour code like `MANGO-7X2K`) and Full Backup (permanent encoded URL)
@@ -23,6 +32,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Deduplication: Items already on device are shown but cannot be re-imported
 
 ### Changed
+- **Share View Modernization**
+  - Redesigned share view with modern card-style UI matching backup modal
+  - Added QR code for scanning lists on other devices
+  - Share options now displayed as elegant icon buttons
+  - New `scanToOpen` translation in all 9 languages
+
 - **Backup Modal UX Improvements**
   - Added hero section explaining the feature: "Move lists to another device - No accounts needed"
   - Primary action (Generate QR Code) now has prominent card-style button

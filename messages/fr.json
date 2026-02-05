@@ -354,6 +354,10 @@
     "Lueur luciole"
   ],
   "onboarding": {
+    "welcome": {
+      "title": "Bienvenue sur",
+      "description": "La façon la plus simple de créer et partager des listes avec n'importe qui, n'importe où."
+    },
     "shareableLinks": {
       "title": "Partagez avec n'importe qui",
       "description": "Envoyez le lien de votre liste via n'importe quelle app. Les destinataires peuvent voir et modifier instantanément – sans télécharger d'app."
@@ -375,7 +379,10 @@
       "description": "Tapez style: suivi d'une description pour créer des thèmes personnalisés pour vos listes et écran d'accueil."
     },
     "getStarted": "Commencer",
-    "swipeHint": "Glissez pour continuer"
+    "swipeHint": "Glissez pour continuer",
+    "clickHint": "Continuer",
+    "next": "Suivant",
+    "skip": "Passer"
   },
   "welcome": {
     "title": "Bienvenue sur List Mango !",

@@ -446,6 +446,10 @@
     "open": "OPEN"
   },
   "onboarding": {
+    "welcome": {
+      "title": "Welcome to",
+      "description": "The simplest way to create and share lists with anyone, anywhere."
+    },
     "shareableLinks": {
       "title": "Share with anyone",
       "description": "Send your list link via any app. Recipients can view and edit instantly - no app download required."
@@ -467,7 +471,10 @@
       "description": "Type style: followed by any description to create custom themes for your lists and home screen."
     },
     "getStarted": "Get Started",
-    "swipeHint": "Swipe to continue"
+    "swipeHint": "Swipe to continue",
+    "clickHint": "Continue",
+    "next": "Next",
+    "skip": "Skip"
   },
   "backup": {
     "deviceNotice": "Your lists live only on this device",

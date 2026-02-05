@@ -356,6 +356,10 @@
     "Glühwürmchen Schein"
   ],
   "onboarding": {
+    "welcome": {
+      "title": "Willkommen bei",
+      "description": "Der einfachste Weg, Listen zu erstellen und mit jedem zu teilen, überall."
+    },
     "shareableLinks": {
       "title": "Mit jedem teilen",
       "description": "Sende deinen Listenlink über jede App. Empfänger können sofort ansehen und bearbeiten – kein App-Download nötig."
@@ -377,7 +381,10 @@
       "description": "Tippe stil: gefolgt von einer Beschreibung, um individuelle Designs für deine Listen und Startseite zu erstellen."
     },
     "getStarted": "Los geht's",
-    "swipeHint": "Wischen zum Fortfahren"
+    "swipeHint": "Wischen zum Fortfahren",
+    "clickHint": "Weiter",
+    "next": "Weiter",
+    "skip": "Überspringen"
   },
   "welcome": {
     "title": "Willkommen bei List Mango!",

@@ -356,6 +356,10 @@
     "Brilho vagalume"
   ],
   "onboarding": {
+    "welcome": {
+      "title": "Bem-vindo ao",
+      "description": "A forma mais simples de criar e compartilhar listas com qualquer pessoa, em qualquer lugar."
+    },
     "shareableLinks": {
       "title": "Compartilhe com qualquer pessoa",
       "description": "Envie o link da sua lista por qualquer app. Os destinatários podem ver e editar instantaneamente – sem precisar baixar nenhum app."
@@ -377,7 +381,10 @@
       "description": "Digite estilo: seguido de qualquer descrição para criar temas personalizados para suas listas e tela inicial."
     },
     "getStarted": "Começar",
-    "swipeHint": "Deslize para continuar"
+    "swipeHint": "Deslize para continuar",
+    "clickHint": "Continuar",
+    "next": "Próximo",
+    "skip": "Pular"
   },
   "welcome": {
     "title": "Bem-vindo ao List Mango!",

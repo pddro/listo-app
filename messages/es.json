@@ -356,6 +356,10 @@
     "Brillo luciérnaga"
   ],
   "onboarding": {
+    "welcome": {
+      "title": "Bienvenido a",
+      "description": "La forma más sencilla de crear y compartir listas con cualquiera, en cualquier lugar."
+    },
     "shareableLinks": {
       "title": "Comparte con cualquiera",
       "description": "Envía el enlace de tu lista por cualquier app. Los destinatarios pueden ver y editar al instante – sin descargar ninguna app."
@@ -377,7 +381,10 @@
       "description": "Escribe estilo: seguido de cualquier descripción para crear temas personalizados para tus listas y pantalla de inicio."
     },
     "getStarted": "Comenzar",
-    "swipeHint": "Desliza para continuar"
+    "swipeHint": "Desliza para continuar",
+    "clickHint": "Continuar",
+    "next": "Siguiente",
+    "skip": "Omitir"
   },
   "welcome": {
     "title": "¡Bienvenido a List Mango!",

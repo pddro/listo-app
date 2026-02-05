@@ -356,6 +356,10 @@
     "반딧불 빛"
   ],
   "onboarding": {
+    "welcome": {
+      "title": "",
+      "description": "누구와도, 어디서나 리스트를 만들고 공유하는 가장 간단한 방법."
+    },
     "shareableLinks": {
       "title": "누구와도 공유",
       "description": "리스트 링크를 어떤 앱으로든 보내세요. 받는 사람은 앱 다운로드 없이 즉시 보고 편집할 수 있습니다."
@@ -377,7 +381,10 @@
       "description": "스타일: 다음에 설명을 입력하여 리스트와 홈 화면에 맞춤 테마를 만드세요."
     },
     "getStarted": "시작하기",
-    "swipeHint": "스와이프하여 계속"
+    "swipeHint": "스와이프하여 계속",
+    "clickHint": "계속",
+    "next": "다음",
+    "skip": "건너뛰기"
   },
   "welcome": {
     "title": "List Mango에 오신 것을 환영합니다!",

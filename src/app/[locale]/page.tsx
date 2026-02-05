@@ -16,6 +16,7 @@ import { EditTemplateModal } from '@/components/templates/EditTemplateModal';
 import { TemplateCategory } from '@/types';
 import BackupTransferModal from '@/components/BackupTransferModal';
 import { BackupList, BackupTemplate } from '@/lib/backup';
+import { OnboardingWalkthrough } from '@/components/OnboardingWalkthrough';
 
 type InputMode = 'single' | 'multiple' | 'ai';
 
@@ -80,6 +81,7 @@ export default function Home() {
   const tCommon = useTranslations('common');
   const tInput = useTranslations('input');
   const tWelcome = useTranslations('welcome');
+  const tOnboarding = useTranslations('onboarding');
   const tTutorial = useTranslations('tutorial');
   const tBackup = useTranslations('backup');
   const locale = useLocale();
@@ -105,8 +107,7 @@ export default function Home() {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const [copiedListId, setCopiedListId] = useState<string | null>(null);
-  const [showWelcome, setShowWelcome] = useState(false);
-  const [welcomeAnimating, setWelcomeAnimating] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const router = useRouter();
   const { generateItems, processDictation } = useAI();
   const { lists: recentLists, archivedLists, isLoading: listsLoading, addList, updateList, archiveList, restoreList } = useRecentListsWeb();
@@ -142,24 +143,23 @@ export default function Home() {
     fetchTemplateCount();
   }, [locale]);
 
-  // Show welcome popup for first-time visitors
+  // Show onboarding for first-time visitors
   useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem('listo_has_seen_welcome');
-    if (!hasSeenWelcome) {
+    // Skip onboarding for search engine bots (SEO)
+    const isBot = /bot|crawl|spider|google|bing|yandex|baidu|duckduck/i.test(navigator.userAgent);
+    const hasSeenOnboarding = localStorage.getItem('listo_has_seen_welcome');
+
+    if (!hasSeenOnboarding && !isBot) {
       // Small delay for smoother experience
       setTimeout(() => {
-        setShowWelcome(true);
-        setTimeout(() => setWelcomeAnimating(true), 50);
-      }, 500);
+        setShowOnboarding(true);
+      }, 300);
     }
   }, []);
 
-  const dismissWelcome = () => {
-    setWelcomeAnimating(false);
-    setTimeout(() => {
-      setShowWelcome(false);
-      localStorage.setItem('listo_has_seen_welcome', 'true');
-    }, 300);
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    localStorage.setItem('listo_has_seen_welcome', 'true');
   };
 
   // Create tutorial list for new users
@@ -1116,151 +1116,13 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Welcome Popup */}
-      {showWelcome && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{
-            backgroundColor: welcomeAnimating ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0)',
-            transition: 'background-color 0.3s ease-out',
-          }}
-          onClick={dismissWelcome}
-        >
-          <div
-            className="bg-white rounded-2xl w-full max-w-sm overflow-hidden"
-            style={{
-              transform: welcomeAnimating ? 'scale(1) translateY(0)' : 'scale(0.95) translateY(20px)',
-              opacity: welcomeAnimating ? 1 : 0,
-              transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-out',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header with icon */}
-            <div
-              className="text-center"
-              style={{ padding: '32px 24px 24px 24px' }}
-            >
-              {/* Animated checkmark icon */}
-              <div
-                className="mx-auto flex items-center justify-center rounded-full"
-                style={{
-                  width: '64px',
-                  height: '64px',
-                  backgroundColor: 'var(--primary-pale)',
-                  marginBottom: '20px',
-                }}
-              >
-                <svg
-                  className="w-8 h-8"
-                  style={{ color: 'var(--primary)' }}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2.5}
-                    d="M5 13l4 4L19 7"
-                    style={{
-                      strokeDasharray: 24,
-                      strokeDashoffset: welcomeAnimating ? 0 : 24,
-                      transition: 'stroke-dashoffset 0.5s ease-out 0.2s',
-                    }}
-                  />
-                </svg>
-              </div>
-
-              <h2
-                className="text-xl font-bold"
-                style={{ color: 'var(--text-primary)', marginBottom: '8px' }}
-              >
-                {tWelcome('title')}
-              </h2>
-              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                {tWelcome('subtitle')}
-              </p>
-            </div>
-
-            {/* Content */}
-            <div style={{ padding: '0 24px 24px 24px' }}>
-              {/* Tip 1 */}
-              <div
-                className="rounded-xl"
-                style={{
-                  padding: '16px',
-                  backgroundColor: 'var(--primary-pale)',
-                  marginBottom: '12px',
-                }}
-              >
-                <div className="flex items-start gap-3">
-                  <div
-                    className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm"
-                    style={{ backgroundColor: 'var(--primary)', color: 'white' }}
-                  >
-                    ...
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm" style={{ color: 'var(--text-primary)', marginBottom: '4px' }}>
-                      {tWelcome('aiPowered.title')}
-                    </div>
-                    <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                      <span dangerouslySetInnerHTML={{ __html: tWelcome('aiPowered.description').replace('<code>', '<code class="font-semibold px-1 py-0.5 rounded" style="background-color: white; color: var(--primary)">') }} />
-                      <span style={{ color: 'var(--text-muted)', display: 'block', marginTop: '4px' }}>
-                        {tWelcome('aiPowered.example')}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Tip 2 */}
-              <div
-                className="rounded-xl"
-                style={{
-                  padding: '16px',
-                  backgroundColor: '#F8FAFC',
-                  marginBottom: '20px',
-                }}
-              >
-                <div className="flex items-start gap-3">
-                  <div
-                    className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
-                    style={{ backgroundColor: '#E2E8F0' }}
-                  >
-                    <svg className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm" style={{ color: 'var(--text-primary)', marginBottom: '4px' }}>
-                      {tWelcome('instantSharing.title')}
-                    </div>
-                    <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                      {tWelcome('instantSharing.description')}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* CTA Button */}
-              <button
-                onClick={dismissWelcome}
-                className="w-full font-semibold text-white rounded-xl transition-all duration-200 active:scale-[0.98]"
-                style={{
-                  backgroundColor: 'var(--primary)',
-                  padding: '14px 24px',
-                  fontSize: '15px',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-dark)'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
-              >
-                {tWelcome('gotIt')}
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Onboarding Walkthrough */}
+      {showOnboarding && (
+        <OnboardingWalkthrough
+          onComplete={handleOnboardingComplete}
+          t={(key: string) => tOnboarding(key)}
+          platform="web"
+        />
       )}
 
       {/* Privacy Policy Modal */}

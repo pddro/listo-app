@@ -356,6 +356,10 @@
     "蛍の光"
   ],
   "onboarding": {
+    "welcome": {
+      "title": "",
+      "description": "誰とでも、どこでも、リストを作成・共有する最もシンプルな方法。"
+    },
     "shareableLinks": {
       "title": "誰とでも共有",
       "description": "リストのリンクをどのアプリからでも送信。受信者はアプリのダウンロードなしで即座に閲覧・編集できます。"
@@ -377,7 +381,10 @@
       "description": "スタイル: に続けて説明を入力し、リストとホーム画面にカスタムテーマを作成。"
     },
     "getStarted": "はじめる",
-    "swipeHint": "スワイプして続ける"
+    "swipeHint": "スワイプして続ける",
+    "clickHint": "続ける",
+    "next": "次へ",
+    "skip": "スキップ"
   },
   "welcome": {
     "title": "List Mangoへようこそ！",

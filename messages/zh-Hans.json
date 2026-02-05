@@ -356,6 +356,10 @@
     "萤火虫光"
   ],
   "onboarding": {
+    "welcome": {
+      "title": "欢迎使用",
+      "description": "与任何人、在任何地方创建和共享清单的最简单方式。"
+    },
     "shareableLinks": {
       "title": "与任何人分享",
       "description": "通过任何应用发送清单链接。接收者无需下载应用即可立即查看和编辑。"
@@ -377,7 +381,10 @@
       "description": "输入 风格: 加任意描述，为你的清单和主屏幕创建自定义主题。"
     },
     "getStarted": "开始使用",
-    "swipeHint": "滑动继续"
+    "swipeHint": "滑动继续",
+    "clickHint": "继续",
+    "next": "下一步",
+    "skip": "跳过"
   },
   "welcome": {
     "title": "欢迎使用 List Mango！",
