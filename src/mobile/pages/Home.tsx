@@ -1625,24 +1625,27 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Backup & Transfer section - only show if user has lists or templates */}
-        {(recentLists.length > 0 || personalTemplates.length > 0) && (
-          <div style={{ marginTop: '32px', textAlign: 'center' }}>
-            <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '12px' }}>
-              {t('backup.deviceNotice')}
-            </p>
-            <button
-              onClick={() => setShowBackupModal(true)}
-              className="inline-flex items-center gap-2 font-medium transition-colors active:opacity-70"
-              style={{ color: 'var(--text-secondary)', fontSize: '14px' }}
-            >
-              <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-              </svg>
-              {t('backup.backupAndTransfer')}
-            </button>
-          </div>
-        )}
+        {/* Backup & Transfer section - always visible for importing */}
+        <div style={{ marginTop: '24px' }}>
+          <button
+            onClick={() => setShowBackupModal(true)}
+            className="w-full flex items-center justify-center gap-3 rounded-xl font-medium transition-all active:scale-[0.98]"
+            style={{
+              padding: '14px 20px',
+              backgroundColor: 'var(--bg-secondary)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border-light)',
+            }}
+          >
+            <svg style={{ width: '20px', height: '20px', color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            {t('backup.backupAndTransfer')}
+          </button>
+          <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '8px', textAlign: 'center' }}>
+            {t('backup.deviceNotice')}
+          </p>
+        </div>
 
         {/* Community Templates Section */}
         <div style={{ marginTop: '32px' }}>

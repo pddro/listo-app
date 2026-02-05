@@ -2,6 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase-server';
 import { isValidBackupCode, BackupPayload } from '@/lib/backup';
 
+// CORS headers for mobile app access
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+// Handle CORS preflight requests
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 // GET /api/backup/[code] - Redeem a backup code
 export async function GET(
   request: NextRequest,
@@ -15,7 +27,7 @@ export async function GET(
     if (!isValidBackupCode(upperCode)) {
       return NextResponse.json(
         { error: 'Invalid code format' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -29,7 +41,7 @@ export async function GET(
     if (error || !data) {
       return NextResponse.json(
         { error: 'Code not found or expired' },
-        { status: 404 }
+        { status: 404, headers: corsHeaders }
       );
     }
 
@@ -38,7 +50,7 @@ export async function GET(
     if (expiresAt < new Date()) {
       return NextResponse.json(
         { error: 'Code has expired' },
-        { status: 410 }
+        { status: 410, headers: corsHeaders }
       );
     }
 
@@ -56,12 +68,12 @@ export async function GET(
       lists: payload.lists,
       templates: payload.templates,
       createdAt: payload.createdAt,
-    });
+    }, { headers: corsHeaders });
   } catch (error) {
     console.error('Backup redeem error:', error);
     return NextResponse.json(
       { error: 'Failed to redeem backup code' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

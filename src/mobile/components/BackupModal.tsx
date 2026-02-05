@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { QRCodeSVG } from 'qrcode.react';
 import { Share } from '@capacitor/share';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { SavedList } from '@/lib/hooks/useRecentLists';
@@ -11,6 +12,7 @@ import {
   generateBackupUrl,
   parseBackupInput,
 } from '@/lib/backup';
+import { WEB_API } from '@/lib/api';
 
 interface BackupModalProps {
   isOpen: boolean;
@@ -22,7 +24,7 @@ interface BackupModalProps {
 }
 
 type Tab = 'export' | 'import';
-type ExportState = 'idle' | 'generating' | 'done';
+type ExportState = 'idle' | 'generating' | 'quickCode' | 'fullBackup';
 
 export function BackupModal({
   isOpen,
@@ -34,14 +36,15 @@ export function BackupModal({
 }: BackupModalProps) {
   const { t } = useTranslation();
 
-  const [activeTab, setActiveTab] = useState<Tab>('export');
+  const [activeTab, setActiveTab] = useState<Tab>('import');
 
   // Export state
   const [selectedLists, setSelectedLists] = useState<Set<string>>(new Set());
   const [selectedTemplates, setSelectedTemplates] = useState<Set<string>>(new Set());
   const [exportState, setExportState] = useState<ExportState>('idle');
   const [backupCode, setBackupCode] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [fullBackupUrl, setFullBackupUrl] = useState<string | null>(null);
+  const [copied, setCopied] = useState<'code' | 'link' | null>(null);
 
   // Import state
   const [importInput, setImportInput] = useState('');
@@ -85,6 +88,8 @@ export function BackupModal({
       setActiveTab('export');
       setExportState('idle');
       setBackupCode(null);
+      setFullBackupUrl(null);
+      setExportError(null);
       setImportInput('');
       setImportError(null);
       setImportPreview(null);
@@ -117,28 +122,40 @@ export function BackupModal({
     return { lists: selectedListsData, templates: selectedTemplatesData };
   };
 
+  // Export error state
+  const [exportError, setExportError] = useState<string | null>(null);
+
   const handleQuickTransfer = async () => {
     const { lists: selLists, templates: selTemplates } = getSelectedData();
     if (selLists.length === 0 && selTemplates.length === 0) return;
 
     setExportState('generating');
+    setExportError(null);
 
     try {
-      const response = await fetch('/api/backup', {
+      console.log('Quick Transfer: calling', WEB_API.backup);
+      const response = await fetch(WEB_API.backup, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lists: selLists, templates: selTemplates }),
       });
 
+      console.log('Quick Transfer: response status', response.status);
+
       if (!response.ok) {
-        throw new Error('Failed');
+        const errorText = await response.text();
+        console.error('Quick Transfer: error response', errorText);
+        throw new Error(`API error: ${response.status}`);
       }
 
-      const { code } = await response.json();
-      setBackupCode(code);
-      setExportState('done');
+      const data = await response.json();
+      console.log('Quick Transfer: got code', data.code);
+      setBackupCode(data.code);
+      setExportState('quickCode');
       Haptics.impact({ style: ImpactStyle.Medium });
-    } catch {
+    } catch (err) {
+      console.error('Quick Transfer: caught error', err);
+      setExportError(err instanceof Error ? err.message : 'Failed to generate code');
       setExportState('idle');
     }
   };
@@ -162,9 +179,61 @@ export function BackupModal({
     if (!backupCode) return;
     try {
       await navigator.clipboard.writeText(backupCode);
-      setCopied(true);
+      setCopied('code');
       Haptics.impact({ style: ImpactStyle.Light });
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(null), 2000);
+    } catch {
+      // Clipboard failed
+    }
+  };
+
+  const handleFullBackup = () => {
+    // Full backup includes ALL lists and templates
+    if (lists.length === 0 && templates.length === 0) return;
+
+    const allLists: BackupList[] = lists.map((l) => ({
+      id: l.id,
+      title: l.title,
+      themeColor: l.themeColor,
+      themeTextColor: l.themeTextColor,
+    }));
+    const allTemplates: BackupTemplate[] = templates.map((t) => ({
+      id: t.id,
+      listId: t.listId,
+      title: t.title,
+      description: t.description,
+      category: t.category,
+      theme: t.theme,
+      itemCount: t.itemCount,
+    }));
+
+    const payload = createBackupPayload(allLists, allTemplates);
+    const url = 'https://listmango.com' + generateBackupUrl(payload);
+    setFullBackupUrl(url);
+    setExportState('fullBackup');
+    Haptics.impact({ style: ImpactStyle.Medium });
+  };
+
+  const handleShareFullBackup = async () => {
+    if (!fullBackupUrl) return;
+    try {
+      await Share.share({
+        title: t('backup.backupEmailSubject'),
+        text: t('backup.backupEmailBody'),
+        url: fullBackupUrl,
+      });
+    } catch {
+      // User cancelled or share failed
+    }
+  };
+
+  const handleCopyLink = async () => {
+    if (!fullBackupUrl) return;
+    try {
+      await navigator.clipboard.writeText(fullBackupUrl);
+      setCopied('link');
+      Haptics.impact({ style: ImpactStyle.Light });
+      setTimeout(() => setCopied(null), 2000);
     } catch {
       // Clipboard failed
     }
@@ -191,7 +260,7 @@ export function BackupModal({
       setIsFetching(false);
     } else {
       try {
-        const response = await fetch(`/api/backup/${parsed.value}`);
+        const response = await fetch(`${WEB_API.backup}/${parsed.value}`);
         if (!response.ok) {
           setImportError(t('backup.codeExpired'));
           setIsFetching(false);
@@ -269,19 +338,21 @@ export function BackupModal({
           <div style={{ width: '36px', height: '5px', backgroundColor: '#e0e0e0', borderRadius: '3px' }} />
         </div>
 
-        {/* Tabs */}
+        {/* Tabs - hide Export tab if nothing to export */}
         <div className="flex" style={{ borderBottom: '1px solid var(--border-light)', padding: '0 16px' }}>
-          <button
-            className="flex-1 font-semibold"
-            style={{
-              padding: '12px',
-              color: activeTab === 'export' ? 'var(--primary)' : 'var(--text-muted)',
-              borderBottom: activeTab === 'export' ? '2px solid var(--primary)' : '2px solid transparent',
-            }}
-            onClick={() => { setActiveTab('export'); setExportState('idle'); }}
-          >
-            {t('backup.exportTab')}
-          </button>
+          {hasItemsToExport && (
+            <button
+              className="flex-1 font-semibold"
+              style={{
+                padding: '12px',
+                color: activeTab === 'export' ? 'var(--primary)' : 'var(--text-muted)',
+                borderBottom: activeTab === 'export' ? '2px solid var(--primary)' : '2px solid transparent',
+              }}
+              onClick={() => { setActiveTab('export'); setExportState('idle'); }}
+            >
+              {t('backup.exportTab')}
+            </button>
+          )}
           <button
             className="flex-1 font-semibold"
             style={{
@@ -421,6 +492,43 @@ export function BackupModal({
                       <p style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', marginTop: '8px' }}>
                         {t('backup.quickTransferDescription')}
                       </p>
+
+                      {/* Export Error */}
+                      {exportError && (
+                        <p style={{ fontSize: '13px', color: '#ef4444', textAlign: 'center', marginTop: '12px' }}>
+                          {exportError}
+                        </p>
+                      )}
+
+                      {/* Full Backup Button */}
+                      <button
+                        onClick={handleFullBackup}
+                        className="w-full flex items-center gap-3"
+                        style={{
+                          marginTop: '16px',
+                          padding: '14px 16px',
+                          backgroundColor: 'var(--bg-secondary)',
+                          borderRadius: '12px',
+                          border: '1px solid var(--border-light)',
+                        }}
+                      >
+                        <div style={{ color: 'var(--text-muted)' }}>
+                          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                          </svg>
+                        </div>
+                        <div style={{ flex: 1, textAlign: 'left' }}>
+                          <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text-primary)' }}>
+                            {t('backup.fullBackup')}
+                          </div>
+                          <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                            {t('backup.fullBackupDescription')}
+                          </div>
+                        </div>
+                        <svg width="16" height="16" fill="none" stroke="var(--text-muted)" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
                     </>
                   )}
                 </>
@@ -442,20 +550,38 @@ export function BackupModal({
                 </div>
               )}
 
-              {exportState === 'done' && backupCode && (
+              {exportState === 'quickCode' && backupCode && (
                 <div className="flex flex-col items-center" style={{ padding: '20px 0' }}>
-                  <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-                    {t('backup.yourCode')}
+                  {/* QR Code */}
+                  <div
+                    style={{
+                      padding: '16px',
+                      backgroundColor: 'white',
+                      borderRadius: '12px',
+                      marginBottom: '16px',
+                    }}
+                  >
+                    <QRCodeSVG
+                      value={`https://listmango.com/restore?code=${backupCode}`}
+                      size={160}
+                      level="M"
+                    />
+                  </div>
+                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '12px' }}>
+                    {t('backup.scanWithPhone')}
+                  </p>
+                  <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '12px' }}>
+                    {t('backup.orEnterCode')}
                   </p>
                   <div
                     style={{
-                      padding: '16px 24px',
+                      padding: '12px 20px',
                       backgroundColor: 'var(--bg-secondary)',
-                      borderRadius: '12px',
+                      borderRadius: '10px',
                       marginBottom: '8px',
                     }}
                   >
-                    <span style={{ fontSize: '24px', fontWeight: '700', fontFamily: 'monospace', letterSpacing: '2px', color: 'var(--text-primary)' }}>
+                    <span style={{ fontSize: '20px', fontWeight: '700', fontFamily: 'monospace', letterSpacing: '2px', color: 'var(--text-primary)' }}>
                       {backupCode}
                     </span>
                   </div>
@@ -475,10 +601,65 @@ export function BackupModal({
                         border: '1px solid var(--border-light)',
                       }}
                     >
-                      {copied ? t('backup.codeCopied') : 'Copy'}
+                      {copied === 'code' ? t('backup.codeCopied') : 'Copy'}
                     </button>
                     <button
                       onClick={handleShare}
+                      className="flex-1 font-medium"
+                      style={{
+                        padding: '14px',
+                        backgroundColor: 'var(--primary)',
+                        color: 'white',
+                        borderRadius: '10px',
+                      }}
+                    >
+                      Share
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => setExportState('idle')}
+                    style={{ marginTop: '16px', color: 'var(--text-muted)', fontSize: '14px' }}
+                  >
+                    {t('common.back')}
+                  </button>
+                </div>
+              )}
+
+              {exportState === 'fullBackup' && fullBackupUrl && (
+                <div className="flex flex-col items-center" style={{ padding: '20px 0' }}>
+                  <div style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>
+                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>
+                    {t('backup.backupCreated')}
+                  </h3>
+                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', textAlign: 'center', marginBottom: '20px' }}>
+                    {t('backup.backupCreatedHint')}
+                  </p>
+
+                  <div className="flex gap-3 w-full">
+                    <button
+                      onClick={handleCopyLink}
+                      className="flex-1 font-medium flex items-center justify-center gap-2"
+                      style={{
+                        padding: '14px',
+                        backgroundColor: 'var(--bg-secondary)',
+                        color: 'var(--text-primary)',
+                        borderRadius: '10px',
+                        border: '1px solid var(--border-light)',
+                      }}
+                    >
+                      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" strokeWidth={2} />
+                        <path strokeWidth={2} d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                      </svg>
+                      {copied === 'link' ? t('backup.linkCopied') : t('backup.copyLink')}
+                    </button>
+                    <button
+                      onClick={handleShareFullBackup}
                       className="flex-1 font-medium"
                       style={{
                         padding: '14px',
@@ -516,9 +697,32 @@ export function BackupModal({
                 </div>
               ) : !importPreview ? (
                 <>
-                  <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-                    {t('backup.scanOrEnter')}
-                  </p>
+                  {/* Import Hero Section */}
+                  <div className="flex flex-col items-center" style={{ marginBottom: '24px' }}>
+                    <div
+                      style={{
+                        width: '56px',
+                        height: '56px',
+                        borderRadius: '16px',
+                        backgroundColor: 'var(--bg-secondary)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '16px',
+                      }}
+                    >
+                      <svg width="28" height="28" fill="none" stroke="var(--primary)" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                      </svg>
+                    </div>
+                    <h2 style={{ fontSize: '20px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>
+                      {t('backup.importHeroTitle')}
+                    </h2>
+                    <p style={{ fontSize: '14px', color: 'var(--text-muted)', textAlign: 'center' }}>
+                      {t('backup.importHeroSubtitle')}
+                    </p>
+                  </div>
+
                   <div className="flex gap-2">
                     <input
                       type="text"
