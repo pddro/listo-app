@@ -93,7 +93,8 @@
       "exportTodoist": "匯出到 Todoist",
       "csvSubtitle": "可匯入任何 Todoist 專案的 CSV 檔案",
       "instruction": "任何擁有此連結的人都可以即時檢視和編輯清單。",
-      "saveAsTemplate": "儲存為範本"
+      "saveAsTemplate": "儲存為範本",
+      "scanToOpen": "掃描以在其他裝置上開啟"
     },
     "footer": {
       "createdWith": "由 List Mango 建立",

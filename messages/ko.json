@@ -93,7 +93,8 @@
       "exportTodoist": "Todoist로 내보내기",
       "csvSubtitle": "모든 Todoist 프로젝트에 가져올 수 있는 CSV 파일",
       "instruction": "이 링크를 가진 모든 사람이 실시간으로 리스트를 보고 편집할 수 있습니다.",
-      "saveAsTemplate": "Save as Template"
+      "saveAsTemplate": "Save as Template",
+      "scanToOpen": "다른 기기에서 열려면 스캔하세요"
     },
     "footer": {
       "createdWith": "List Mango로 만듦",

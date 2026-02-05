@@ -93,7 +93,8 @@
       "exportTodoist": "导出到 Todoist",
       "csvSubtitle": "可导入任何 Todoist 项目的 CSV 文件",
       "instruction": "任何拥有此链接的人都可以实时查看和编辑清单。",
-      "saveAsTemplate": "Save as Template"
+      "saveAsTemplate": "Save as Template",
+      "scanToOpen": "扫描以在其他设备上打开"
     },
     "footer": {
       "createdWith": "由 List Mango 创建",

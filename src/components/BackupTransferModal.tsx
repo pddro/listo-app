@@ -94,7 +94,9 @@ export default function BackupTransferModal({
   onClearAll,
   translations: t,
 }: BackupTransferModalProps) {
-  const [activeTab, setActiveTab] = useState<Tab>('export');
+  const hasItemsToExport = lists.length > 0 || templates.length > 0;
+  // Initialize with 'import' to avoid hydration mismatch (lists come from localStorage)
+  const [activeTab, setActiveTab] = useState<Tab>('import');
   const [isAnimating, setIsAnimating] = useState(false);
 
   // Export state
@@ -138,6 +140,8 @@ export default function BackupTransferModal({
       if (!hasInitialized) {
         setSelectedLists(new Set(lists.map((l) => l.id)));
         setSelectedTemplates(new Set(templates.map((t) => t.id)));
+        // Set active tab based on whether there are items to export
+        setActiveTab(hasItemsToExport ? 'export' : 'import');
         setHasInitialized(true);
       }
     } else {
@@ -147,7 +151,7 @@ export default function BackupTransferModal({
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isOpen, lists, templates, hasInitialized]);
+  }, [isOpen, lists, templates, hasInitialized, hasItemsToExport]);
 
   const handleClose = () => {
     setIsAnimating(false);
@@ -343,7 +347,6 @@ export default function BackupTransferModal({
 
   if (!isOpen && !isAnimating) return null;
 
-  const hasItemsToExport = lists.length > 0 || templates.length > 0;
   const hasSelection = selectedLists.size > 0 || selectedTemplates.size > 0;
   const totalSelected = selectedLists.size + selectedTemplates.size;
 
@@ -356,17 +359,19 @@ export default function BackupTransferModal({
         className={`backup-modal ${isOpen ? 'open' : 'closing'}`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Tabs */}
+        {/* Tabs - only show Export tab if there are items to export */}
         <div className="backup-tabs">
-          <button
-            className={`backup-tab ${activeTab === 'export' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveTab('export');
-              setExportMode('idle');
-            }}
-          >
-            {t.exportTab}
-          </button>
+          {hasItemsToExport && (
+            <button
+              className={`backup-tab ${activeTab === 'export' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab('export');
+                setExportMode('idle');
+              }}
+            >
+              {t.exportTab}
+            </button>
+          )}
           <button
             className={`backup-tab ${activeTab === 'import' ? 'active' : ''}`}
             onClick={() => setActiveTab('import')}

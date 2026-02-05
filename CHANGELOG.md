@@ -23,6 +23,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Deduplication: Items already on device are shown but cannot be re-imported
 
 ### Changed
+- **Backup Modal UX Improvements**
+  - Added hero section explaining the feature: "Move lists to another device - No accounts needed"
+  - Primary action (Generate QR Code) now has prominent card-style button
+  - Secondary action (Create Backup Link) moved below as subtle option
+  - Custom checkboxes matching app's design language (rounded-md, primary color fill)
+  - All hardcoded colors replaced with CSS variables for theme consistency
+  - Fixed bug where lists would reselect after ~3 seconds (useEffect dependency issue)
+  - Updated button copy: "Quick Transfer" → "Generate QR Code", "Full Backup" → "Create Backup Link"
+  - New i18n keys: exportHeroTitle, exportHeroSubtitle, importHeroTitle, importHeroSubtitle
+
 - **Rebranding: Listo → List Mango**
   - App name changed from "Listo" to "List Mango" across all platforms
   - Domain changed from listo.to to listmango.com

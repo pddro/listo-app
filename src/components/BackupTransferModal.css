@@ -8,7 +8,8 @@
   z-index: 100;
   opacity: 0;
   transition: opacity 0.2s ease;
-  padding: 20px;
+  padding: 16px;
+  overflow: hidden;
 }
 
 .backup-modal-overlay.open {
@@ -557,12 +558,15 @@
 
 .backup-url {
   flex: 1;
+  min-width: 0;
   padding: 10px 12px;
   font-size: 12px;
   border: 1px solid var(--border-medium);
   border-radius: 8px;
   background: var(--bg-secondary);
   color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Import tab */
@@ -836,13 +840,21 @@
 
 /* Mobile adjustments */
 @media (max-width: 640px) {
+  .backup-modal-overlay {
+    padding: 12px;
+  }
+
   .backup-modal {
     max-height: 90vh;
-    margin: 10px;
+    max-width: calc(100vw - 24px);
   }
 
   .backup-code {
     font-size: 20px;
     letter-spacing: 2px;
+  }
+
+  .backup-action-buttons {
+    flex-direction: column;
   }
 }

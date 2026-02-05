@@ -109,8 +109,8 @@ export default function Home() {
   const [welcomeAnimating, setWelcomeAnimating] = useState(false);
   const router = useRouter();
   const { generateItems, processDictation } = useAI();
-  const { lists: recentLists, archivedLists, addList, updateList, archiveList, restoreList } = useRecentListsWeb();
-  const { templates: personalTemplates, deleteTemplate, updateTemplate, addTemplate } = usePersonalTemplates();
+  const { lists: recentLists, archivedLists, isLoading: listsLoading, addList, updateList, archiveList, restoreList } = useRecentListsWeb();
+  const { templates: personalTemplates, isLoading: templatesLoading, deleteTemplate, updateTemplate, addTemplate } = usePersonalTemplates();
   const [usingTemplateId, setUsingTemplateId] = useState<string | null>(null);
   const [editingTemplate, setEditingTemplate] = useState<PersonalTemplate | null>(null);
   const [communityTemplateCount, setCommunityTemplateCount] = useState<number>(0);
@@ -818,7 +818,7 @@ export default function Home() {
           </div>
 
           {/* Tutorial List for New Users - styled exactly like a regular list */}
-          {recentLists.length === 0 && !isCreating && (
+          {!listsLoading && recentLists.length === 0 && !isCreating && (
             <div className="space-y-2">
               <div
                 className="flex items-center gap-4 py-4 px-4 rounded-xl cursor-pointer active:bg-gray-100 hover:bg-gray-50 transition-colors"
@@ -845,7 +845,7 @@ export default function Home() {
           )}
 
           {/* Actual lists */}
-          {recentLists.length > 0 && (
+          {!listsLoading && recentLists.length > 0 && (
             <div className="flex flex-col" style={{ gap: '8px' }}>
               {recentLists.map((list) => (
                 <div
@@ -970,7 +970,7 @@ export default function Home() {
         )}
 
         {/* My Templates */}
-        {personalTemplates.length > 0 && (
+        {!templatesLoading && personalTemplates.length > 0 && (
           <div style={{ marginTop: '24px' }}>
             <div className="font-bold uppercase tracking-wide text-xs mb-3 text-left" style={{ color: 'var(--text-muted)' }}>
               {t('templates.myTemplates')}
@@ -1047,29 +1047,27 @@ export default function Home() {
           </div>
         )}
 
-        {/* Backup & Share section - only show if user has lists or templates */}
-        {(recentLists.length > 0 || personalTemplates.length > 0) && (
-          <div style={{ marginTop: '24px' }}>
-            <button
-              onClick={() => setShowBackupModal(true)}
-              className="w-full flex items-center justify-center gap-3 rounded-xl font-medium transition-all duration-200 hover:bg-[var(--bg-hover)] hover:border-[var(--border-medium)] active:scale-[0.98] cursor-pointer"
-              style={{
-                padding: '14px 20px',
-                backgroundColor: 'var(--bg-secondary)',
-                color: 'var(--text-primary)',
-                border: '1px solid var(--border-light)',
-              }}
-            >
-              <svg className="w-5 h-5" style={{ color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-              </svg>
-              {tBackup('backupAndTransfer')}
-            </button>
-            <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '8px', textAlign: 'center' }}>
-              {tBackup('deviceNotice')}
-            </p>
-          </div>
-        )}
+        {/* Backup & Transfer section - always visible for importing */}
+        <div style={{ marginTop: '24px' }}>
+          <button
+            onClick={() => setShowBackupModal(true)}
+            className="w-full flex items-center justify-center gap-3 rounded-xl font-medium transition-all duration-200 hover:bg-[var(--bg-hover)] hover:border-[var(--border-medium)] active:scale-[0.98] cursor-pointer"
+            style={{
+              padding: '14px 20px',
+              backgroundColor: 'var(--bg-secondary)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border-light)',
+            }}
+          >
+            <svg className="w-5 h-5" style={{ color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            {tBackup('backupAndTransfer')}
+          </button>
+          <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '8px', textAlign: 'center' }}>
+            {tBackup('deviceNotice')}
+          </p>
+        </div>
 
         {/* Browse Community Templates - prominent button */}
         <button

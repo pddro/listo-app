@@ -93,7 +93,8 @@
       "exportTodoist": "Exportar para Todoist",
       "csvSubtitle": "Archivo CSV que puedes importar en cualquier proyecto de Todoist",
       "instruction": "Cualquier persona con este enlace puede ver y editar la lista en tiempo real.",
-      "saveAsTemplate": "Save as Template"
+      "saveAsTemplate": "Guardar como Plantilla",
+      "scanToOpen": "Escanea para abrir en otro dispositivo"
     },
     "footer": {
       "createdWith": "Creado con List Mango",
