@@ -12,7 +12,8 @@ import { useRecentLists, SavedList } from '@/lib/hooks/useRecentLists';
 import { useHomeTheme } from '@/lib/hooks/useHomeTheme';
 import { HomeThemeModal } from '@/mobile/components/HomeThemeModal';
 import { SaveAsTemplateModal } from '@/mobile/components/SaveAsTemplateModal';
-import { OnboardingWalkthrough } from '@/mobile/components/OnboardingWalkthrough';
+import { OnboardingWalkthrough } from '@/components/OnboardingWalkthrough';
+import { BackupModal } from '@/mobile/components/BackupModal';
 import { useOnboardingState } from '@/mobile/hooks/useOnboardingState';
 import { ThemeColors } from '@/lib/gemini';
 import { useAppState } from '@/mobile/context/AppStateContext';
@@ -523,6 +524,7 @@ export default function HomePage() {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showTipsModal, setShowTipsModal] = useState(false);
   const [showThemeModal, setShowThemeModal] = useState(false);
+  const [showBackupModal, setShowBackupModal] = useState(false);
   const [deleteConfirmList, setDeleteConfirmList] = useState<SavedList | null>(null);
   const [duplicateConfirmList, setDuplicateConfirmList] = useState<SavedList | null>(null);
   const [platform, setPlatform] = useState<'ios' | 'android' | 'web'>('web');
@@ -1623,6 +1625,28 @@ export default function HomePage() {
           </div>
         )}
 
+        {/* Backup & Transfer section - always visible for importing */}
+        <div style={{ marginTop: '24px' }}>
+          <button
+            onClick={() => setShowBackupModal(true)}
+            className="w-full flex items-center justify-center gap-3 rounded-xl font-medium transition-all active:scale-[0.98]"
+            style={{
+              padding: '14px 20px',
+              backgroundColor: 'var(--bg-secondary)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border-light)',
+            }}
+          >
+            <svg style={{ width: '20px', height: '20px', color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            {t('backup.backupAndTransfer')}
+          </button>
+          <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '8px', textAlign: 'center' }}>
+            {t('backup.deviceNotice')}
+          </p>
+        </div>
+
         {/* Community Templates Section */}
         <div style={{ marginTop: '32px' }}>
           <div
@@ -2025,9 +2049,46 @@ export default function HomePage() {
         </div>
       )}
 
+      {/* Backup & Transfer Modal */}
+      {showBackupModal && (
+        <BackupModal
+          isOpen={showBackupModal}
+          onClose={() => setShowBackupModal(false)}
+          lists={recentLists}
+          templates={personalTemplates}
+          onImport={(listsToImport, templatesToImport) => {
+            // Import lists
+            for (const list of listsToImport) {
+              addList(list.id, list.title || null, list.themeColor || null);
+            }
+            // Import templates
+            for (const template of templatesToImport) {
+              addTemplate({
+                listId: template.listId,
+                title: template.title,
+                description: template.description || '',
+                category: template.category,
+                theme: template.theme,
+                itemCount: template.itemCount,
+              });
+            }
+          }}
+          onClearAll={async () => {
+            // Clear all local storage
+            await Preferences.remove({ key: 'listo_saved_lists' });
+            await Preferences.remove({ key: 'listo_personal_templates' });
+            window.location.reload();
+          }}
+        />
+      )}
+
       {/* Onboarding walkthrough - shows on first launch */}
       {hasCompletedOnboarding === false && (
-        <OnboardingWalkthrough onComplete={completeOnboarding} />
+        <OnboardingWalkthrough
+          onComplete={completeOnboarding}
+          t={(key: string) => t(`onboarding.${key}`)}
+          platform={platform}
+        />
       )}
     </div>
   );

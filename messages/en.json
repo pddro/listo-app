@@ -93,7 +93,8 @@
       "exportTodoist": "Export for Todoist",
       "csvSubtitle": "CSV file you can import into any Todoist project",
       "instruction": "Anyone with this link can view and edit the list in real-time.",
-      "saveAsTemplate": "Save as Template"
+      "saveAsTemplate": "Save as Template",
+      "scanToOpen": "Scan to open on another device"
     },
     "footer": {
       "createdWith": "Created with List Mango",
@@ -445,6 +446,10 @@
     "open": "OPEN"
   },
   "onboarding": {
+    "welcome": {
+      "title": "Welcome to",
+      "description": "The simplest way to create and share lists with anyone, anywhere."
+    },
     "shareableLinks": {
       "title": "Share with anyone",
       "description": "Send your list link via any app. Recipients can view and edit instantly - no app download required."
@@ -466,7 +471,63 @@
       "description": "Type style: followed by any description to create custom themes for your lists and home screen."
     },
     "getStarted": "Get Started",
-    "swipeHint": "Swipe to continue"
+    "swipeHint": "Swipe to continue",
+    "clickHint": "Continue",
+    "next": "Next",
+    "skip": "Skip"
+  },
+  "backup": {
+    "deviceNotice": "Your lists live only on this device",
+    "backupAndTransfer": "Backup & Transfer",
+    "exportTab": "Export",
+    "importTab": "Import",
+    "exportHeroTitle": "Move lists to another device",
+    "exportHeroSubtitle": "No accounts needed. Just scan a QR code or enter a short code on your other device.",
+    "importHeroTitle": "Bring your lists here",
+    "importHeroSubtitle": "Enter the code from your other device to copy your lists.",
+    "selectedCount": "%count% selected",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "quickTransfer": "Generate QR Code",
+    "quickTransferDescription": "Scan to transfer • Expires in 24h",
+    "fullBackup": "Create Full Backup",
+    "fullBackupDescription": "Permanent link with all your lists & templates",
+    "yourCode": "Your code",
+    "scanOrEnter": "Scan QR code or enter code",
+    "codePlaceholder": "MANGO-XXXX or paste backup link",
+    "preview": "Preview",
+    "importing": "Importing...",
+    "importSelected": "Import Selected",
+    "itemsToImport": "%count% items to import",
+    "importMangos": "Import these %count% Mangos Here",
+    "alreadyHave": "Already on this device",
+    "clearAllData": "Clear All Data",
+    "clearConfirm": "This will remove all lists and templates from this device. The lists still exist if you have the links.",
+    "cleared": "All local data cleared",
+    "codeExpired": "Code expired or not found",
+    "invalidBackup": "Invalid backup data",
+    "importSuccess": "%count% items imported",
+    "nothingToExport": "Nothing to export",
+    "lists": "Lists",
+    "selectListsToShare": "Select Lists to Share",
+    "selectListMangos": "Select ListMangos to Import",
+    "templates": "Templates",
+    "generating": "Generating...",
+    "codeCopied": "Code copied!",
+    "linkCopied": "Link copied!",
+    "expiresIn": "Expires in 24 hours",
+    "scanWithPhone": "Scan with your phone",
+    "orEnterCode": "Or enter the code manually",
+    "fetch": "Fetch",
+    "fetching": "Fetching...",
+    "dangerZone": "Danger Zone",
+    "clearAllDataDescription": "Remove all lists and templates from this device",
+    "backupCreated": "Backup Created",
+    "backupCreatedHint": "Save this link somewhere safe. It contains all your lists and templates.",
+    "copyLink": "Copy Link",
+    "emailToSelf": "Email to Myself",
+    "backupEmailSubject": "My ListMango Backup",
+    "backupEmailBody": "Here's your ListMango backup link. Keep it safe - you can use it anytime to restore your lists."
   },
   "mobile": {
     "taglineShort": "Create a list. Share the link.",

@@ -93,7 +93,8 @@
       "exportTodoist": "Todoistにエクスポート",
       "csvSubtitle": "任意のTodoistプロジェクトにインポートできるCSVファイル",
       "instruction": "このリンクを持つ人は誰でもリアルタイムでリストを閲覧・編集できます。",
-      "saveAsTemplate": "Save as Template"
+      "saveAsTemplate": "Save as Template",
+      "scanToOpen": "別のデバイスで開くにはスキャン"
     },
     "footer": {
       "createdWith": "List Mangoで作成",
@@ -355,6 +356,10 @@
     "蛍の光"
   ],
   "onboarding": {
+    "welcome": {
+      "title": "",
+      "description": "誰とでも、どこでも、リストを作成・共有する最もシンプルな方法。"
+    },
     "shareableLinks": {
       "title": "誰とでも共有",
       "description": "リストのリンクをどのアプリからでも送信。受信者はアプリのダウンロードなしで即座に閲覧・編集できます。"
@@ -376,7 +381,10 @@
       "description": "スタイル: に続けて説明を入力し、リストとホーム画面にカスタムテーマを作成。"
     },
     "getStarted": "はじめる",
-    "swipeHint": "スワイプして続ける"
+    "swipeHint": "スワイプして続ける",
+    "clickHint": "続ける",
+    "next": "次へ",
+    "skip": "スキップ"
   },
   "welcome": {
     "title": "List Mangoへようこそ！",
@@ -472,6 +480,59 @@
     "openWithTitle": "アプリで「{title}」を開く",
     "openGeneric": "List Mangoアプリでこのリストを開く",
     "open": "開く"
+  },
+  "backup": {
+    "deviceNotice": "リストはこのデバイスにのみ保存されています",
+    "backupAndTransfer": "バックアップと転送",
+    "exportTab": "エクスポート",
+    "importTab": "インポート",
+    "exportHeroTitle": "リストを別のデバイスに移動",
+    "exportHeroSubtitle": "アカウント不要。QRコードをスキャンするか、他のデバイスで短いコードを入力するだけです。",
+    "importHeroTitle": "リストをここにインポート",
+    "importHeroSubtitle": "他のデバイスのコードを入力してリストをコピーします。",
+    "selectedCount": "%count%件選択中",
+    "selectAll": "すべて選択",
+    "deselectAll": "選択解除",
+    "quickTransfer": "QRコードを生成",
+    "quickTransferDescription": "スキャンして転送 • 24時間で期限切れ",
+    "fullBackup": "フルバックアップを作成",
+    "fullBackupDescription": "すべてのリストとテンプレートを含む永続リンク",
+    "yourCode": "あなたのコード",
+    "scanOrEnter": "QRコードをスキャンするかコードを入力",
+    "codePlaceholder": "MANGO-XXXX またはバックアップリンクを貼り付け",
+    "preview": "プレビュー",
+    "importing": "インポート中...",
+    "importSelected": "選択したものをインポート",
+    "itemsToImport": "%count%件のインポート対象",
+    "importMangos": "この%count%個のマンゴーをここにインポート",
+    "alreadyHave": "このデバイスにすでにあります",
+    "clearAllData": "すべてのデータを削除",
+    "clearConfirm": "このデバイスからすべてのリストとテンプレートが削除されます。リンクがあればリストには引き続きアクセスできます。",
+    "cleared": "すべてのローカルデータが削除されました",
+    "codeExpired": "コードが期限切れまたは見つかりません",
+    "invalidBackup": "無効なバックアップデータ",
+    "importSuccess": "%count%件をインポートしました",
+    "nothingToExport": "エクスポートするものがありません",
+    "lists": "リスト",
+    "selectListsToShare": "共有するリストを選択",
+    "selectListMangos": "インポートするListMangosを選択",
+    "templates": "テンプレート",
+    "generating": "生成中...",
+    "codeCopied": "コードをコピーしました！",
+    "linkCopied": "リンクをコピーしました！",
+    "expiresIn": "24時間で期限切れ",
+    "scanWithPhone": "スマートフォンでスキャン",
+    "orEnterCode": "またはコードを手動で入力",
+    "fetch": "取得",
+    "fetching": "取得中...",
+    "dangerZone": "危険ゾーン",
+    "clearAllDataDescription": "このデバイスからすべてのリストとテンプレートを削除",
+    "backupCreated": "バックアップ完了",
+    "backupCreatedHint": "このリンクを安全な場所に保存してください。すべてのリストとテンプレートが含まれています。",
+    "copyLink": "リンクをコピー",
+    "emailToSelf": "自分にメール",
+    "backupEmailSubject": "ListMangoバックアップ",
+    "backupEmailBody": "ListMangoのバックアップリンクです。安全に保管してください。いつでもリストを復元するために使用できます。"
   },
   "mobile": {
     "taglineShort": "リストを作成。リンクを共有。",

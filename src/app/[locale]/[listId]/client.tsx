@@ -18,6 +18,7 @@ import { SaveAsTemplateModal } from '@/components/templates/SaveAsTemplateModal'
 import PresenceIndicator from '@/components/PresenceIndicator';
 import CollaborationModal from '@/components/CollaborationModal';
 import MangoRain from '@/components/MangoRain';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface ListPageClientProps {
   listId: string;
@@ -646,37 +647,68 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
 
         {/* Share View */}
         {showShareView ? (
-          <div style={{ paddingTop: '16px' }}>
-            {/* Collaboration explainer */}
-            <div
-              className="text-sm px-4"
-              style={{ color: 'var(--text-muted)', marginBottom: '16px' }}
-            >
-              {t('share.instruction')}
+          <div style={{ paddingTop: '24px' }}>
+            {/* QR Code Section */}
+            <div className="flex flex-col items-center" style={{ marginBottom: '24px' }}>
+              <div
+                style={{
+                  padding: '16px',
+                  backgroundColor: 'white',
+                  borderRadius: '16px',
+                  boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
+                }}
+              >
+                <QRCodeSVG
+                  value={typeof window !== 'undefined' ? window.location.href : `https://listmango.com/${listId}`}
+                  size={140}
+                  level="M"
+                />
+              </div>
+              <p className="text-sm" style={{ color: 'var(--text-muted)', marginTop: '12px' }}>
+                {t('share.scanToOpen')}
+              </p>
             </div>
 
-            {/* Share options - styled like list items */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {/* Collaboration explainer */}
+            <p
+              className="text-sm text-center"
+              style={{ color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: '1.5' }}
+            >
+              {t('share.instruction')}
+            </p>
+
+            {/* Share options - modern card style */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {/* Copy URL */}
               <button
                 onClick={handleCopyUrl}
-                className="w-full flex items-center gap-3 py-3 px-4 rounded transition-all duration-150"
+                className="w-full flex items-center gap-4 rounded-xl transition-all duration-150 cursor-pointer"
                 style={{
-                  backgroundColor: copied ? 'var(--primary-pale)' : 'transparent',
+                  padding: '14px 16px',
+                  backgroundColor: copied ? 'var(--primary-pale)' : 'var(--bg-secondary)',
+                  border: copied ? '1px solid var(--primary-light)' : '1px solid transparent',
                 }}
-                onMouseEnter={(e) => { if (!copied) e.currentTarget.style.backgroundColor = 'var(--primary-pale)'; }}
-                onMouseLeave={(e) => { if (!copied) e.currentTarget.style.backgroundColor = 'transparent'; }}
               >
-                {copied ? (
-                  <svg className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                  </svg>
-                )}
-                <span style={{ color: copied ? 'var(--primary)' : 'var(--text-primary)' }}>
+                <div
+                  className="flex items-center justify-center flex-shrink-0"
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '10px',
+                    backgroundColor: copied ? 'var(--primary)' : 'var(--primary-pale)',
+                  }}
+                >
+                  {copied ? (
+                    <svg className="w-5 h-5" style={{ color: 'white' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" style={{ color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                  )}
+                </div>
+                <span className="font-medium" style={{ color: copied ? 'var(--primary)' : 'var(--text-primary)' }}>
                   {copied ? t('share.linkCopied') : t('share.copyLink')}
                 </span>
               </button>
@@ -684,23 +716,33 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
               {/* Copy as Markdown */}
               <button
                 onClick={handleCopyMarkdown}
-                className="w-full flex items-center gap-3 py-3 px-4 rounded transition-all duration-150"
+                className="w-full flex items-center gap-4 rounded-xl transition-all duration-150 cursor-pointer"
                 style={{
-                  backgroundColor: copiedMarkdown ? 'var(--primary-pale)' : 'transparent',
+                  padding: '14px 16px',
+                  backgroundColor: copiedMarkdown ? 'var(--primary-pale)' : 'var(--bg-secondary)',
+                  border: copiedMarkdown ? '1px solid var(--primary-light)' : '1px solid transparent',
                 }}
-                onMouseEnter={(e) => { if (!copiedMarkdown) e.currentTarget.style.backgroundColor = 'var(--primary-pale)'; }}
-                onMouseLeave={(e) => { if (!copiedMarkdown) e.currentTarget.style.backgroundColor = 'transparent'; }}
               >
-                {copiedMarkdown ? (
-                  <svg className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                )}
-                <span style={{ color: copiedMarkdown ? 'var(--primary)' : 'var(--text-primary)' }}>
+                <div
+                  className="flex items-center justify-center flex-shrink-0"
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '10px',
+                    backgroundColor: copiedMarkdown ? 'var(--primary)' : 'var(--bg-hover)',
+                  }}
+                >
+                  {copiedMarkdown ? (
+                    <svg className="w-5 h-5" style={{ color: 'white' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  )}
+                </div>
+                <span className="font-medium" style={{ color: copiedMarkdown ? 'var(--primary)' : 'var(--text-primary)' }}>
                   {copiedMarkdown ? t('share.markdownCopied') : t('share.copyMarkdown')}
                 </span>
               </button>
@@ -713,53 +755,87 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
                   const body = encodeURIComponent(`${title}\n\n${typeof window !== 'undefined' ? window.location.href : ''}`);
                   return `mailto:?subject=${subject}&body=${body}`;
                 })()}
-                className="w-full flex items-center gap-3 py-3 px-4 rounded transition-all duration-150"
-                style={{ backgroundColor: 'transparent' }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary-pale)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                className="w-full flex items-center gap-4 rounded-xl transition-all duration-150 cursor-pointer"
+                style={{
+                  padding: '14px 16px',
+                  backgroundColor: 'var(--bg-secondary)',
+                  textDecoration: 'none',
+                }}
               >
-                <svg className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <span style={{ color: 'var(--text-primary)' }}>
+                <div
+                  className="flex items-center justify-center flex-shrink-0"
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '10px',
+                    backgroundColor: 'var(--bg-hover)',
+                  }}
+                >
+                  <svg className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
                   {t('share.sendEmail')}
                 </span>
               </a>
 
               {/* Export for Todoist */}
-              <div>
-                <button
-                  onClick={handleDownloadTodoistCSV}
-                  className="w-full flex items-center gap-3 py-3 px-4 rounded transition-all duration-150"
-                  style={{ backgroundColor: 'transparent' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary-pale)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+              <button
+                onClick={handleDownloadTodoistCSV}
+                className="w-full flex items-center gap-4 rounded-xl transition-all duration-150 cursor-pointer"
+                style={{
+                  padding: '14px 16px',
+                  backgroundColor: 'var(--bg-secondary)',
+                }}
+              >
+                <div
+                  className="flex items-center justify-center flex-shrink-0"
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '10px',
+                    backgroundColor: '#fef2f2',
+                  }}
                 >
-                  <svg className="w-5 h-5 flex-shrink-0" style={{ color: '#E44332' }} viewBox="0 0 24 24" fill="currentColor">
+                  <svg className="w-5 h-5" style={{ color: '#E44332' }} viewBox="0 0 24 24" fill="currentColor">
                     <path d="M21 0H3C1.35 0 0 1.35 0 3v18c0 1.65 1.35 3 3 3h18c1.65 0 3-1.35 3-3V3c0-1.65-1.35-3-3-3zM5.5 6.75h13c.414 0 .75.336.75.75s-.336.75-.75.75h-13c-.414 0-.75-.336-.75-.75s.336-.75.75-.75zm0 4.5h13c.414 0 .75.336.75.75s-.336.75-.75.75h-13c-.414 0-.75-.336-.75-.75s.336-.75.75-.75zm0 4.5h13c.414 0 .75.336.75.75s-.336.75-.75.75h-13c-.414 0-.75-.336-.75-.75s.336-.75.75-.75z"/>
                   </svg>
-                  <span style={{ color: 'var(--text-primary)' }}>
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
                     {t('share.exportTodoist')}
                   </span>
-                </button>
-                <div className="text-xs px-4" style={{ color: 'var(--text-muted)', marginTop: '4px', marginLeft: '32px' }}>
-                  {t('share.csvSubtitle')}
+                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                    {t('share.csvSubtitle')}
+                  </span>
                 </div>
-              </div>
+              </button>
 
               {/* Save as Template */}
               {items.length > 0 && (
                 <button
                   onClick={() => setShowTemplateModal(true)}
-                  className="w-full flex items-center gap-3 py-3 px-4 rounded transition-all duration-150"
-                  style={{ backgroundColor: 'transparent' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary-pale)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                  className="w-full flex items-center gap-4 rounded-xl transition-all duration-150 cursor-pointer"
+                  style={{
+                    padding: '14px 16px',
+                    backgroundColor: 'var(--bg-secondary)',
+                  }}
                 >
-                  <svg className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-                  </svg>
-                  <span style={{ color: 'var(--text-primary)' }}>
+                  <div
+                    className="flex items-center justify-center flex-shrink-0"
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '10px',
+                      backgroundColor: 'var(--bg-hover)',
+                    }}
+                  >
+                    <svg className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                    </svg>
+                  </div>
+                  <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
                     {t('share.saveAsTemplate')}
                   </span>
                 </button>

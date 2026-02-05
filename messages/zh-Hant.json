@@ -93,7 +93,8 @@
       "exportTodoist": "匯出到 Todoist",
       "csvSubtitle": "可匯入任何 Todoist 專案的 CSV 檔案",
       "instruction": "任何擁有此連結的人都可以即時檢視和編輯清單。",
-      "saveAsTemplate": "儲存為範本"
+      "saveAsTemplate": "儲存為範本",
+      "scanToOpen": "掃描以在其他裝置上開啟"
     },
     "footer": {
       "createdWith": "由 List Mango 建立",
@@ -355,6 +356,10 @@
     "螢火蟲光"
   ],
   "onboarding": {
+    "welcome": {
+      "title": "歡迎使用",
+      "description": "與任何人、在任何地方建立和分享清單的最簡單方式。"
+    },
     "shareableLinks": {
       "title": "與任何人分享",
       "description": "透過任何應用程式傳送清單連結。收件人無需下載應用程式即可立即檢視和編輯。"
@@ -376,7 +381,10 @@
       "description": "輸入 風格: 加任意描述，為你的清單和主畫面建立自訂主題。"
     },
     "getStarted": "開始使用",
-    "swipeHint": "滑動繼續"
+    "swipeHint": "滑動繼續",
+    "clickHint": "繼續",
+    "next": "下一步",
+    "skip": "跳過"
   },
   "welcome": {
     "title": "歡迎使用 List Mango！",
@@ -473,6 +481,59 @@
     "openWithTitle": "在應用程式中開啟「{title}」",
     "openGeneric": "在 List Mango 應用程式中開啟此清單",
     "open": "開啟"
+  },
+  "backup": {
+    "deviceNotice": "您的清單僅儲存在此裝置上",
+    "backupAndTransfer": "備份與傳輸",
+    "exportTab": "匯出",
+    "importTab": "匯入",
+    "exportHeroTitle": "將清單移至另一台裝置",
+    "exportHeroSubtitle": "無需帳戶。只需掃描二維碼或在另一台裝置上輸入短代碼。",
+    "importHeroTitle": "將清單匯入此裝置",
+    "importHeroSubtitle": "輸入另一台裝置的代碼以複製您的清單。",
+    "selectedCount": "已選擇%count%個",
+    "selectAll": "全選",
+    "deselectAll": "取消全選",
+    "quickTransfer": "產生二維碼",
+    "quickTransferDescription": "掃描傳輸 • 24小時後過期",
+    "fullBackup": "建立完整備份",
+    "fullBackupDescription": "包含所有清單和範本的永久連結",
+    "yourCode": "您的代碼",
+    "scanOrEnter": "掃描二維碼或輸入代碼",
+    "codePlaceholder": "MANGO-XXXX 或貼上備份連結",
+    "preview": "預覽",
+    "importing": "正在匯入...",
+    "importSelected": "匯入所選",
+    "itemsToImport": "%count%個待匯入項目",
+    "importMangos": "在此匯入這%count%個芒果",
+    "alreadyHave": "此裝置已存在",
+    "clearAllData": "清除所有資料",
+    "clearConfirm": "這將從此裝置刪除所有清單和範本。如果您有連結，仍可存取清單。",
+    "cleared": "已清除所有本機資料",
+    "codeExpired": "代碼已過期或未找到",
+    "invalidBackup": "無效的備份資料",
+    "importSuccess": "已匯入%count%個項目",
+    "nothingToExport": "沒有可匯出的內容",
+    "lists": "清單",
+    "selectListsToShare": "選擇要分享的清單",
+    "selectListMangos": "選擇要匯入的ListMangos",
+    "templates": "範本",
+    "generating": "正在產生...",
+    "codeCopied": "代碼已複製！",
+    "linkCopied": "連結已複製！",
+    "expiresIn": "24小時後過期",
+    "scanWithPhone": "用手機掃描",
+    "orEnterCode": "或手動輸入代碼",
+    "fetch": "取得",
+    "fetching": "正在取得...",
+    "dangerZone": "危險區域",
+    "clearAllDataDescription": "從此裝置刪除所有清單和範本",
+    "backupCreated": "備份已建立",
+    "backupCreatedHint": "請將此連結儲存在安全的地方。它包含您所有的清單和範本。",
+    "copyLink": "複製連結",
+    "emailToSelf": "傳送到郵箱",
+    "backupEmailSubject": "我的 ListMango 備份",
+    "backupEmailBody": "這是您的 ListMango 備份連結。請妥善保管 - 您可以隨時使用它來恢復您的清單。"
   },
   "mobile": {
     "taglineShort": "建立清單。分享連結。",

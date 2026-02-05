@@ -14,6 +14,9 @@ import { useRecentListsWeb } from '@/lib/hooks/useRecentListsWeb';
 import { usePersonalTemplates, PersonalTemplate } from '@/lib/hooks/usePersonalTemplates';
 import { EditTemplateModal } from '@/components/templates/EditTemplateModal';
 import { TemplateCategory } from '@/types';
+import BackupTransferModal from '@/components/BackupTransferModal';
+import { BackupList, BackupTemplate } from '@/lib/backup';
+import { OnboardingWalkthrough } from '@/components/OnboardingWalkthrough';
 
 type InputMode = 'single' | 'multiple' | 'ai';
 
@@ -78,7 +81,9 @@ export default function Home() {
   const tCommon = useTranslations('common');
   const tInput = useTranslations('input');
   const tWelcome = useTranslations('welcome');
+  const tOnboarding = useTranslations('onboarding');
   const tTutorial = useTranslations('tutorial');
+  const tBackup = useTranslations('backup');
   const locale = useLocale();
 
   // Get translated placeholders
@@ -102,15 +107,15 @@ export default function Home() {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const [copiedListId, setCopiedListId] = useState<string | null>(null);
-  const [showWelcome, setShowWelcome] = useState(false);
-  const [welcomeAnimating, setWelcomeAnimating] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const router = useRouter();
   const { generateItems, processDictation } = useAI();
-  const { lists: recentLists, archivedLists, addList, updateList, archiveList, restoreList } = useRecentListsWeb();
-  const { templates: personalTemplates, deleteTemplate, updateTemplate } = usePersonalTemplates();
+  const { lists: recentLists, archivedLists, isLoading: listsLoading, addList, updateList, archiveList, restoreList } = useRecentListsWeb();
+  const { templates: personalTemplates, isLoading: templatesLoading, deleteTemplate, updateTemplate, addTemplate } = usePersonalTemplates();
   const [usingTemplateId, setUsingTemplateId] = useState<string | null>(null);
   const [editingTemplate, setEditingTemplate] = useState<PersonalTemplate | null>(null);
   const [communityTemplateCount, setCommunityTemplateCount] = useState<number>(0);
+  const [showBackupModal, setShowBackupModal] = useState(false);
 
   // Track page visit
   useEffect(() => {
@@ -138,24 +143,23 @@ export default function Home() {
     fetchTemplateCount();
   }, [locale]);
 
-  // Show welcome popup for first-time visitors
+  // Show onboarding for first-time visitors
   useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem('listo_has_seen_welcome');
-    if (!hasSeenWelcome) {
+    // Skip onboarding for search engine bots (SEO)
+    const isBot = /bot|crawl|spider|google|bing|yandex|baidu|duckduck/i.test(navigator.userAgent);
+    const hasSeenOnboarding = localStorage.getItem('listo_has_seen_welcome');
+
+    if (!hasSeenOnboarding && !isBot) {
       // Small delay for smoother experience
       setTimeout(() => {
-        setShowWelcome(true);
-        setTimeout(() => setWelcomeAnimating(true), 50);
-      }, 500);
+        setShowOnboarding(true);
+      }, 300);
     }
   }, []);
 
-  const dismissWelcome = () => {
-    setWelcomeAnimating(false);
-    setTimeout(() => {
-      setShowWelcome(false);
-      localStorage.setItem('listo_has_seen_welcome', 'true');
-    }, 300);
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    localStorage.setItem('listo_has_seen_welcome', 'true');
   };
 
   // Create tutorial list for new users
@@ -814,7 +818,7 @@ export default function Home() {
           </div>
 
           {/* Tutorial List for New Users - styled exactly like a regular list */}
-          {recentLists.length === 0 && !isCreating && (
+          {!listsLoading && recentLists.length === 0 && !isCreating && (
             <div className="space-y-2">
               <div
                 className="flex items-center gap-4 py-4 px-4 rounded-xl cursor-pointer active:bg-gray-100 hover:bg-gray-50 transition-colors"
@@ -841,7 +845,7 @@ export default function Home() {
           )}
 
           {/* Actual lists */}
-          {recentLists.length > 0 && (
+          {!listsLoading && recentLists.length > 0 && (
             <div className="flex flex-col" style={{ gap: '8px' }}>
               {recentLists.map((list) => (
                 <div
@@ -966,7 +970,7 @@ export default function Home() {
         )}
 
         {/* My Templates */}
-        {personalTemplates.length > 0 && (
+        {!templatesLoading && personalTemplates.length > 0 && (
           <div style={{ marginTop: '24px' }}>
             <div className="font-bold uppercase tracking-wide text-xs mb-3 text-left" style={{ color: 'var(--text-muted)' }}>
               {t('templates.myTemplates')}
@@ -1043,6 +1047,28 @@ export default function Home() {
           </div>
         )}
 
+        {/* Backup & Transfer section - always visible for importing */}
+        <div style={{ marginTop: '24px' }}>
+          <button
+            onClick={() => setShowBackupModal(true)}
+            className="w-full flex items-center justify-center gap-3 rounded-xl font-medium transition-all duration-200 hover:bg-[var(--bg-hover)] hover:border-[var(--border-medium)] active:scale-[0.98] cursor-pointer"
+            style={{
+              padding: '14px 20px',
+              backgroundColor: 'var(--bg-secondary)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border-light)',
+            }}
+          >
+            <svg className="w-5 h-5" style={{ color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            {tBackup('backupAndTransfer')}
+          </button>
+          <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '8px', textAlign: 'center' }}>
+            {tBackup('deviceNotice')}
+          </p>
+        </div>
+
         {/* Browse Community Templates - prominent button */}
         <button
           onClick={() => router.push('/templates')}
@@ -1090,151 +1116,13 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Welcome Popup */}
-      {showWelcome && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{
-            backgroundColor: welcomeAnimating ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0)',
-            transition: 'background-color 0.3s ease-out',
-          }}
-          onClick={dismissWelcome}
-        >
-          <div
-            className="bg-white rounded-2xl w-full max-w-sm overflow-hidden"
-            style={{
-              transform: welcomeAnimating ? 'scale(1) translateY(0)' : 'scale(0.95) translateY(20px)',
-              opacity: welcomeAnimating ? 1 : 0,
-              transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-out',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header with icon */}
-            <div
-              className="text-center"
-              style={{ padding: '32px 24px 24px 24px' }}
-            >
-              {/* Animated checkmark icon */}
-              <div
-                className="mx-auto flex items-center justify-center rounded-full"
-                style={{
-                  width: '64px',
-                  height: '64px',
-                  backgroundColor: 'var(--primary-pale)',
-                  marginBottom: '20px',
-                }}
-              >
-                <svg
-                  className="w-8 h-8"
-                  style={{ color: 'var(--primary)' }}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2.5}
-                    d="M5 13l4 4L19 7"
-                    style={{
-                      strokeDasharray: 24,
-                      strokeDashoffset: welcomeAnimating ? 0 : 24,
-                      transition: 'stroke-dashoffset 0.5s ease-out 0.2s',
-                    }}
-                  />
-                </svg>
-              </div>
-
-              <h2
-                className="text-xl font-bold"
-                style={{ color: 'var(--text-primary)', marginBottom: '8px' }}
-              >
-                {tWelcome('title')}
-              </h2>
-              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                {tWelcome('subtitle')}
-              </p>
-            </div>
-
-            {/* Content */}
-            <div style={{ padding: '0 24px 24px 24px' }}>
-              {/* Tip 1 */}
-              <div
-                className="rounded-xl"
-                style={{
-                  padding: '16px',
-                  backgroundColor: 'var(--primary-pale)',
-                  marginBottom: '12px',
-                }}
-              >
-                <div className="flex items-start gap-3">
-                  <div
-                    className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm"
-                    style={{ backgroundColor: 'var(--primary)', color: 'white' }}
-                  >
-                    ...
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm" style={{ color: 'var(--text-primary)', marginBottom: '4px' }}>
-                      {tWelcome('aiPowered.title')}
-                    </div>
-                    <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                      <span dangerouslySetInnerHTML={{ __html: tWelcome('aiPowered.description').replace('<code>', '<code class="font-semibold px-1 py-0.5 rounded" style="background-color: white; color: var(--primary)">') }} />
-                      <span style={{ color: 'var(--text-muted)', display: 'block', marginTop: '4px' }}>
-                        {tWelcome('aiPowered.example')}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Tip 2 */}
-              <div
-                className="rounded-xl"
-                style={{
-                  padding: '16px',
-                  backgroundColor: '#F8FAFC',
-                  marginBottom: '20px',
-                }}
-              >
-                <div className="flex items-start gap-3">
-                  <div
-                    className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
-                    style={{ backgroundColor: '#E2E8F0' }}
-                  >
-                    <svg className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm" style={{ color: 'var(--text-primary)', marginBottom: '4px' }}>
-                      {tWelcome('instantSharing.title')}
-                    </div>
-                    <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                      {tWelcome('instantSharing.description')}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* CTA Button */}
-              <button
-                onClick={dismissWelcome}
-                className="w-full font-semibold text-white rounded-xl transition-all duration-200 active:scale-[0.98]"
-                style={{
-                  backgroundColor: 'var(--primary)',
-                  padding: '14px 24px',
-                  fontSize: '15px',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-dark)'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
-              >
-                {tWelcome('gotIt')}
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Onboarding Walkthrough */}
+      {showOnboarding && (
+        <OnboardingWalkthrough
+          onComplete={handleOnboardingComplete}
+          t={(key: string) => tOnboarding(key)}
+          platform="web"
+        />
       )}
 
       {/* Privacy Policy Modal */}
@@ -1316,6 +1204,100 @@ export default function Home() {
           onClose={() => setEditingTemplate(null)}
         />
       )}
+
+      {/* Backup & Transfer Modal */}
+      <BackupTransferModal
+        isOpen={showBackupModal}
+        onClose={() => setShowBackupModal(false)}
+        lists={recentLists.map((list) => ({
+          id: list.id,
+          title: list.title,
+          themeColor: list.themeColor,
+          themeTextColor: list.themeTextColor,
+        }))}
+        templates={personalTemplates.map((template) => ({
+          id: template.id,
+          listId: template.listId,
+          title: template.title,
+          description: template.description,
+          category: template.category,
+          theme: template.theme,
+          itemCount: template.itemCount,
+        }))}
+        onImport={(listsToImport, templatesToImport) => {
+          // Import lists
+          for (const list of listsToImport) {
+            addList(list.id, list.title, list.themeColor);
+          }
+          // Import templates
+          for (const template of templatesToImport) {
+            addTemplate({
+              listId: template.listId,
+              title: template.title,
+              description: template.description,
+              category: template.category,
+              themeColor: template.theme?.primary || null,
+              theme: template.theme,
+              itemCount: template.itemCount,
+            });
+          }
+        }}
+        onClearAll={() => {
+          // Clear all local storage
+          localStorage.removeItem('listo_saved_lists');
+          localStorage.removeItem('listo_personal_templates');
+          window.location.reload();
+        }}
+        translations={{
+          exportTab: tBackup('exportTab'),
+          importTab: tBackup('importTab'),
+          exportHeroTitle: tBackup('exportHeroTitle'),
+          exportHeroSubtitle: tBackup('exportHeroSubtitle'),
+          importHeroTitle: tBackup('importHeroTitle'),
+          importHeroSubtitle: tBackup('importHeroSubtitle'),
+          selectedCount: tBackup('selectedCount'),
+          selectAll: tBackup('selectAll'),
+          deselectAll: tBackup('deselectAll'),
+          quickTransfer: tBackup('quickTransfer'),
+          quickTransferDescription: tBackup('quickTransferDescription'),
+          fullBackup: tBackup('fullBackup'),
+          fullBackupDescription: tBackup('fullBackupDescription'),
+          yourCode: tBackup('yourCode'),
+          scanOrEnter: tBackup('scanOrEnter'),
+          codePlaceholder: tBackup('codePlaceholder'),
+          preview: tBackup('preview'),
+          importing: tBackup('importing'),
+          importSelected: tBackup('importSelected'),
+          itemsToImport: tBackup('itemsToImport'),
+          alreadyHave: tBackup('alreadyHave'),
+          clearAllData: tBackup('clearAllData'),
+          clearConfirm: tBackup('clearConfirm'),
+          cleared: tBackup('cleared'),
+          codeExpired: tBackup('codeExpired'),
+          invalidBackup: tBackup('invalidBackup'),
+          importSuccess: tBackup('importSuccess'),
+          nothingToExport: tBackup('nothingToExport'),
+          lists: tBackup('lists'),
+          selectListsToShare: tBackup('selectListsToShare'),
+          templates: tBackup('templates'),
+          generating: tBackup('generating'),
+          codeCopied: tBackup('codeCopied'),
+          linkCopied: tBackup('linkCopied'),
+          expiresIn: tBackup('expiresIn'),
+          scanWithPhone: tBackup('scanWithPhone'),
+          orEnterCode: tBackup('orEnterCode'),
+          fetch: tBackup('fetch'),
+          fetching: tBackup('fetching'),
+          dangerZone: tBackup('dangerZone'),
+          clearAllDataDescription: tBackup('clearAllDataDescription'),
+          backupCreated: tBackup('backupCreated'),
+          backupCreatedHint: tBackup('backupCreatedHint'),
+          copyLink: tBackup('copyLink'),
+          emailToSelf: tBackup('emailToSelf'),
+          backupEmailSubject: tBackup('backupEmailSubject'),
+          backupEmailBody: tBackup('backupEmailBody'),
+        }}
+      />
     </div>
   );
 }

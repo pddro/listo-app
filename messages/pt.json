@@ -93,7 +93,8 @@
       "exportTodoist": "Exportar para Todoist",
       "csvSubtitle": "Arquivo CSV para importar em qualquer projeto do Todoist",
       "instruction": "Qualquer pessoa com este link pode ver e editar a lista em tempo real.",
-      "saveAsTemplate": "Save as Template"
+      "saveAsTemplate": "Save as Template",
+      "scanToOpen": "Escaneie para abrir em outro dispositivo"
     },
     "footer": {
       "createdWith": "Criado com List Mango",
@@ -355,6 +356,10 @@
     "Brilho vagalume"
   ],
   "onboarding": {
+    "welcome": {
+      "title": "Bem-vindo ao",
+      "description": "A forma mais simples de criar e compartilhar listas com qualquer pessoa, em qualquer lugar."
+    },
     "shareableLinks": {
       "title": "Compartilhe com qualquer pessoa",
       "description": "Envie o link da sua lista por qualquer app. Os destinatários podem ver e editar instantaneamente – sem precisar baixar nenhum app."
@@ -376,7 +381,10 @@
       "description": "Digite estilo: seguido de qualquer descrição para criar temas personalizados para suas listas e tela inicial."
     },
     "getStarted": "Começar",
-    "swipeHint": "Deslize para continuar"
+    "swipeHint": "Deslize para continuar",
+    "clickHint": "Continuar",
+    "next": "Próximo",
+    "skip": "Pular"
   },
   "welcome": {
     "title": "Bem-vindo ao List Mango!",
@@ -472,6 +480,59 @@
     "openWithTitle": "Abrir \"{title}\" no app",
     "openGeneric": "Abrir esta lista no app List Mango",
     "open": "ABRIR"
+  },
+  "backup": {
+    "deviceNotice": "Suas listas existem apenas neste dispositivo",
+    "backupAndTransfer": "Backup e Transferência",
+    "exportTab": "Exportar",
+    "importTab": "Importar",
+    "exportHeroTitle": "Mover listas para outro dispositivo",
+    "exportHeroSubtitle": "Sem contas. Basta escanear um código QR ou digitar um código curto no outro dispositivo.",
+    "importHeroTitle": "Trazer suas listas para cá",
+    "importHeroSubtitle": "Digite o código do seu outro dispositivo para copiar suas listas.",
+    "selectedCount": "%count% selecionados",
+    "selectAll": "Selecionar tudo",
+    "deselectAll": "Desmarcar tudo",
+    "quickTransfer": "Gerar Código QR",
+    "quickTransferDescription": "Escaneie para transferir • Expira em 24h",
+    "fullBackup": "Criar Backup Completo",
+    "fullBackupDescription": "Link permanente com todas as suas listas e modelos",
+    "yourCode": "Seu código",
+    "scanOrEnter": "Escaneie o código QR ou digite o código",
+    "codePlaceholder": "MANGO-XXXX ou cole o link de backup",
+    "preview": "Visualização",
+    "importing": "Importando...",
+    "importSelected": "Importar Selecionados",
+    "itemsToImport": "%count% itens para importar",
+    "importMangos": "Importar esses %count% Mangos Aqui",
+    "alreadyHave": "Já está neste dispositivo",
+    "clearAllData": "Apagar Todos os Dados",
+    "clearConfirm": "Isso removerá todas as listas e modelos deste dispositivo. As listas ainda existirão se você tiver os links.",
+    "cleared": "Todos os dados locais apagados",
+    "codeExpired": "Código expirado ou não encontrado",
+    "invalidBackup": "Dados de backup inválidos",
+    "importSuccess": "%count% itens importados",
+    "nothingToExport": "Nada para exportar",
+    "lists": "Listas",
+    "selectListsToShare": "Selecionar Listas para Compartilhar",
+    "selectListMangos": "Selecionar ListMangos para Importar",
+    "templates": "Modelos",
+    "generating": "Gerando...",
+    "codeCopied": "Código copiado!",
+    "linkCopied": "Link copiado!",
+    "expiresIn": "Expira em 24 horas",
+    "scanWithPhone": "Escaneie com seu celular",
+    "orEnterCode": "Ou digite o código manualmente",
+    "fetch": "Buscar",
+    "fetching": "Buscando...",
+    "dangerZone": "Zona de Perigo",
+    "clearAllDataDescription": "Remover todas as listas e modelos deste dispositivo",
+    "backupCreated": "Backup Criado",
+    "backupCreatedHint": "Guarde este link em um lugar seguro. Ele contém todas as suas listas e modelos.",
+    "copyLink": "Copiar Link",
+    "emailToSelf": "Enviar por Email",
+    "backupEmailSubject": "Meu Backup do ListMango",
+    "backupEmailBody": "Aqui está seu link de backup do ListMango. Guarde-o em segurança - você pode usá-lo a qualquer momento para restaurar suas listas."
   },
   "mobile": {
     "taglineShort": "Crie uma lista. Compartilhe o link.",

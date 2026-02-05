@@ -8,7 +8,46 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- **Unified Onboarding Walkthrough**
+  - Rich 5-page onboarding experience now shared between web and mobile
+  - Pages: Shareable links, Works everywhere, Dictation, AI-powered, Themes
+  - Web: Click/keyboard navigation with Skip option
+  - Mobile: Swipe navigation with gesture support
+  - Animated visual examples on each page (floating checkmarks, audio visualizer, etc.)
+  - Full i18n support with `clickHint` and `skip` translations in all 9 languages
+  - Single source of truth: `src/components/OnboardingWalkthrough.tsx`
+
+- **List Backups Feature**
+  - Backup and transfer lists/templates between devices without accounts
+  - Two backup types: Quick Transfer (24-hour code like `MANGO-7X2K`) and Full Backup (permanent encoded URL)
+  - Web: `/restore` page handles both code redemption and URL hash decoding
+  - Web: `BackupTransferModal` component with Export/Import tabs
+  - Mobile: `BackupModal` component with native share integration
+  - QR codes for easy transfer between devices (web uses `qrcode.react`)
+  - API endpoints: `POST /api/backup` (create code), `GET /api/backup/[code]` (redeem code)
+  - Database: `backup_codes` table with auto-expiry (24 hours) and cleanup function
+  - Danger Zone: Clear all local data option with confirmation
+  - Full i18n support in all 9 languages
+  - Deduplication: Items already on device are shown but cannot be re-imported
+
 ### Changed
+- **Share View Modernization**
+  - Redesigned share view with modern card-style UI matching backup modal
+  - Added QR code for scanning lists on other devices
+  - Share options now displayed as elegant icon buttons
+  - New `scanToOpen` translation in all 9 languages
+
+- **Backup Modal UX Improvements**
+  - Added hero section explaining the feature: "Move lists to another device - No accounts needed"
+  - Primary action (Generate QR Code) now has prominent card-style button
+  - Secondary action (Create Backup Link) moved below as subtle option
+  - Custom checkboxes matching app's design language (rounded-md, primary color fill)
+  - All hardcoded colors replaced with CSS variables for theme consistency
+  - Fixed bug where lists would reselect after ~3 seconds (useEffect dependency issue)
+  - Updated button copy: "Quick Transfer" → "Generate QR Code", "Full Backup" → "Create Backup Link"
+  - New i18n keys: exportHeroTitle, exportHeroSubtitle, importHeroTitle, importHeroSubtitle
+
 - **Rebranding: Listo → List Mango**
   - App name changed from "Listo" to "List Mango" across all platforms
   - Domain changed from listo.to to listmango.com

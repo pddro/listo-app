@@ -37,6 +37,14 @@ export const API = {
   transcribe: getEdgeFunctionUrl('transcribe'),
 } as const;
 
+// Web API routes (Next.js API routes, not edge functions)
+// Mobile apps need full URLs since they don't have a local server
+const WEB_API_BASE = 'https://listmango.com';
+
+export const WEB_API = {
+  backup: `${WEB_API_BASE}/api/backup`,
+} as const;
+
 // Get headers for Supabase edge function calls
 export const getSupabaseHeaders = (): Record<string, string> => {
   if (SUPABASE_ANON_KEY) {

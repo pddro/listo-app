@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect, ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Device } from '@capacitor/device';
+'use client';
+
+import { useState, useRef, useEffect, ReactNode, useCallback, useMemo } from 'react';
 
 interface OnboardingPageConfig {
   id: string;
@@ -10,55 +10,81 @@ interface OnboardingPageConfig {
   exampleContent?: ReactNode;
 }
 
-// Page configurations - easily add/remove pages here
-const ONBOARDING_PAGES: OnboardingPageConfig[] = [
+// Welcome page for web only
+const WELCOME_PAGE: OnboardingPageConfig = {
+  id: 'welcome',
+  icon: <WelcomeIcon />,
+  titleKey: 'welcome.title',
+  descriptionKey: 'welcome.description',
+};
+
+// Feature pages - shared between web and mobile
+// Keys are relative to the 'onboarding' namespace (no prefix needed)
+const FEATURE_PAGES: OnboardingPageConfig[] = [
   {
     id: 'shareable-links',
     icon: <LinkIcon />,
-    titleKey: 'onboarding.shareableLinks.title',
-    descriptionKey: 'onboarding.shareableLinks.description',
+    titleKey: 'shareableLinks.title',
+    descriptionKey: 'shareableLinks.description',
     exampleContent: <ShareableLinksVisual />,
   },
   {
     id: 'no-app-needed',
     icon: <GlobeIcon />,
-    titleKey: 'onboarding.noAppNeeded.title',
-    descriptionKey: 'onboarding.noAppNeeded.description',
+    titleKey: 'noAppNeeded.title',
+    descriptionKey: 'noAppNeeded.description',
     exampleContent: <MultiDeviceVisual />,
   },
   {
     id: 'dictation',
     icon: <MicrophoneIcon />,
-    titleKey: 'onboarding.dictation.title',
-    descriptionKey: 'onboarding.dictation.description',
+    titleKey: 'dictation.title',
+    descriptionKey: 'dictation.description',
     exampleContent: <DictationVisual />,
   },
   {
     id: 'ai-power',
     icon: <SparklesIcon />,
-    titleKey: 'onboarding.aiPower.title',
-    descriptionKey: 'onboarding.aiPower.description',
+    titleKey: 'aiPower.title',
+    descriptionKey: 'aiPower.description',
     exampleContent: <AICommandsVisual />,
   },
   {
     id: 'themes',
     icon: <PaletteIcon />,
-    titleKey: 'onboarding.themes.title',
-    descriptionKey: 'onboarding.themes.description',
+    titleKey: 'themes.title',
+    descriptionKey: 'themes.description',
     exampleContent: <ThemesVisual />,
   },
 ];
 
 interface OnboardingWalkthroughProps {
   onComplete: () => void;
+  t: (key: string) => string;
+  platform?: 'web' | 'ios' | 'android';
+  safeAreaTop?: string;
+  safeAreaBottom?: string;
 }
 
-export function OnboardingWalkthrough({ onComplete }: OnboardingWalkthroughProps) {
-  const { t } = useTranslation();
+export function OnboardingWalkthrough({
+  onComplete,
+  t,
+  platform = 'web',
+  safeAreaTop: customSafeAreaTop,
+  safeAreaBottom: customSafeAreaBottom,
+}: OnboardingWalkthroughProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwipeActive, setIsSwipeActive] = useState(false);
-  const [platform, setPlatform] = useState<'ios' | 'android' | 'web'>('web');
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Build pages array - web gets welcome page first, mobile skips it
+  const pages = useMemo(() => {
+    if (platform === 'web') {
+      return [WELCOME_PAGE, ...FEATURE_PAGES];
+    }
+    return FEATURE_PAGES;
+  }, [platform]);
 
   // Refs for touch tracking
   const touchStartX = useRef(0);
@@ -70,15 +96,47 @@ export function OnboardingWalkthrough({ onComplete }: OnboardingWalkthroughProps
   const DIRECTION_THRESHOLD = 5;
   const SWIPE_THRESHOLD = 0.25;
 
-  // Platform detection for safe areas
+  // Safe area defaults based on platform
+  const safeAreaTop = customSafeAreaTop ?? (platform === 'android' ? '36px' : platform === 'ios' ? 'env(safe-area-inset-top, 0px)' : '0px');
+  const safeAreaBottom = customSafeAreaBottom ?? (platform === 'android' ? '24px' : platform === 'ios' ? 'env(safe-area-inset-bottom, 0px)' : '0px');
+
+  // Animate in on mount
   useEffect(() => {
-    Device.getInfo().then(info => {
-      setPlatform(info.platform as 'ios' | 'android' | 'web');
-    });
+    const timer = setTimeout(() => setIsVisible(true), 50);
+    return () => clearTimeout(timer);
   }, []);
 
-  const safeAreaTop = platform === 'android' ? '36px' : 'env(safe-area-inset-top, 0px)';
-  const safeAreaBottom = platform === 'android' ? '24px' : 'env(safe-area-inset-bottom, 0px)';
+  // Keyboard navigation for web
+  useEffect(() => {
+    if (platform !== 'web') return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (currentPage < pages.length - 1) {
+          setCurrentPage(prev => prev + 1);
+        }
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (currentPage > 0) {
+          setCurrentPage(prev => prev - 1);
+        }
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (currentPage === pages.length - 1) {
+          handleComplete();
+        } else {
+          setCurrentPage(prev => prev + 1);
+        }
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        handleComplete();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [platform, currentPage]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     const touch = e.touches[0];
@@ -107,7 +165,7 @@ export function OnboardingWalkthrough({ onComplete }: OnboardingWalkthroughProps
     // Calculate offset with resistance at edges
     let offset = deltaX;
     const isAtStart = currentPage === 0 && deltaX > 0;
-    const isAtEnd = currentPage === ONBOARDING_PAGES.length - 1 && deltaX < 0;
+    const isAtEnd = currentPage === pages.length - 1 && deltaX < 0;
 
     if (isAtStart || isAtEnd) {
       offset = deltaX * 0.3; // Rubber-band resistance
@@ -124,7 +182,7 @@ export function OnboardingWalkthrough({ onComplete }: OnboardingWalkthroughProps
     const swipeRatio = Math.abs(swipeOffset) / screenWidth;
 
     if (swipeRatio > SWIPE_THRESHOLD) {
-      if (swipeOffset < 0 && currentPage < ONBOARDING_PAGES.length - 1) {
+      if (swipeOffset < 0 && currentPage < pages.length - 1) {
         setCurrentPage(prev => prev + 1);
       } else if (swipeOffset > 0 && currentPage > 0) {
         setCurrentPage(prev => prev - 1);
@@ -134,25 +192,33 @@ export function OnboardingWalkthrough({ onComplete }: OnboardingWalkthroughProps
     setSwipeOffset(0);
   };
 
-  const handleComplete = () => {
-    onComplete();
+  const handleComplete = useCallback(() => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onComplete();
+    }, 300);
+  }, [onComplete]);
+
+  const goToNextPage = () => {
+    if (currentPage < pages.length - 1) {
+      setCurrentPage(prev => prev + 1);
+    }
   };
 
-  const isLastPage = currentPage === ONBOARDING_PAGES.length - 1;
+  const isLastPage = currentPage === pages.length - 1;
 
   // Calculate transform for pages
   const pageTransform = `translateX(calc(-${currentPage * 100}% + ${swipeOffset}px))`;
 
-  return (
-    <div
-      className="fixed inset-0 z-50 overflow-hidden"
-      style={{ backgroundColor: 'var(--bg-primary)' }}
-    >
+  // Content shared between modal (web) and fullscreen (mobile)
+  const content = (
+    <>
       {/* Pages container */}
       <div
         ref={containerRef}
-        className="flex h-full"
+        className="flex"
         style={{
+          height: platform === 'web' ? '420px' : '100%',
           transform: pageTransform,
           transition: isSwipeActive ? 'none' : 'transform 0.3s ease-out',
         }}
@@ -160,13 +226,13 @@ export function OnboardingWalkthrough({ onComplete }: OnboardingWalkthroughProps
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {ONBOARDING_PAGES.map((page, index) => (
+        {pages.map((page) => (
           <div
             key={page.id}
             className="flex-shrink-0 w-full h-full flex flex-col items-center justify-center px-8"
             style={{
-              paddingTop: `calc(${safeAreaTop} + 40px)`,
-              paddingBottom: `calc(${safeAreaBottom} + 140px)`,
+              paddingTop: platform === 'web' ? '32px' : `calc(${safeAreaTop} + 40px)`,
+              paddingBottom: platform === 'web' ? '0' : `calc(${safeAreaBottom} + 140px)`,
             }}
           >
             {/* Icon */}
@@ -188,7 +254,14 @@ export function OnboardingWalkthrough({ onComplete }: OnboardingWalkthroughProps
                 lineHeight: 1.3,
               }}
             >
-              {t(page.titleKey)}
+              {page.id === 'welcome' ? (
+                <>
+                  {t(page.titleKey)}{t(page.titleKey) ? ' ' : ''}
+                  <span style={{ color: 'var(--primary)' }}>ListMango</span>
+                </>
+              ) : (
+                t(page.titleKey)
+              )}
             </h2>
 
             {/* Description */}
@@ -203,7 +276,7 @@ export function OnboardingWalkthrough({ onComplete }: OnboardingWalkthroughProps
               {t(page.descriptionKey)}
             </p>
 
-            {/* Example content - 16px spacing from description */}
+            {/* Example content */}
             {page.exampleContent && (
               <div className="w-full max-w-xs" style={{ marginTop: '16px' }}>
                 {page.exampleContent}
@@ -215,14 +288,15 @@ export function OnboardingWalkthrough({ onComplete }: OnboardingWalkthroughProps
 
       {/* Bottom section: indicators + button */}
       <div
-        className="absolute bottom-0 left-0 right-0 flex flex-col items-center"
+        className={platform === 'web' ? 'flex flex-col items-center' : 'absolute bottom-0 left-0 right-0 flex flex-col items-center'}
         style={{
-          paddingBottom: `calc(${safeAreaBottom} + 32px)`,
+          paddingBottom: platform === 'web' ? '24px' : `calc(${safeAreaBottom} + 32px)`,
+          paddingTop: platform === 'web' ? '16px' : '0',
         }}
       >
-        {/* Page indicators - raised higher to clear Get Started button */}
+        {/* Page indicators */}
         <div className="flex gap-2" style={{ marginBottom: isLastPage ? '20px' : '16px' }}>
-          {ONBOARDING_PAGES.map((_, index) => (
+          {pages.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentPage(index)}
@@ -262,31 +336,162 @@ export function OnboardingWalkthrough({ onComplete }: OnboardingWalkthroughProps
               animation: 'onboarding-button-fade-in 0.3s ease-out forwards',
             }}
           >
-            {t('onboarding.getStarted')}
+            {t('getStarted')}
           </button>
         )}
 
-        {/* Swipe hint on non-last pages */}
+        {/* Navigation hint on non-last pages */}
         {!isLastPage && (
-          <p
-            className="text-center"
-            style={{
-              fontSize: '14px',
-              color: 'var(--text-muted)',
-              minHeight: '44px',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            {t('onboarding.swipeHint')}
-          </p>
+          <div style={{ minHeight: '52px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {platform === 'web' ? (
+              // Next button for web - styled like Get Started
+              <button
+                onClick={goToNextPage}
+                className="active:opacity-60 transition-opacity flex items-center gap-2"
+                style={{
+                  minWidth: '200px',
+                  minHeight: '44px',
+                  padding: '16px 32px',
+                  borderRadius: '14px',
+                  backgroundColor: 'var(--primary)',
+                  color: 'white',
+                  fontSize: '17px',
+                  fontWeight: '600',
+                  border: 'none',
+                  justifyContent: 'center',
+                }}
+              >
+                {t('next') || 'Next'}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
+            ) : (
+              // Swipe hint for mobile
+              <p
+                className="text-center"
+                style={{
+                  fontSize: '14px',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                {t('swipeHint')}
+              </p>
+            )}
+          </div>
         )}
       </div>
+    </>
+  );
+
+  // Web: Modal with backdrop
+  if (platform === 'web') {
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{
+          backgroundColor: isVisible ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0)',
+          transition: 'background-color 0.3s ease-out',
+        }}
+      >
+        <div
+          className="relative bg-white rounded-2xl w-full max-w-md overflow-hidden"
+          style={{
+            transform: isVisible ? 'scale(1) translateY(0)' : 'scale(0.95) translateY(20px)',
+            opacity: isVisible ? 1 : 0,
+            transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-out',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          }}
+        >
+          {/* Skip button inside modal */}
+          <button
+            onClick={handleComplete}
+            className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-lg transition-colors"
+            style={{
+              color: 'var(--text-muted)',
+              backgroundColor: 'transparent',
+              fontSize: '14px',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          >
+            {t('skip') || 'Skip'}
+          </button>
+
+          {content}
+        </div>
+
+        {/* Keyframe animations */}
+        <style>{`
+          @keyframes onboarding-button-fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes floatRight {
+            0% { transform: translateX(-60px); opacity: 0; }
+            10% { opacity: 1; }
+            45% { transform: translateX(60px); opacity: 1; }
+            55% { transform: translateX(60px); opacity: 0; }
+            100% { transform: translateX(60px); opacity: 0; }
+          }
+          @keyframes floatLeft {
+            0% { transform: translateX(60px); opacity: 0; }
+            10% { opacity: 1; }
+            45% { transform: translateX(-60px); opacity: 1; }
+            55% { transform: translateX(-60px); opacity: 0; }
+            100% { transform: translateX(-60px); opacity: 0; }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Mobile: Fullscreen
+  return (
+    <div
+      className="fixed inset-0 z-50 overflow-hidden"
+      style={{
+        backgroundColor: 'var(--bg-primary)',
+        opacity: isVisible ? 1 : 0,
+        transition: 'opacity 0.3s ease-out',
+      }}
+    >
+      {content}
+
+      {/* Keyframe animations */}
+      <style>{`
+        @keyframes onboarding-button-fade-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes floatRight {
+          0% { transform: translateX(-60px); opacity: 0; }
+          10% { opacity: 1; }
+          45% { transform: translateX(60px); opacity: 1; }
+          55% { transform: translateX(60px); opacity: 0; }
+          100% { transform: translateX(60px); opacity: 0; }
+        }
+        @keyframes floatLeft {
+          0% { transform: translateX(60px); opacity: 0; }
+          10% { opacity: 1; }
+          45% { transform: translateX(-60px); opacity: 1; }
+          55% { transform: translateX(-60px); opacity: 0; }
+          100% { transform: translateX(-60px); opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 }
 
 // ============ Icon Components ============
+
+function WelcomeIcon() {
+  return (
+    <div style={{ fontSize: '80px', lineHeight: 1 }}>
+      🥭
+    </div>
+  );
+}
 
 function LinkIcon() {
   return (
@@ -388,32 +593,28 @@ function ShareableLinksVisual() {
           You
         </div>
 
-        {/* Floating checkmarks */}
+        {/* Floating mangos */}
         <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-          {/* Checkmark going right (you → others) */}
+          {/* Mango going right (you → others) */}
           <div
             className="absolute"
             style={{
               animation: 'floatRight 2.5s ease-in-out infinite',
-              color: 'var(--primary)',
+              fontSize: '20px',
             }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            🥭
           </div>
-          {/* Checkmark going left (others → you) */}
+          {/* Mango going left (others → you) */}
           <div
             className="absolute"
             style={{
               animation: 'floatLeft 2.5s ease-in-out infinite 1.25s',
-              color: 'var(--primary)',
+              fontSize: '20px',
               opacity: 0,
             }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            🥭
           </div>
         </div>
 
@@ -432,24 +633,6 @@ function ShareableLinksVisual() {
       <p className="text-center text-xs" style={{ color: 'var(--text-muted)', marginTop: '12px' }}>
         Real-time collaboration
       </p>
-
-      {/* Inline keyframes for floating checkmarks */}
-      <style>{`
-        @keyframes floatRight {
-          0% { transform: translateX(-60px); opacity: 0; }
-          10% { opacity: 1; }
-          45% { transform: translateX(60px); opacity: 1; }
-          55% { transform: translateX(60px); opacity: 0; }
-          100% { transform: translateX(60px); opacity: 0; }
-        }
-        @keyframes floatLeft {
-          0% { transform: translateX(60px); opacity: 0; }
-          10% { opacity: 1; }
-          45% { transform: translateX(-60px); opacity: 1; }
-          55% { transform: translateX(-60px); opacity: 0; }
-          100% { transform: translateX(-60px); opacity: 0; }
-        }
-      `}</style>
     </div>
   );
 }
