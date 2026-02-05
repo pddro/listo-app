@@ -24,12 +24,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Web: `/restore` page handles both code redemption and URL hash decoding
   - Web: `BackupTransferModal` component with Export/Import tabs
   - Mobile: `BackupModal` component with native share integration
-  - QR codes for easy transfer between devices (web uses `qrcode.react`)
+  - Mobile: QR code display in Quick Transfer result screen
+  - Mobile: Import hero section with "Bring your lists here" title
+  - Mobile: Full Backup option for permanent backup links
+  - Mobile: Backup & Transfer button always visible (not just when lists exist)
+  - QR codes for easy transfer between devices (web and mobile use `qrcode.react`)
   - API endpoints: `POST /api/backup` (create code), `GET /api/backup/[code]` (redeem code)
+  - API: CORS headers added for mobile app access
   - Database: `backup_codes` table with auto-expiry (24 hours) and cleanup function
   - Danger Zone: Clear all local data option with confirmation
   - Full i18n support in all 9 languages
   - Deduplication: Items already on device are shown but cannot be re-imported
+
+- **Mobile Share Sheet QR Code**
+  - QR code now displayed at top of share modal for easy list sharing
+  - "Scan to view this list" label in all 9 languages
 
 ### Changed
 - **Share View Modernization**
