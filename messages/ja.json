@@ -606,6 +606,7 @@
     "duplicateTemplate": "テンプレートを複製",
     "shareList": "リンクを共有",
     "shareListDescription": "誰にでもリストを送信",
+    "scanToView": "スキャンしてこのリストを表示",
     "saveAsTemplate": "テンプレートとして保存",
     "saveAsTemplateDescription": "このリストレイアウトを後で再利用"
   }

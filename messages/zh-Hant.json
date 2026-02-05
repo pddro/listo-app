@@ -607,6 +607,7 @@
     "duplicateTemplate": "複製範本",
     "shareList": "分享連結",
     "shareListDescription": "將清單傳送給任何人",
+    "scanToView": "掃描查看此清單",
     "saveAsTemplate": "儲存為範本",
     "saveAsTemplateDescription": "稍後重複使用此清單佈局"
   }

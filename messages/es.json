@@ -607,6 +607,7 @@
     "duplicateTemplate": "Duplicar plantilla",
     "shareList": "Compartir enlace",
     "shareListDescription": "Enviar la lista a cualquier persona",
+    "scanToView": "Escanea para ver esta lista",
     "saveAsTemplate": "Guardar como plantilla",
     "saveAsTemplateDescription": "Reutilizar este diseño de lista más tarde"
   }

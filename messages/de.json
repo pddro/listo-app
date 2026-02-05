@@ -607,6 +607,7 @@
     "duplicateTemplate": "Vorlage duplizieren",
     "shareList": "Link teilen",
     "shareListDescription": "Liste an beliebige Personen senden",
+    "scanToView": "Scannen um diese Liste anzuzeigen",
     "saveAsTemplate": "Als Vorlage speichern",
     "saveAsTemplateDescription": "Dieses Listenlayout später wiederverwenden"
   }

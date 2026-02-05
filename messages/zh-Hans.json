@@ -606,6 +606,7 @@
     "duplicateTemplate": "复制模板",
     "shareList": "分享链接",
     "shareListDescription": "将清单发送给任何人",
+    "scanToView": "扫描查看此清单",
     "saveAsTemplate": "保存为模板",
     "saveAsTemplateDescription": "稍后重复使用此清单布局"
   }

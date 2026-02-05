@@ -606,6 +606,7 @@
     "duplicateTemplate": "템플릿 복제",
     "shareList": "링크 공유",
     "shareListDescription": "누구에게나 리스트 보내기",
+    "scanToView": "스캔하여 이 리스트 보기",
     "saveAsTemplate": "템플릿으로 저장",
     "saveAsTemplateDescription": "나중에 이 리스트 레이아웃 재사용"
   }

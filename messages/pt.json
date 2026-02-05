@@ -606,6 +606,7 @@
     "duplicateTemplate": "Duplicar modelo",
     "shareList": "Compartilhar link",
     "shareListDescription": "Enviar a lista para qualquer pessoa",
+    "scanToView": "Escaneie para ver esta lista",
     "saveAsTemplate": "Salvar como modelo",
     "saveAsTemplateDescription": "Reutilizar este layout de lista depois"
   }

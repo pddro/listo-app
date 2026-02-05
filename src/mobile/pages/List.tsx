@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { QRCodeSVG } from 'qrcode.react';
 import { Preferences } from '@capacitor/preferences';
 import { Device } from '@capacitor/device';
 import { useList } from '@/lib/hooks/useList';
@@ -1110,6 +1111,27 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
             {/* Handle */}
             <div style={{ display: 'flex', justifyContent: 'center', padding: '12px' }}>
               <div style={{ width: '36px', height: '4px', backgroundColor: 'var(--border-medium)', borderRadius: '2px' }} />
+            </div>
+
+            {/* QR Code */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '8px 16px 20px' }}>
+              <div
+                style={{
+                  padding: '16px',
+                  backgroundColor: 'white',
+                  borderRadius: '16px',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                }}
+              >
+                <QRCodeSVG
+                  value={`https://listmango.com/${listId}`}
+                  size={140}
+                  level="M"
+                />
+              </div>
+              <p style={{ marginTop: '12px', fontSize: '13px', color: 'var(--text-muted)', textAlign: 'center' }}>
+                {t('mobile.scanToView')}
+              </p>
             </div>
 
             {/* Options */}
