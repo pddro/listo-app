@@ -64,13 +64,19 @@ export function BackupModal({
   const existingListIds = new Set(lists.map((l) => l.id));
   const existingTemplateIds = new Set(templates.map((t) => t.id));
 
-  // Select all by default when modal opens
+  // Track if we've initialized selection for this modal open
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  // Select all by default when modal opens, but only once per open
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !hasInitialized) {
       setSelectedLists(new Set(lists.map((l) => l.id)));
       setSelectedTemplates(new Set(templates.map((t) => t.id)));
+      setHasInitialized(true);
+    } else if (!isOpen) {
+      setHasInitialized(false);
     }
-  }, [isOpen, lists, templates]);
+  }, [isOpen, lists, templates, hasInitialized]);
 
   const handleClose = () => {
     onClose();

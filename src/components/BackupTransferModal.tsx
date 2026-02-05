@@ -43,6 +43,7 @@ interface BackupTransferModalProps {
     importSuccess: string;
     nothingToExport: string;
     lists: string;
+    selectListsToShare: string;
     templates: string;
     generating: string;
     codeCopied: string;
@@ -54,11 +55,35 @@ interface BackupTransferModalProps {
     fetching: string;
     dangerZone: string;
     clearAllDataDescription: string;
+    // New translations for improved UX
+    exportHeroTitle: string;
+    exportHeroSubtitle: string;
+    importHeroTitle: string;
+    importHeroSubtitle: string;
+    selectedCount: string;
+    // Full backup translations
+    backupCreated: string;
+    backupCreatedHint: string;
+    copyLink: string;
+    emailToSelf: string;
+    backupEmailSubject: string;
+    backupEmailBody: string;
   };
 }
 
 type Tab = 'export' | 'import';
 type ExportMode = 'idle' | 'generating' | 'quickCode' | 'fullBackup';
+
+// Custom checkbox component matching app style
+function Checkbox({ checked }: { checked: boolean }) {
+  return (
+    <div className={`backup-checkbox ${checked ? 'checked' : ''}`}>
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
+  );
+}
 
 export default function BackupTransferModal({
   isOpen,
@@ -102,20 +127,27 @@ export default function BackupTransferModal({
   const existingListIds = new Set(lists.map((l) => l.id));
   const existingTemplateIds = new Set(templates.map((t) => t.id));
 
+  // Track if we've initialized selection for this modal open
+  const [hasInitialized, setHasInitialized] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
       setIsAnimating(true);
       document.body.style.overflow = 'hidden';
-      // Select all by default
-      setSelectedLists(new Set(lists.map((l) => l.id)));
-      setSelectedTemplates(new Set(templates.map((t) => t.id)));
+      // Select all by default, but only on first open
+      if (!hasInitialized) {
+        setSelectedLists(new Set(lists.map((l) => l.id)));
+        setSelectedTemplates(new Set(templates.map((t) => t.id)));
+        setHasInitialized(true);
+      }
     } else {
       document.body.style.overflow = '';
+      setHasInitialized(false);
     }
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isOpen, lists, templates]);
+  }, [isOpen, lists, templates, hasInitialized]);
 
   const handleClose = () => {
     setIsAnimating(false);
@@ -205,10 +237,10 @@ export default function BackupTransferModal({
   };
 
   const handleFullBackup = () => {
-    const { lists: selLists, templates: selTemplates } = getSelectedData();
-    if (selLists.length === 0 && selTemplates.length === 0) return;
+    // Full backup always includes ALL lists and templates, regardless of selection
+    if (lists.length === 0 && templates.length === 0) return;
 
-    const payload = createBackupPayload(selLists, selTemplates);
+    const payload = createBackupPayload(lists, templates);
     const url = window.location.origin + generateBackupUrl(payload);
     setFullBackupUrl(url);
     setExportMode('fullBackup');
@@ -313,6 +345,7 @@ export default function BackupTransferModal({
 
   const hasItemsToExport = lists.length > 0 || templates.length > 0;
   const hasSelection = selectedLists.size > 0 || selectedTemplates.size > 0;
+  const totalSelected = selectedLists.size + selectedTemplates.size;
 
   return (
     <div
@@ -352,26 +385,47 @@ export default function BackupTransferModal({
                     <p className="backup-empty">{t.nothingToExport}</p>
                   ) : (
                     <>
+                      {/* Primary action - Quick Transfer */}
+                      <button
+                        className="backup-primary-action"
+                        onClick={handleQuickTransfer}
+                        disabled={!hasSelection}
+                      >
+                        <div className="backup-primary-action-content">
+                          <div className="backup-primary-action-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                            </svg>
+                          </div>
+                          <div className="backup-primary-action-text">
+                            <div className="backup-primary-action-title">{t.quickTransfer}</div>
+                            <div className="backup-primary-action-desc">{t.quickTransferDescription}</div>
+                          </div>
+                          <div className="backup-primary-action-arrow">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
+                        </div>
+                      </button>
+
                       {/* Lists section */}
                       {lists.length > 0 && (
-                        <div className="backup-section">
-                          <div className="backup-section-header">
-                            <span className="backup-section-title">{t.lists}</span>
-                            <button
-                              className="backup-select-all"
-                              onClick={toggleAllLists}
-                            >
+                        <>
+                          <div className="backup-selection-header">
+                            <span className="backup-selection-label">{t.selectListsToShare}</span>
+                            <button className="backup-select-toggle" onClick={toggleAllLists}>
                               {selectedLists.size === lists.length ? t.deselectAll : t.selectAll}
                             </button>
                           </div>
                           <div className="backup-item-list">
                             {lists.map((list) => (
-                              <label key={list.id} className="backup-item">
-                                <input
-                                  type="checkbox"
-                                  checked={selectedLists.has(list.id)}
-                                  onChange={() => toggleList(list.id)}
-                                />
+                              <div
+                                key={list.id}
+                                className="backup-item"
+                                onClick={() => toggleList(list.id)}
+                              >
+                                <Checkbox checked={selectedLists.has(list.id)} />
                                 <span
                                   className="backup-item-color"
                                   style={{ backgroundColor: list.themeColor || '#E75F3E' }}
@@ -379,66 +433,61 @@ export default function BackupTransferModal({
                                 <span className="backup-item-title">
                                   {list.title || 'Untitled List'}
                                 </span>
-                              </label>
+                              </div>
                             ))}
                           </div>
-                        </div>
+                        </>
                       )}
 
                       {/* Templates section */}
                       {templates.length > 0 && (
-                        <div className="backup-section">
-                          <div className="backup-section-header">
-                            <span className="backup-section-title">{t.templates}</span>
-                            <button
-                              className="backup-select-all"
-                              onClick={toggleAllTemplates}
-                            >
-                              {selectedTemplates.size === templates.length
-                                ? t.deselectAll
-                                : t.selectAll}
+                        <>
+                          <div className="backup-selection-header">
+                            <span className="backup-selection-label">{t.templates}</span>
+                            <button className="backup-select-toggle" onClick={toggleAllTemplates}>
+                              {selectedTemplates.size === templates.length ? t.deselectAll : t.selectAll}
                             </button>
                           </div>
                           <div className="backup-item-list">
                             {templates.map((template) => (
-                              <label key={template.id} className="backup-item">
-                                <input
-                                  type="checkbox"
-                                  checked={selectedTemplates.has(template.id)}
-                                  onChange={() => toggleTemplate(template.id)}
-                                />
+                              <div
+                                key={template.id}
+                                className="backup-item"
+                                onClick={() => toggleTemplate(template.id)}
+                              >
+                                <Checkbox checked={selectedTemplates.has(template.id)} />
                                 <span
                                   className="backup-item-color"
-                                  style={{
-                                    backgroundColor: template.theme?.primary || '#E75F3E',
-                                  }}
+                                  style={{ backgroundColor: template.theme?.primary || '#E75F3E' }}
                                 />
                                 <span className="backup-item-title">{template.title}</span>
-                              </label>
+                              </div>
                             ))}
                           </div>
-                        </div>
+                        </>
                       )}
 
-                      {/* Export buttons */}
-                      <div className="backup-buttons">
-                        <button
-                          className="backup-button primary"
-                          onClick={handleQuickTransfer}
-                          disabled={!hasSelection}
-                        >
-                          <span className="backup-button-title">{t.quickTransfer}</span>
-                          <span className="backup-button-desc">{t.quickTransferDescription}</span>
-                        </button>
-                        <button
-                          className="backup-button secondary"
-                          onClick={handleFullBackup}
-                          disabled={!hasSelection}
-                        >
-                          <span className="backup-button-title">{t.fullBackup}</span>
-                          <span className="backup-button-desc">{t.fullBackupDescription}</span>
-                        </button>
-                      </div>
+                      {/* Secondary action - Full Backup */}
+                      <button
+                        className="backup-secondary-action"
+                        onClick={handleFullBackup}
+                        disabled={!hasSelection}
+                      >
+                        <div className="backup-secondary-action-icon">
+                          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                          </svg>
+                        </div>
+                        <div className="backup-secondary-action-text">
+                          <span className="backup-secondary-action-title">{t.fullBackup}</span>
+                          <span className="backup-secondary-action-desc">{t.fullBackupDescription}</span>
+                        </div>
+                        <div className="backup-secondary-action-arrow">
+                          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </button>
                     </>
                   )}
                 </>
@@ -483,10 +532,14 @@ export default function BackupTransferModal({
 
               {exportMode === 'fullBackup' && fullBackupUrl && (
                 <div className="backup-result">
-                  <div className="backup-qr">
-                    <QRCodeSVG value={fullBackupUrl} size={160} level="L" />
+                  <div className="backup-vault-icon">
+                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
                   </div>
-                  <p className="backup-hint">{t.scanWithPhone}</p>
+                  <h3 className="backup-result-title">{t.backupCreated}</h3>
+                  <p className="backup-result-hint">{t.backupCreatedHint}</p>
+
                   <div className="backup-url-container">
                     <input
                       type="text"
@@ -494,13 +547,30 @@ export default function BackupTransferModal({
                       value={fullBackupUrl}
                       className="backup-url"
                     />
+                  </div>
+
+                  <div className="backup-action-buttons">
                     <button
-                      className="backup-copy"
+                      className="backup-action-button primary"
                       onClick={() => copyToClipboard(fullBackupUrl, 'link')}
                     >
-                      {copied === 'link' ? t.linkCopied : 'Copy'}
+                      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" strokeWidth={2} />
+                        <path strokeWidth={2} d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                      </svg>
+                      {copied === 'link' ? t.linkCopied : t.copyLink}
                     </button>
+                    <a
+                      href={`mailto:?subject=${encodeURIComponent(t.backupEmailSubject)}&body=${encodeURIComponent(t.backupEmailBody + '\n\n' + fullBackupUrl)}`}
+                      className="backup-action-button secondary"
+                    >
+                      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      {t.emailToSelf}
+                    </a>
                   </div>
+
                   <button
                     className="backup-back"
                     onClick={() => setExportMode('idle')}
@@ -526,7 +596,17 @@ export default function BackupTransferModal({
                 </div>
               ) : !importPreview ? (
                 <>
-                  <p className="backup-instruction">{t.scanOrEnter}</p>
+                  {/* Hero section for import */}
+                  <div className="backup-hero">
+                    <div className="backup-hero-icon">
+                      <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                      </svg>
+                    </div>
+                    <h2 className="backup-hero-title">{t.importHeroTitle}</h2>
+                    <p className="backup-hero-subtitle">{t.importHeroSubtitle}</p>
+                  </div>
+
                   <div className="backup-input-group">
                     <input
                       type="text"
@@ -554,32 +634,29 @@ export default function BackupTransferModal({
 
                   {/* Preview lists */}
                   {importPreview.lists.length > 0 && (
-                    <div className="backup-section">
-                      <div className="backup-section-header">
-                        <span className="backup-section-title">{t.lists}</span>
+                    <>
+                      <div className="backup-selection-header">
+                        <span className="backup-selection-label">{t.lists}</span>
                       </div>
                       <div className="backup-item-list">
                         {importPreview.lists.map((list) => {
                           const alreadyExists = existingListIds.has(list.id);
                           return (
-                            <label
+                            <div
                               key={list.id}
                               className={`backup-item ${alreadyExists ? 'disabled' : ''}`}
+                              onClick={() => {
+                                if (alreadyExists) return;
+                                const newSet = new Set(selectedImportLists);
+                                if (newSet.has(list.id)) {
+                                  newSet.delete(list.id);
+                                } else {
+                                  newSet.add(list.id);
+                                }
+                                setSelectedImportLists(newSet);
+                              }}
                             >
-                              <input
-                                type="checkbox"
-                                checked={selectedImportLists.has(list.id)}
-                                onChange={() => {
-                                  const newSet = new Set(selectedImportLists);
-                                  if (newSet.has(list.id)) {
-                                    newSet.delete(list.id);
-                                  } else {
-                                    newSet.add(list.id);
-                                  }
-                                  setSelectedImportLists(newSet);
-                                }}
-                                disabled={alreadyExists}
-                              />
+                              <Checkbox checked={selectedImportLists.has(list.id)} />
                               <span
                                 className="backup-item-color"
                                 style={{ backgroundColor: list.themeColor || '#E75F3E' }}
@@ -590,61 +667,56 @@ export default function BackupTransferModal({
                               {alreadyExists && (
                                 <span className="backup-item-badge">{t.alreadyHave}</span>
                               )}
-                            </label>
+                            </div>
                           );
                         })}
                       </div>
-                    </div>
+                    </>
                   )}
 
                   {/* Preview templates */}
                   {importPreview.templates.length > 0 && (
-                    <div className="backup-section">
-                      <div className="backup-section-header">
-                        <span className="backup-section-title">{t.templates}</span>
+                    <>
+                      <div className="backup-selection-header">
+                        <span className="backup-selection-label">{t.templates}</span>
                       </div>
                       <div className="backup-item-list">
                         {importPreview.templates.map((template) => {
                           const alreadyExists = existingTemplateIds.has(template.id);
                           return (
-                            <label
+                            <div
                               key={template.id}
                               className={`backup-item ${alreadyExists ? 'disabled' : ''}`}
+                              onClick={() => {
+                                if (alreadyExists) return;
+                                const newSet = new Set(selectedImportTemplates);
+                                if (newSet.has(template.id)) {
+                                  newSet.delete(template.id);
+                                } else {
+                                  newSet.add(template.id);
+                                }
+                                setSelectedImportTemplates(newSet);
+                              }}
                             >
-                              <input
-                                type="checkbox"
-                                checked={selectedImportTemplates.has(template.id)}
-                                onChange={() => {
-                                  const newSet = new Set(selectedImportTemplates);
-                                  if (newSet.has(template.id)) {
-                                    newSet.delete(template.id);
-                                  } else {
-                                    newSet.add(template.id);
-                                  }
-                                  setSelectedImportTemplates(newSet);
-                                }}
-                                disabled={alreadyExists}
-                              />
+                              <Checkbox checked={selectedImportTemplates.has(template.id)} />
                               <span
                                 className="backup-item-color"
-                                style={{
-                                  backgroundColor: template.theme?.primary || '#E75F3E',
-                                }}
+                                style={{ backgroundColor: template.theme?.primary || '#E75F3E' }}
                               />
                               <span className="backup-item-title">{template.title}</span>
                               {alreadyExists && (
                                 <span className="backup-item-badge">{t.alreadyHave}</span>
                               )}
-                            </label>
+                            </div>
                           );
                         })}
                       </div>
-                    </div>
+                    </>
                   )}
 
-                  <div className="backup-buttons">
+                  <div className="backup-import-buttons">
                     <button
-                      className="backup-button primary"
+                      className="backup-import-button primary"
                       onClick={handleImport}
                       disabled={
                         isImporting ||
@@ -659,7 +731,7 @@ export default function BackupTransferModal({
                           )}
                     </button>
                     <button
-                      className="backup-button secondary"
+                      className="backup-import-button secondary"
                       onClick={() => {
                         setImportPreview(null);
                         setImportInput('');

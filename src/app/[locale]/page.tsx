@@ -1047,22 +1047,27 @@ export default function Home() {
           </div>
         )}
 
-        {/* Backup & Transfer section - only show if user has lists or templates */}
+        {/* Backup & Share section - only show if user has lists or templates */}
         {(recentLists.length > 0 || personalTemplates.length > 0) && (
-          <div style={{ marginTop: '24px', textAlign: 'center' }}>
-            <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '12px' }}>
-              {tBackup('deviceNotice')}
-            </p>
+          <div style={{ marginTop: '24px' }}>
             <button
               onClick={() => setShowBackupModal(true)}
-              className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-[var(--primary)]"
-              style={{ color: 'var(--text-secondary)' }}
+              className="w-full flex items-center justify-center gap-3 rounded-xl font-medium transition-all duration-200 hover:bg-[var(--bg-hover)] hover:border-[var(--border-medium)] active:scale-[0.98] cursor-pointer"
+              style={{
+                padding: '14px 20px',
+                backgroundColor: 'var(--bg-secondary)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border-light)',
+              }}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+              <svg className="w-5 h-5" style={{ color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
               </svg>
               {tBackup('backupAndTransfer')}
             </button>
+            <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '8px', textAlign: 'center' }}>
+              {tBackup('deviceNotice')}
+            </p>
           </div>
         )}
 
@@ -1386,6 +1391,11 @@ export default function Home() {
         translations={{
           exportTab: tBackup('exportTab'),
           importTab: tBackup('importTab'),
+          exportHeroTitle: tBackup('exportHeroTitle'),
+          exportHeroSubtitle: tBackup('exportHeroSubtitle'),
+          importHeroTitle: tBackup('importHeroTitle'),
+          importHeroSubtitle: tBackup('importHeroSubtitle'),
+          selectedCount: tBackup('selectedCount'),
           selectAll: tBackup('selectAll'),
           deselectAll: tBackup('deselectAll'),
           quickTransfer: tBackup('quickTransfer'),
@@ -1408,6 +1418,7 @@ export default function Home() {
           importSuccess: tBackup('importSuccess'),
           nothingToExport: tBackup('nothingToExport'),
           lists: tBackup('lists'),
+          selectListsToShare: tBackup('selectListsToShare'),
           templates: tBackup('templates'),
           generating: tBackup('generating'),
           codeCopied: tBackup('codeCopied'),
@@ -1419,6 +1430,12 @@ export default function Home() {
           fetching: tBackup('fetching'),
           dangerZone: tBackup('dangerZone'),
           clearAllDataDescription: tBackup('clearAllDataDescription'),
+          backupCreated: tBackup('backupCreated'),
+          backupCreatedHint: tBackup('backupCreatedHint'),
+          copyLink: tBackup('copyLink'),
+          emailToSelf: tBackup('emailToSelf'),
+          backupEmailSubject: tBackup('backupEmailSubject'),
+          backupEmailBody: tBackup('backupEmailBody'),
         }}
       />
     </div>
