@@ -941,6 +941,51 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
               {t('footer.createdWith')}
             </div>
 
+            {/* App download strip */}
+            <div
+              className="flex flex-col items-center gap-3 rounded-xl"
+              style={{
+                padding: '16px 20px',
+                backgroundColor: 'var(--bg-secondary)',
+                border: '1px solid var(--border-light)',
+                marginBottom: '16px',
+              }}
+            >
+              <div className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
+                {t('footer.getApp')}
+              </div>
+              <div className="flex items-center gap-3">
+                {/* App Store badge */}
+                <a
+                  href="https://apps.apple.com/app/list-mango/id6758048013"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-opacity hover:opacity-80 active:opacity-60"
+                >
+                  <svg width="120" height="40" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="120" height="40" rx="6" fill="black" />
+                    <text x="60" y="14" textAnchor="middle" fill="white" fontSize="7" fontFamily="system-ui, -apple-system, sans-serif">Download on the</text>
+                    <text x="60" y="28" textAnchor="middle" fill="white" fontSize="13" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">App Store</text>
+                  </svg>
+                </a>
+                {/* Google Play - Coming Soon */}
+                <div
+                  className="flex items-center justify-center rounded-md"
+                  style={{
+                    width: '120px',
+                    height: '40px',
+                    backgroundColor: 'var(--bg-hover)',
+                    border: '1px solid var(--border-medium)',
+                    opacity: 0.6,
+                  }}
+                >
+                  <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+                    {t('footer.playStoreComingSoon')}
+                  </span>
+                </div>
+              </div>
+            </div>
+
             <div className="flex items-center justify-center gap-4">
               <a
                 href="/"

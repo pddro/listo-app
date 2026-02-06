@@ -15,8 +15,28 @@
     },
     "buttons": {
       "create": "Create",
+      "newList": "New List",
+      "createList": "Create List",
+      "addItems": "Add {count} items",
+      "generate": "Generate",
       "restore": "Restore",
       "archived": "Archived"
+    },
+    "differentiators": {
+      "noAccount": "No accounts. Ever.",
+      "noAccountDesc": "Not for you, not for anyone you share with",
+      "shareLink": "Share a link, they're in",
+      "shareLinkDesc": "Anyone can view and edit in real-time",
+      "everywhere": "Web, iOS & Android",
+      "everywhereDesc": "Free apps that sync instantly",
+      "ai": "AI does the heavy lifting",
+      "aiDesc": "Generate entire lists by describing what you need"
+    },
+    "quickStart": {
+      "title": "Your first list is one tap away",
+      "grocery": "Grocery List",
+      "packing": "Packing List",
+      "todo": "To-Do List"
     },
     "placeholders": [
       "groceries for tacos",
@@ -99,7 +119,10 @@
     "footer": {
       "createdWith": "Created with List Mango",
       "home": "Home",
-      "newList": "New List"
+      "newList": "New List",
+      "getApp": "Get the free app — no account needed",
+      "appStore": "Download on the App Store",
+      "playStoreComingSoon": "Android coming soon"
     },
     "backToList": "Back to list",
     "shareHint": "Share the list to collaborate in real-time",
@@ -443,7 +466,10 @@
     "appName": "List Mango",
     "openWithTitle": "Open \"{title}\" in the app",
     "openGeneric": "Open this list in the List Mango app",
-    "open": "OPEN"
+    "open": "OPEN",
+    "continueInApp": "Continue on the free app — syncs automatically",
+    "getApp": "GET",
+    "comingSoon": "Coming soon to Android"
   },
   "onboarding": {
     "welcome": {

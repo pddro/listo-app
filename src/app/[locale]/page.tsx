@@ -108,6 +108,7 @@ export default function Home() {
   const [showArchived, setShowArchived] = useState(false);
   const [copiedListId, setCopiedListId] = useState<string | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
   const router = useRouter();
   const { generateItems, processDictation } = useAI();
   const { lists: recentLists, archivedLists, isLoading: listsLoading, addList, updateList, archiveList, restoreList } = useRecentListsWeb();
@@ -143,22 +144,19 @@ export default function Home() {
     fetchTemplateCount();
   }, [locale]);
 
-  // Show onboarding for first-time visitors
+  // Show inline differentiators for first-time visitors (instead of blocking modal)
   useEffect(() => {
-    // Skip onboarding for search engine bots (SEO)
     const isBot = /bot|crawl|spider|google|bing|yandex|baidu|duckduck/i.test(navigator.userAgent);
     const hasSeenOnboarding = localStorage.getItem('listo_has_seen_welcome');
 
     if (!hasSeenOnboarding && !isBot) {
-      // Small delay for smoother experience
-      setTimeout(() => {
-        setShowOnboarding(true);
-      }, 300);
+      setIsFirstVisit(true);
     }
   }, []);
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
+    setIsFirstVisit(false);
     localStorage.setItem('listo_has_seen_welcome', 'true');
   };
 
@@ -384,9 +382,9 @@ export default function Home() {
     const normalized = normalizeInput(value);
     const trimmed = normalized.trim();
 
-    // AI mode: starts with ...
-    if (trimmed.startsWith('...')) {
-      const prompt = trimmed.slice(3).trim();
+    // AI mode: starts with . or ... (single period is the new shorthand)
+    if (trimmed.startsWith('.') && !trimmed.startsWith('..') || trimmed.startsWith('...')) {
+      const prompt = trimmed.replace(/^\.+/, '').trim();
       return {
         mode: 'ai' as InputMode,
         itemCount: 0,
@@ -464,9 +462,10 @@ export default function Home() {
       let itemsToAdd: string[] = [];
       let categorizedItems: ManipulatedItem[] | null = null;
 
-      // AI mode: ... prefix or Ctrl+Enter
-      if (forceAI || inputWithoutTheme.startsWith('...')) {
-        const prompt = inputWithoutTheme.startsWith('...') ? inputWithoutTheme.slice(3).trim() : inputWithoutTheme;
+      // AI mode: . or ... prefix, or Ctrl+Enter
+      const isAIPrefix = inputWithoutTheme.startsWith('...') || (inputWithoutTheme.startsWith('.') && !inputWithoutTheme.startsWith('..'));
+      if (forceAI || isAIPrefix) {
+        const prompt = isAIPrefix ? inputWithoutTheme.replace(/^\.+/, '').trim() : inputWithoutTheme;
         if (prompt) {
           const result = await generateItems(prompt);
           if (isCategorizedResult(result)) {
@@ -556,6 +555,11 @@ export default function Home() {
           // Theme generation failed, but continue - list is still created
           console.error('Theme generation failed:', themeErr);
         }
+      }
+
+      // Mark onboarding as seen on first list creation
+      if (isFirstVisit) {
+        localStorage.setItem('listo_has_seen_welcome', 'true');
       }
 
       // Navigate to the new list
@@ -762,22 +766,22 @@ export default function Home() {
             >
               {isCreating ? (
                 <span className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : mode === 'ai' && value.trim().length > 3 ? (
+                <span className="flex items-center gap-1">
+                  <SparklesIcon />
+                  {t('buttons.generate')}
+                </span>
+              ) : mode === 'multiple' ? (
+                t('buttons.addItems', { count: itemCount })
+              ) : value.trim() ? (
+                t('buttons.createList')
               ) : (
-                t('buttons.create')
+                t('buttons.newList')
               )}
             </button>
           </div>
 
-          {/* Mode indicator badge */}
-          {displayText && !isCreating && (
-            <div
-              className="absolute left-0 flex items-center gap-1 text-xs text-white bg-[var(--primary)] px-2 py-0.5 rounded-sm"
-              style={{ top: 'calc(100% + 4px)' }}
-            >
-              <SparklesIcon />
-              {displayText}
-            </div>
-          )}
+          {/* Mode indicator badge - removed, button text now conveys this */}
 
           {/* Processing indicator */}
           {isCreating && mode === 'ai' && (
@@ -810,6 +814,58 @@ export default function Home() {
           />
         </div>
 
+        {/* Inline differentiators for first-time visitors */}
+        {isFirstVisit && (
+          <div
+            className="grid grid-cols-2 gap-3 text-left"
+            style={{ marginTop: '24px' }}
+          >
+            <div
+              className="rounded-xl"
+              style={{ padding: '12px 14px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-light)' }}
+            >
+              <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                {t('differentiators.noAccount')}
+              </div>
+              <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
+                {t('differentiators.noAccountDesc')}
+              </div>
+            </div>
+            <div
+              className="rounded-xl"
+              style={{ padding: '12px 14px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-light)' }}
+            >
+              <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                {t('differentiators.shareLink')}
+              </div>
+              <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
+                {t('differentiators.shareLinkDesc')}
+              </div>
+            </div>
+            <div
+              className="rounded-xl"
+              style={{ padding: '12px 14px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-light)' }}
+            >
+              <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                {t('differentiators.everywhere')}
+              </div>
+              <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
+                {t('differentiators.everywhereDesc')}
+              </div>
+            </div>
+            <div
+              className="rounded-xl"
+              style={{ padding: '12px 14px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-light)' }}
+            >
+              <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                {t('differentiators.ai')}
+              </div>
+              <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
+                {t('differentiators.aiDesc')}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Your Lists */}
         <div style={{ marginTop: '32px' }}>
@@ -817,29 +873,44 @@ export default function Home() {
             {t('recentLists')}
           </div>
 
-          {/* Tutorial List for New Users - styled exactly like a regular list */}
+          {/* Quick-start chips for new users */}
           {!listsLoading && recentLists.length === 0 && !isCreating && (
-            <div className="space-y-2">
-              <div
-                className="flex items-center gap-4 py-4 px-4 rounded-xl cursor-pointer active:bg-gray-100 hover:bg-gray-50 transition-colors"
-                style={{ border: '1px solid var(--border-light)', paddingRight: '16px' }}
-                onClick={createTutorialList}
-              >
-                {/* Progress badge */}
-                <div
-                  className="flex-shrink-0 rounded-lg font-semibold text-sm flex items-center justify-center"
-                  style={{
-                    width: '56px',
-                    height: '56px',
-                    backgroundColor: tutorialList.theme.primary,
-                    color: 'white',
-                  }}
-                >
-                  0/{tutorialList.items.filter(i => !i.content.startsWith('#')).length}
-                </div>
-                <span className="flex-1 text-base text-left truncate font-medium" style={{ color: 'var(--text-primary)' }}>
-                  {tutorialList.title}
-                </span>
+            <div className="space-y-3">
+              <p className="text-sm text-left" style={{ color: 'var(--text-muted)' }}>
+                {t('quickStart.title')}
+              </p>
+              <div className="flex gap-2 flex-wrap">
+                {[
+                  { label: t('quickStart.grocery'), prompt: '.weekly grocery essentials' },
+                  { label: t('quickStart.packing'), prompt: '.packing list for a weekend trip' },
+                  { label: t('quickStart.todo'), prompt: '.things to do this week' },
+                ].map((chip) => (
+                  <button
+                    key={chip.label}
+                    onClick={() => {
+                      setValue(chip.prompt);
+                      // Auto-submit after a brief moment so user sees what happened
+                      setTimeout(() => handleCreate(true), 150);
+                    }}
+                    className="text-sm font-medium rounded-full transition-all duration-200 active:scale-95 cursor-pointer"
+                    style={{
+                      padding: '8px 16px',
+                      backgroundColor: 'var(--primary-pale)',
+                      color: 'var(--primary)',
+                      border: '1px solid var(--primary-light)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--primary)';
+                      e.currentTarget.style.color = 'white';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--primary-pale)';
+                      e.currentTarget.style.color = 'var(--primary)';
+                    }}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
               </div>
             </div>
           )}
@@ -1116,7 +1187,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Onboarding Walkthrough */}
+      {/* Onboarding Walkthrough - stashed, can be triggered manually or post-first-list-creation */}
       {showOnboarding && (
         <OnboardingWalkthrough
           onComplete={handleOnboardingComplete}
