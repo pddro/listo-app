@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.listo.to',
+  appId: 'com.listmango.app',
   appName: 'ListMango',
   webDir: 'dist',
   server: {

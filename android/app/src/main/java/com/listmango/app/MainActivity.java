@@ -1,4 +1,4 @@
-package com.listo.app;
+package com.listmango.app;
 
 import android.os.Bundle;
 import android.view.View;

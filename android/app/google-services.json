@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:680783007355:android:e9878f7ac1fa08d8eddcde",
+        "android_client_info": {
+          "package_name": "com.listmango.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYhYT-x61B1-JbaAUot-hQLUhjD6GfFWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:680783007355:android:5c2fb3a2bea2a0a2eddcde",
         "android_client_info": {
           "package_name": "com.listo.app"

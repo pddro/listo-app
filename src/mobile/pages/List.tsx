@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { QRCodeSVG } from 'qrcode.react';
 import { Preferences } from '@capacitor/preferences';
 import { Device } from '@capacitor/device';
+import { Share } from '@capacitor/share';
+import { Capacitor } from '@capacitor/core';
 import { useList } from '@/lib/hooks/useList';
 import { useAI, ManipulatedItem, isCategorizedResult } from '@/lib/hooks/useAI';
 import { useRecentLists } from '@/lib/hooks/useRecentLists';
@@ -407,7 +409,21 @@ export default function ListPage({ listId: listIdProp }: ListPageProps = {}) {
     const url = `https://listmango.com/${listId}`;
     const shareTitle = list?.title || 'My List';
 
-    if (navigator.share) {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        await Share.share({
+          title: shareTitle,
+          text: `Check out my list: ${shareTitle}`,
+          url: url,
+          dialogTitle: shareTitle,
+        });
+        analytics.listShared('native_share');
+      } catch (err) {
+        if ((err as Error).message !== 'Share canceled') {
+          console.error('Share failed:', err);
+        }
+      }
+    } else if (navigator.share) {
       try {
         await navigator.share({
           title: shareTitle,

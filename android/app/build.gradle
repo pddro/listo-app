@@ -7,7 +7,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.listo.app"
+    namespace = "com.listmango.app"
     compileSdk = rootProject.ext.compileSdkVersion
 
     signingConfigs {
@@ -22,10 +22,10 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.listo.app"
+        applicationId "com.listmango.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        versionCode 3
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
