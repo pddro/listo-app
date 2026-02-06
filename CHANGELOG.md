@@ -68,6 +68,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Bundle IDs preserved (app.listo.to, com.listo.app) to maintain App Store presence
   - Storage keys (listo_*) unchanged to preserve existing user data
 
+- **Android Production Readiness (RC-1)**
+  - Full package rebrand from `com.listo.app` to `com.listmango.app` (build.gradle, AndroidManifest, Capacitor config)
+  - Capacitor appId updated to `com.listmango.app`
+  - Android versionCode bumped to 3
+  - Removed AD_ID permission from AndroidManifest (no ad tracking)
+  - CSS fixes for Android WebView compatibility (Tailwind `@layer` stripping, `@property` fallbacks)
+  - Layout fixes: sticky headers instead of absolute positioning for cross-device consistency
+  - Safe area handling for Android edge-to-edge mode (`--safe-area-bottom: 48px`)
+  - CSS animation shorthand fixes for Android WebView
+  - Splash screen and app icon updates
+  - Native share sheet using `@capacitor/share` plugin (replaces `navigator.share`)
+  - Native voice recording using VoiceRecorder plugin for Android/iOS mic input
+  - Google Services / Firebase configuration for `com.listmango.app`
+  - Translation and localization updates for Android
+
 ### Added
 - **Templates Feature**
   - Community templates gallery at `/templates` with category filtering and search
