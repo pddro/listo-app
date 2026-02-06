@@ -13,8 +13,12 @@
       "realtime": "Real-time sharing",
       "aiPowered": "AI-powered"
     },
+    "nav": {
+      "getApp": "Get the App"
+    },
     "buttons": {
       "create": "Create",
+      "go": "Go",
       "newList": "New List",
       "createList": "Create List",
       "addItems": "Add {count} items",
@@ -38,17 +42,18 @@
       "packing": "Packing List",
       "todo": "To-Do List"
     },
+    "inputHint": "Type your first items, or start with . to generate with AI",
     "placeholders": [
-      "groceries for tacos",
-      "packing for beach vacation",
-      "questions for doctor visit",
-      "movies to watch this weekend",
-      "things to do before moving",
-      "gift ideas for mom",
-      "books to read this year",
-      "home improvement projects",
-      "weekly meal prep ideas",
-      "travel bucket list"
+      "milk, eggs, bread, butter",
+      ".groceries for taco night",
+      "passport, charger, sunscreen",
+      ".packing list for beach trip",
+      "chicken, rice, broccoli, soy sauce",
+      ".birthday party planning checklist",
+      "dentist, oil change, renew passport",
+      ".weekly meal prep ideas",
+      "tent, sleeping bag, flashlight",
+      ".home improvement projects for spring"
     ],
     "templates": {
       "browse": "Browse Templates",
@@ -505,6 +510,7 @@
   "backup": {
     "deviceNotice": "Your lists live only on this device",
     "backupAndTransfer": "Backup & Transfer",
+    "importFromDevice": "Bring lists from another device",
     "exportTab": "Export",
     "importTab": "Import",
     "exportHeroTitle": "Move lists to another device",

@@ -117,6 +117,7 @@ export default function Home() {
   const [editingTemplate, setEditingTemplate] = useState<PersonalTemplate | null>(null);
   const [communityTemplateCount, setCommunityTemplateCount] = useState<number>(0);
   const [showBackupModal, setShowBackupModal] = useState(false);
+  const [showAppDropdown, setShowAppDropdown] = useState(false);
 
   // Track page visit
   useEffect(() => {
@@ -665,41 +666,93 @@ export default function Home() {
         backgroundColor: 'var(--bg-primary)',
         paddingLeft: 'max(16px, env(safe-area-inset-left))',
         paddingRight: 'max(16px, env(safe-area-inset-right))',
-        paddingTop: 'max(48px, env(safe-area-inset-top, 48px))',
+        paddingTop: 'env(safe-area-inset-top, 0px)',
         paddingBottom: 'max(24px, env(safe-area-inset-bottom))',
       }}
     >
-      <div className="w-full max-w-md md:max-w-[540px] text-center" style={{ marginTop: 'auto', marginBottom: 'auto' }}>
-        {/* Logo/Title */}
-        <div className="space-y-3" style={{ marginBottom: '24px' }}>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-[0.02em]">
-            {t('title')}
-          </h1>
-          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            {t('tagline')}
-          </p>
-          {/* Hero benefit strip */}
-          <div className="flex items-center justify-center gap-4 text-xs" style={{ color: 'var(--text-muted)', marginTop: '12px' }}>
-            <span className="flex items-center gap-1">
-              <svg className="w-3 h-3" style={{ color: 'var(--primary)' }} fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+      {/* Nav bar */}
+      <nav className="w-full max-w-md md:max-w-[540px] mx-auto flex items-center justify-between" style={{ padding: '16px 0' }}>
+        <a href="/" className="text-lg font-bold tracking-[0.02em]" style={{ color: 'var(--text-primary)' }}>
+          {t('title')}
+        </a>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.push('/templates')}
+            className="text-sm font-medium transition-colors"
+            style={{ color: 'var(--text-muted)' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+          >
+            {t('templates.browse')}
+          </button>
+          {/* Get the App dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowAppDropdown(!showAppDropdown)}
+              className="text-sm font-medium flex items-center gap-1 transition-colors"
+              style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+            >
+              {t('nav.getApp')}
+              <svg className={`w-3 h-3 transition-transform ${showAppDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
-              {t('benefits.noSignup')}
-            </span>
-            <span className="flex items-center gap-1">
-              <svg className="w-3 h-3" style={{ color: 'var(--primary)' }} fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              {t('benefits.realtime')}
-            </span>
-            <span className="flex items-center gap-1">
-              <svg className="w-3 h-3" style={{ color: 'var(--primary)' }} fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              {t('benefits.aiPowered')}
-            </span>
+            </button>
+            {showAppDropdown && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setShowAppDropdown(false)} />
+                <div
+                  className="absolute right-0 z-50 rounded-xl shadow-lg"
+                  style={{
+                    marginTop: '8px',
+                    width: '200px',
+                    backgroundColor: 'var(--bg-primary)',
+                    border: '1px solid var(--border-light)',
+                    padding: '8px',
+                  }}
+                >
+                  <a
+                    href="https://apps.apple.com/app/list-mango/id6758048013"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 rounded-lg transition-colors hover:bg-[var(--bg-hover)]"
+                    style={{ padding: '10px 12px' }}
+                    onClick={() => setShowAppDropdown(false)}
+                  >
+                    <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--text-primary)' }}>
+                      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                    </svg>
+                    <div>
+                      <div className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>iOS</div>
+                      <div className="text-xs" style={{ color: 'var(--text-muted)' }}>App Store</div>
+                    </div>
+                  </a>
+                  <div
+                    className="flex items-center gap-3 rounded-lg"
+                    style={{ padding: '10px 12px', opacity: 0.5 }}
+                  >
+                    <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--text-primary)' }}>
+                      <path d="M17.523 2.047l-5.477 9.453h9.954l-5.477-9.453zm-11.046 0l-5.477 9.453h9.954l-4.477-9.453zm5.523 10.453l-5.477 9.453h10.954l-5.477-9.453z" opacity="0.8"/>
+                      <path d="M3.064 7.757L.907 11.5h4.313L3.064 7.757zm8.936-5.21L7.83 11.5h8.34L12 2.547zm8.936 5.21L18.78 11.5h4.313l-2.157-3.743zM7.83 12.5L12 21.453 16.17 12.5H7.83z"/>
+                    </svg>
+                    <div>
+                      <div className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Android</div>
+                      <div className="text-xs" style={{ color: 'var(--text-muted)' }}>Coming soon</div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
+      </nav>
+
+      <div className="w-full max-w-md md:max-w-[540px] mx-auto text-center" style={{ marginTop: 'auto', marginBottom: 'auto' }}>
+        {/* Input hint */}
+        <p className="text-xs text-left" style={{ color: 'var(--text-muted)', marginTop: '8px', marginBottom: '8px' }}>
+          {t('inputHint')}
+        </p>
 
         {/* Input */}
         <div className="relative">
@@ -732,15 +785,15 @@ export default function Home() {
                   }
                 `}
                 style={{
-                  padding: '8px 12px',
-                  borderRadius: '4px 0 0 4px'
+                  padding: '14px 16px',
+                  borderRadius: '8px 0 0 8px'
                 }}
               />
               {/* Animated placeholder or loading state */}
               {!value && (
                 <div
                   className={`
-                    absolute left-3 top-1/2 -translate-y-1/2
+                    absolute left-4 top-1/2 -translate-y-1/2
                     text-base pointer-events-none
                     transition-opacity duration-200
                     ${isPlaceholderFading && !isCreating ? 'opacity-0' : 'opacity-100'}
@@ -758,8 +811,8 @@ export default function Home() {
               className="text-white font-medium transition-all duration-200 disabled:opacity-70"
               style={{
                 backgroundColor: 'var(--primary)',
-                borderRadius: '0 4px 4px 0',
-                padding: '8px 16px',
+                borderRadius: '0 8px 8px 0',
+                padding: '14px 20px',
               }}
               onMouseEnter={(e) => !isCreating && (e.currentTarget.style.backgroundColor = 'var(--primary-dark)')}
               onMouseLeave={(e) => !isCreating && (e.currentTarget.style.backgroundColor = 'var(--primary)')}
@@ -773,10 +826,8 @@ export default function Home() {
                 </span>
               ) : mode === 'multiple' ? (
                 t('buttons.addItems', { count: itemCount })
-              ) : value.trim() ? (
-                t('buttons.createList')
               ) : (
-                t('buttons.newList')
+                t('buttons.go')
               )}
             </button>
           </div>
@@ -869,21 +920,21 @@ export default function Home() {
 
         {/* Your Lists */}
         <div style={{ marginTop: '32px' }}>
-          <div className="font-bold uppercase tracking-wide text-xs mb-3 text-left" style={{ color: 'var(--text-muted)' }}>
+          <div className="font-bold uppercase tracking-wide text-xs text-left" style={{ color: 'var(--text-muted)', paddingLeft: '4px', marginBottom: '4px' }}>
             {t('recentLists')}
           </div>
 
           {/* Quick-start chips for new users */}
           {!listsLoading && recentLists.length === 0 && !isCreating && (
-            <div className="space-y-3">
-              <p className="text-sm text-left" style={{ color: 'var(--text-muted)' }}>
+            <div>
+              <p className="text-sm text-left" style={{ color: 'var(--text-muted)', paddingLeft: '4px' }}>
                 {t('quickStart.title')}
               </p>
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-2 flex-wrap" style={{ marginTop: '16px' }}>
                 {[
-                  { label: t('quickStart.grocery'), prompt: '.weekly grocery essentials' },
-                  { label: t('quickStart.packing'), prompt: '.packing list for a weekend trip' },
-                  { label: t('quickStart.todo'), prompt: '.things to do this week' },
+                  { label: t('quickStart.grocery'), prompt: '.weekly grocery essentials', icon: '🛒' },
+                  { label: t('quickStart.packing'), prompt: '.packing list for a weekend trip', icon: '🧳' },
+                  { label: t('quickStart.todo'), prompt: '.things to do this week', icon: '✅' },
                 ].map((chip) => (
                   <button
                     key={chip.label}
@@ -908,7 +959,7 @@ export default function Home() {
                       e.currentTarget.style.color = 'var(--primary)';
                     }}
                   >
-                    {chip.label}
+                    {chip.icon} {chip.label}
                   </button>
                 ))}
               </div>
@@ -1131,13 +1182,19 @@ export default function Home() {
             }}
           >
             <svg className="w-5 h-5" style={{ color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+              {recentLists.length === 0 ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+              )}
             </svg>
-            {tBackup('backupAndTransfer')}
+            {recentLists.length === 0 ? tBackup('importFromDevice') : tBackup('backupAndTransfer')}
           </button>
-          <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '8px', textAlign: 'center' }}>
-            {tBackup('deviceNotice')}
-          </p>
+          {recentLists.length > 0 && (
+            <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '8px', textAlign: 'center' }}>
+              {tBackup('deviceNotice')}
+            </p>
+          )}
         </div>
 
         {/* Browse Community Templates - prominent button */}
