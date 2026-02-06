@@ -13,22 +13,37 @@
       "realtime": "Echtzeit",
       "aiPowered": "KI-gestützt"
     },
+    "nav": {
+      "getApp": "App holen",
+      "androidEarlyAccess": "Früher Zugang",
+      "androidEmailPlaceholder": "deine@email.de",
+      "androidSending": "Wird gespeichert...",
+      "androidSuccess": "Du bist dabei!",
+      "androidAlready": "Bereits angemeldet!",
+      "androidError": "Nochmal versuchen",
+      "androidSocialProof": "Schließe dich {count} Android-Testern an"
+    },
     "buttons": {
       "create": "Erstellen",
+      "go": "Los",
+      "newList": "Neue Liste",
+      "createList": "Liste erstellen",
+      "addItems": "{count} Einträge hinzufügen",
+      "generate": "Generieren",
       "restore": "Wiederherstellen",
       "archived": "Archiviert"
     },
     "placeholders": [
-      "Zutaten für Tacos",
-      "Packliste für Strandurlaub",
-      "Fragen für den Arzttermin",
-      "Filme für dieses Wochenende",
-      "Erledigungen vor dem Umzug",
-      "Geschenkideen für Mama",
-      "Bücher für dieses Jahr",
-      "Heimwerker-Projekte",
-      "Wochenmenü-Ideen",
-      "Traumreise-Ziele"
+      "Milch, Eier, Brot, Butter",
+      ".Einkäufe für Taco-Abend",
+      "Reisepass, Ladegerät, Sonnencreme",
+      ".Packliste für Strandurlaub",
+      "Hähnchen, Reis, Brokkoli, Sojasoße",
+      ".Geburtstagsparty-Planung",
+      "Zahnarzt, Ölwechsel, Reisepass erneuern",
+      ".Wochenmenü-Ideen",
+      "Zelt, Schlafsack, Taschenlampe",
+      ".Heimwerker-Projekte für den Frühling"
     ],
     "templates": {
       "browse": "Vorlagen durchsuchen",
@@ -37,6 +52,13 @@
       "browseDescription": "Mit einer vorgefertigten Liste beginnen",
       "myTemplates": "Meine Vorlagen"
     },
+    "quickStart": {
+      "title": "Deine erste Liste ist nur einen Tipp entfernt",
+      "grocery": "Einkaufsliste",
+      "packing": "Packliste",
+      "todo": "Aufgabenliste"
+    },
+    "inputHint": "Tippe deine ersten Einträge, oder starte mit . um mit KI zu generieren",
     "recentLists": "Deine Listen",
     "noRecentLists": "Keine aktuellen Listen",
     "untitledList": "Unbenannte Liste",
@@ -99,7 +121,17 @@
     "footer": {
       "createdWith": "Erstellt mit List Mango",
       "home": "Startseite",
-      "newList": "Neue Liste"
+      "newList": "Neue Liste",
+      "getApp": "Hol dir die kostenlose App — kein Konto nötig",
+      "appStore": "Im App Store laden",
+      "playStoreComingSoon": "Android kommt bald",
+      "androidSignup": "Android Früher Zugang",
+      "androidEmailPlaceholder": "deine@email.de",
+      "androidSending": "Wird gespeichert...",
+      "androidSuccess": "Du bist dabei! ✓",
+      "androidAlready": "Bereits angemeldet! ✓",
+      "androidError": "Etwas ist schiefgelaufen, versuche es erneut",
+      "androidSocialProof": "Schließe dich {count} Android-Testern an"
     },
     "backToList": "Zurück zur Liste",
     "shareHint": "Teile die Liste, um in Echtzeit zusammenzuarbeiten",
@@ -485,6 +517,7 @@
   "backup": {
     "deviceNotice": "Deine Listen existieren nur auf diesem Gerät",
     "backupAndTransfer": "Sichern & Übertragen",
+    "importFromDevice": "Listen von einem anderen Gerät importieren",
     "exportTab": "Exportieren",
     "importTab": "Importieren",
     "exportHeroTitle": "Listen auf anderes Gerät übertragen",

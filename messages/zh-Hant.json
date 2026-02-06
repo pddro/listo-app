@@ -13,22 +13,37 @@
       "realtime": "即時同步",
       "aiPowered": "AI 驅動"
     },
+    "nav": {
+      "getApp": "取得應用",
+      "androidEarlyAccess": "搶先體驗",
+      "androidEmailPlaceholder": "信箱@example.com",
+      "androidSending": "儲存中...",
+      "androidSuccess": "註冊成功！",
+      "androidAlready": "已經註冊過了！",
+      "androidError": "請重試",
+      "androidSocialProof": "已有{count}人在Android上測試"
+    },
     "buttons": {
       "create": "建立",
+      "go": "開始",
+      "newList": "新建清單",
+      "createList": "建立清單",
+      "addItems": "新增{count}項",
+      "generate": "產生",
       "restore": "恢復",
       "archived": "已封存"
     },
     "placeholders": [
-      "墨西哥捲餅購物清單",
-      "海灘度假行李清單",
-      "看醫生要問的問題",
-      "這週末要看的電影",
-      "搬家前要做的事",
-      "給媽媽的禮物點子",
-      "今年要讀的書",
-      "居家改造專案",
-      "每週餐食計畫",
-      "夢想旅行清單"
+      "牛奶、雞蛋、麵包、奶油",
+      ".墨西哥捲餅食材清單",
+      "護照、充電器、防曬乳",
+      ".海灘旅行行李清單",
+      "雞肉、白飯、花椰菜、醬油",
+      ".生日派對策劃",
+      "看牙醫、換機油、續簽護照",
+      ".每週餐食計畫",
+      "帳篷、睡袋、手電筒",
+      ".春季居家裝修"
     ],
     "templates": {
       "browse": "瀏覽範本",
@@ -37,6 +52,13 @@
       "browseDescription": "從預製清單開始",
       "myTemplates": "我的範本"
     },
+    "quickStart": {
+      "title": "一鍵建立你的第一個清單",
+      "grocery": "購物清單",
+      "packing": "行李清單",
+      "todo": "待辦清單"
+    },
+    "inputHint": "輸入你的第一批項目，或以 . 開頭用AI產生",
     "recentLists": "你的清單",
     "noRecentLists": "沒有最近的清單",
     "untitledList": "無標題清單",
@@ -99,7 +121,17 @@
     "footer": {
       "createdWith": "由 List Mango 建立",
       "home": "首頁",
-      "newList": "新建清單"
+      "newList": "新建清單",
+      "getApp": "免費下載應用 — 無需註冊",
+      "appStore": "在 App Store 下載",
+      "playStoreComingSoon": "Android 即將推出",
+      "androidSignup": "Android 搶先體驗",
+      "androidEmailPlaceholder": "信箱@example.com",
+      "androidSending": "儲存中...",
+      "androidSuccess": "註冊成功！ ✓",
+      "androidAlready": "已經註冊過了！ ✓",
+      "androidError": "出錯了，請重試",
+      "androidSocialProof": "已有{count}人在Android上測試"
     },
     "backToList": "返回清單",
     "shareHint": "分享清單以即時協作",
@@ -485,6 +517,7 @@
   "backup": {
     "deviceNotice": "您的清單僅儲存在此裝置上",
     "backupAndTransfer": "備份與傳輸",
+    "importFromDevice": "從其他裝置匯入清單",
     "exportTab": "匯出",
     "importTab": "匯入",
     "exportHeroTitle": "將清單移至另一台裝置",

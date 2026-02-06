@@ -13,22 +13,37 @@
       "realtime": "실시간",
       "aiPowered": "AI 기반"
     },
+    "nav": {
+      "getApp": "앱 다운로드",
+      "androidEarlyAccess": "얼리 액세스",
+      "androidEmailPlaceholder": "이메일@example.com",
+      "androidSending": "저장 중...",
+      "androidSuccess": "등록 완료!",
+      "androidAlready": "이미 등록됨!",
+      "androidError": "다시 시도해주세요",
+      "androidSocialProof": "{count}명이 Android에서 테스트 중"
+    },
     "buttons": {
+      "go": "시작",
+      "newList": "새 리스트",
+      "createList": "리스트 만들기",
+      "addItems": "{count}개 추가",
+      "generate": "생성",
       "create": "만들기",
       "restore": "복원",
       "archived": "보관됨"
     },
     "placeholders": [
-      "타코 재료",
-      "해변 휴가 짐 목록",
-      "의사에게 물어볼 질문",
-      "이번 주말에 볼 영화",
-      "이사 전 할 일",
-      "엄마 선물 아이디어",
-      "올해 읽을 책",
-      "DIY 프로젝트",
-      "주간 식단 아이디어",
-      "꿈의 여행지 리스트"
+      "우유, 계란, 빵, 버터",
+      ".타코 재료 장보기",
+      "여권, 충전기, 선크림",
+      ".해변 여행 짐 싸기 리스트",
+      "닭고기, 쌀, 브로콜리, 간장",
+      ".생일 파티 계획",
+      "치과, 오일 교환, 여권 갱신",
+      ".주간 식단 아이디어",
+      "텐트, 침낭, 손전등",
+      ".봄 DIY 프로젝트"
     ],
     "templates": {
       "browse": "템플릿 둘러보기",
@@ -37,6 +52,13 @@
       "browseDescription": "미리 만들어진 리스트로 시작하기",
       "myTemplates": "내 템플릿"
     },
+    "quickStart": {
+      "title": "첫 번째 리스트를 바로 만들어보세요",
+      "grocery": "장보기 리스트",
+      "packing": "짐 싸기 리스트",
+      "todo": "할 일 리스트"
+    },
+    "inputHint": "항목을 입력하거나, .으로 시작하여 AI로 생성하세요",
     "recentLists": "내 리스트",
     "noRecentLists": "최근 리스트 없음",
     "untitledList": "제목 없는 리스트",
@@ -99,7 +121,17 @@
     "footer": {
       "createdWith": "List Mango로 만듦",
       "home": "홈",
-      "newList": "새 리스트"
+      "newList": "새 리스트",
+      "getApp": "무료 앱 다운로드 — 계정 불필요",
+      "appStore": "App Store에서 다운로드",
+      "playStoreComingSoon": "Android 곧 출시",
+      "androidSignup": "Android 얼리 액세스",
+      "androidEmailPlaceholder": "이메일@example.com",
+      "androidSending": "저장 중...",
+      "androidSuccess": "등록 완료! ✓",
+      "androidAlready": "이미 등록됨! ✓",
+      "androidError": "문제가 발생했습니다. 다시 시도해주세요",
+      "androidSocialProof": "{count}명이 Android에서 테스트 중"
     },
     "backToList": "리스트로 돌아가기",
     "shareHint": "리스트를 공유하여 실시간으로 협업하세요",
@@ -484,6 +516,7 @@
   "backup": {
     "deviceNotice": "리스트는 이 기기에만 저장되어 있습니다",
     "backupAndTransfer": "백업 및 전송",
+    "importFromDevice": "다른 기기에서 리스트 가져오기",
     "exportTab": "내보내기",
     "importTab": "가져오기",
     "exportHeroTitle": "다른 기기로 리스트 이동",
