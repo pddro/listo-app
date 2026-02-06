@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'app.listo.to',
-  appName: 'List Mango',
+  appName: 'ListMango',
   webDir: 'dist',
   server: {
     androidScheme: 'https',

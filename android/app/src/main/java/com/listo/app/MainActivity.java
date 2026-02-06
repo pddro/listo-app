@@ -22,5 +22,8 @@ public class MainActivity extends BridgeActivity {
             insetsController.setAppearanceLightStatusBars(true);
             insetsController.setAppearanceLightNavigationBars(true);
         }
+
+        // Enable overscroll bounce effect (stretch on Android 12+, glow on older)
+        getBridge().getWebView().setOverScrollMode(View.OVER_SCROLL_ALWAYS);
     }
 }

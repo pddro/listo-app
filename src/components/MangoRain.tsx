@@ -59,8 +59,7 @@ export default function MangoRain({ active, onComplete }: MangoRainProps) {
           className="mango"
           style={{
             left: `${mango.left}%`,
-            animationDelay: `${mango.delay}s`,
-            animationDuration: `${mango.duration}s`,
+            animation: `mangoFall ${mango.duration}s linear ${mango.delay}s forwards`,
             fontSize: `${mango.size}px`,
             '--rotation': `${mango.rotation}deg`,
           } as React.CSSProperties}

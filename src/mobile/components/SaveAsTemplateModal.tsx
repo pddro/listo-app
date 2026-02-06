@@ -97,7 +97,7 @@ export function SaveAsTemplateModal({ isOpen, onClose, onSave, listTitle, listDe
             maxHeight: 'calc(90vh - 24px)',
             paddingLeft: '24px',
             paddingRight: '24px',
-            paddingBottom: 'calc(32px + env(safe-area-inset-bottom, 0px))',
+            paddingBottom: 'calc(32px + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)))',
           }}
         >
           {/* Header */}

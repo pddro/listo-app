@@ -98,7 +98,7 @@ export function OnboardingWalkthrough({
 
   // Safe area defaults based on platform
   const safeAreaTop = customSafeAreaTop ?? (platform === 'android' ? '36px' : platform === 'ios' ? 'env(safe-area-inset-top, 0px)' : '0px');
-  const safeAreaBottom = customSafeAreaBottom ?? (platform === 'android' ? '24px' : platform === 'ios' ? 'env(safe-area-inset-bottom, 0px)' : '0px');
+  const safeAreaBottom = customSafeAreaBottom ?? (platform === 'android' ? '48px' : platform === 'ios' ? 'env(safe-area-inset-bottom, 0px)' : '0px');
 
   // Animate in on mount
   useEffect(() => {

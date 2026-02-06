@@ -283,7 +283,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
           flex flex-col items-center
           ${isFloating ? 'fixed right-6 z-40' : ''}
         `}
-        style={isFloating ? { bottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' } : undefined}
+        style={isFloating ? { bottom: 'calc(var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)) + 24px)' } : undefined}
       >
         <button
           onClick={handleClick}
@@ -437,7 +437,7 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
             backgroundColor: 'rgba(0, 0, 0, 0.85)',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
-            bottom: isFloating ? 'calc(env(safe-area-inset-bottom, 0px) + 110px)' : undefined,
+            bottom: isFloating ? 'calc(var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)) + 110px)' : undefined,
             animation: 'fadeInUp 0.3s ease-out',
           }}
         >

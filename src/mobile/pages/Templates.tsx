@@ -191,7 +191,7 @@ export default function TemplatesPage() {
   }, [i18n.language, selectedCategory]);
 
   const safeAreaTop = platform === 'android' ? '36px' : 'env(safe-area-inset-top, 0px)';
-  const safeAreaBottom = platform === 'android' ? '24px' : 'env(safe-area-inset-bottom, 0px)';
+  const safeAreaBottom = platform === 'android' ? '48px' : 'env(safe-area-inset-bottom, 0px)';
 
   return (
     <SwipeBackLayout>

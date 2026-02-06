@@ -9,7 +9,6 @@
 .mango {
   position: absolute;
   top: -60px;
-  animation: mangoFall linear forwards;
   will-change: transform;
 }
 

@@ -1281,7 +1281,7 @@ export default function HomePage() {
 
   // Safe area padding - Android doesn't support env(safe-area-inset-*) in WebView
   const safeAreaTop = platform === 'android' ? '36px' : 'env(safe-area-inset-top, 0px)';
-  const safeAreaBottom = platform === 'android' ? '24px' : 'env(safe-area-inset-bottom, 0px)';
+  const safeAreaBottom = platform === 'android' ? '48px' : 'env(safe-area-inset-bottom, 0px)';
 
   return (
     <div
@@ -1698,7 +1698,7 @@ export default function HomePage() {
             className="w-full max-h-[85vh] overflow-y-auto"
             style={{
               padding: '24px',
-              paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
+              paddingBottom: 'calc(24px + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)))',
               borderRadius: '20px 20px 0 0',
               backgroundColor: 'var(--bg-primary)',
             }}
@@ -1759,7 +1759,7 @@ export default function HomePage() {
             className="w-full"
             style={{
               padding: '24px',
-              paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
+              paddingBottom: 'calc(24px + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)))',
               borderRadius: '20px 20px 0 0',
               backgroundColor: 'var(--bg-primary)',
             }}

@@ -1,10 +1,11 @@
+import tailwindcss from "@tailwindcss/postcss";
+import stripLayers from "./postcss-strip-layers.mjs";
+
 const config = {
-  plugins: {
-    "@tailwindcss/postcss": {
-      // Use lightningcss for better browser compatibility
-      optimize: { minify: true },
-    },
-  },
+  plugins: [
+    tailwindcss({ optimize: { minify: true } }),
+    stripLayers(),
+  ],
 };
 
 export default config;

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { App as CapacitorApp } from '@capacitor/app';
+import { Device } from '@capacitor/device';
 import { Preferences } from '@capacitor/preferences';
 import HomePage from './mobile/pages/Home';
 import ListPage from './mobile/pages/List';
@@ -38,6 +39,15 @@ function applyThemeToRoot(theme: ThemeColors | null) {
 function AppContent() {
   const navigate = useNavigate();
   const hasHandledLaunchUrl = useRef(false);
+
+  // Set Android-specific safe area CSS variable (Android WebView doesn't support env())
+  useEffect(() => {
+    Device.getInfo().then(info => {
+      if (info.platform === 'android') {
+        document.documentElement.style.setProperty('--safe-area-bottom', '48px');
+      }
+    });
+  }, []);
 
   // Apply stored home theme early before routes render
   useEffect(() => {

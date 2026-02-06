@@ -329,7 +329,7 @@ export function BackupModal({
           maxHeight: '85vh',
           borderRadius: '20px 20px 0 0',
           backgroundColor: 'var(--bg-primary)',
-          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          paddingBottom: 'var(--safe-area-bottom, env(safe-area-inset-bottom, 0px))',
         }}
         onClick={(e) => e.stopPropagation()}
       >
