@@ -735,14 +735,26 @@ export function NewItemInput({
         </div>
       )}
 
-      {/* Processing indicator */}
+      {/* Shimmer bar while AI is working */}
       {isProcessing && (
         <div
-          className="absolute left-0 flex items-center gap-1.5 text-xs text-white bg-[var(--primary)] px-2 py-0.5 rounded-sm"
-          style={{ top: 'calc(100% + 4px)' }}
+          className="absolute left-0 right-0 overflow-hidden"
+          style={{ bottom: 0, height: '3px', borderRadius: '0 0 4px 4px' }}
         >
-          <span className="inline-block w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-          {processingMessage}
+          <div
+            style={{
+              width: '200%',
+              height: '100%',
+              background: 'linear-gradient(90deg, transparent 0%, var(--primary) 25%, var(--primary-light) 50%, var(--primary) 75%, transparent 100%)',
+              animation: 'shimmer 1.5s ease-in-out infinite',
+            }}
+          />
+          <style>{`
+            @keyframes shimmer {
+              0% { transform: translateX(-50%); }
+              100% { transform: translateX(0%); }
+            }
+          `}</style>
         </div>
       )}
 

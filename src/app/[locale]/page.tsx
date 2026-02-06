@@ -456,11 +456,11 @@ export default function Home() {
     return { content: input, themeDescription: null };
   };
 
-  const handleCreate = async (forceAI = false) => {
+  const handleCreate = async (forceAI = false, overrideValue?: string) => {
     if (isCreating) return;
 
     // Normalize iOS smart punctuation before processing
-    const normalized = normalizeInput(value);
+    const normalized = normalizeInput(overrideValue ?? value);
     const trimmed = normalized.trim();
     if (!trimmed) {
       // Create empty list
@@ -861,16 +861,26 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Mode indicator badge - removed, button text now conveys this */}
-
-          {/* Processing indicator */}
+          {/* Shimmer bar while AI is working */}
           {isCreating && mode === 'ai' && (
             <div
-              className="absolute left-0 flex items-center gap-1.5 text-xs text-white bg-[var(--primary)] px-2 py-0.5 rounded-sm"
-              style={{ top: 'calc(100% + 4px)' }}
+              className="absolute left-0 right-0 overflow-hidden"
+              style={{ bottom: 0, height: '3px', borderRadius: '0 0 8px 8px' }}
             >
-              <span className="inline-block w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              {tInput('processing.thinking')}
+              <div
+                style={{
+                  width: '200%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, transparent 0%, var(--primary) 25%, var(--primary-light) 50%, var(--primary) 75%, transparent 100%)',
+                  animation: 'shimmer 1.5s ease-in-out infinite',
+                }}
+              />
+              <style>{`
+                @keyframes shimmer {
+                  0% { transform: translateX(-50%); }
+                  100% { transform: translateX(0%); }
+                }
+              `}</style>
             </div>
           )}
 
@@ -1000,8 +1010,7 @@ export default function Home() {
                     key={chip.label}
                     onClick={() => {
                       setValue(chip.prompt);
-                      // Auto-submit after a brief moment so user sees what happened
-                      setTimeout(() => handleCreate(true), 150);
+                      handleCreate(true, chip.prompt);
                     }}
                     className="text-sm font-medium rounded-full transition-all duration-200 active:scale-95 cursor-pointer"
                     style={{
