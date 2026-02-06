@@ -980,9 +980,13 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
               }}
             />
 
-            <div className="text-xs" style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>
+            <a
+              href="/"
+              className="text-xs transition-opacity hover:opacity-70 active:opacity-50"
+              style={{ color: 'var(--text-muted)', marginBottom: '16px', display: 'inline-block', textDecoration: 'none' }}
+            >
               {t('footer.createdWith')}
-            </div>
+            </a>
 
             {/* App download strip */}
             <div
@@ -997,7 +1001,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
               <div className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
                 {t('footer.getApp')}
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-start gap-3">
                 {/* App Store badge */}
                 <a
                   href="https://apps.apple.com/app/list-mango/id6758048013"
@@ -1031,7 +1035,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
                         handleAndroidSignup(androidEmail, 'list_footer');
                       }}
                     >
-                      <div className="flex rounded-md overflow-hidden" style={{ border: '1px solid var(--border-medium)', height: '40px' }}>
+                      <div className="flex rounded-md overflow-hidden" style={{ border: '1px solid var(--border-medium)', height: '40px', position: 'relative' }}>
                         <input
                           type="email"
                           value={androidEmail}
@@ -1043,20 +1047,29 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
                           className="text-xs border-none outline-none"
                           style={{
                             padding: '0 8px',
-                            width: '130px',
+                            paddingRight: androidEmail.trim() ? '28px' : '8px',
+                            width: '150px',
                             backgroundColor: 'var(--bg-primary)',
                             color: 'var(--text-primary)',
                           }}
                           disabled={androidSignupState === 'sending'}
                         />
-                        <button
-                          type="submit"
-                          disabled={androidSignupState === 'sending' || !androidEmail.trim()}
-                          className="text-xs font-medium text-white px-2 disabled:opacity-50"
-                          style={{ backgroundColor: 'var(--primary)' }}
-                        >
-                          {androidSignupState === 'sending' ? '...' : 'Go'}
-                        </button>
+                        {androidEmail.trim() && (
+                          <button
+                            type="submit"
+                            disabled={androidSignupState === 'sending'}
+                            className="absolute right-0 top-0 bottom-0 flex items-center justify-center transition-opacity hover:opacity-70 active:opacity-50"
+                            style={{ width: '28px', color: 'var(--primary)', background: 'none', border: 'none' }}
+                          >
+                            {androidSignupState === 'sending' ? (
+                              <span className="text-xs">...</span>
+                            ) : (
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M9 18l6-6-6-6" />
+                              </svg>
+                            )}
+                          </button>
+                        )}
                       </div>
                       <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                         {t('footer.androidSignup')}
