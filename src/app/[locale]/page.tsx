@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { supabase } from '@/lib/supabase';
@@ -118,6 +118,9 @@ export default function Home() {
   const [communityTemplateCount, setCommunityTemplateCount] = useState<number>(0);
   const [showBackupModal, setShowBackupModal] = useState(false);
   const [showAppDropdown, setShowAppDropdown] = useState(false);
+  const [sparkles, setSparkles] = useState<{ id: number; x: number; y: number; tx: number; ty: number; scale: number; delay: number }[]>([]);
+  const prevModeRef = useRef<InputMode>('single');
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Track page visit
   useEffect(() => {
@@ -406,6 +409,31 @@ export default function Home() {
     // Single mode
     return { mode: 'single' as InputMode, itemCount: 0, displayText: '' };
   }, [value, tInput]);
+
+  // Sparkle burst when entering AI mode
+  useEffect(() => {
+    if (mode === 'ai' && prevModeRef.current !== 'ai' && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const newSparkles = Array.from({ length: 14 }, (_, i) => {
+        const angle = ((i * 26) + (Math.random() * 15 - 7)) * (Math.PI / 180);
+        const dist = 50 + Math.random() * 50;
+        return {
+          id: Date.now() + i,
+          x: cx + (Math.random() * 20 - 10),
+          y: cy + (Math.random() * 10 - 5),
+          tx: Math.cos(angle) * dist,
+          ty: Math.sin(angle) * dist,
+          scale: 0.8 + Math.random() * 1.2,
+          delay: Math.random() * 100,
+        };
+      });
+      setSparkles(newSparkles);
+      setTimeout(() => setSparkles([]), 1000);
+    }
+    prevModeRef.current = mode;
+  }, [mode]);
 
   // Parse theme from input (supports ~theme, theme:theme, style:theme)
   const parseThemeFromInput = (input: string): { content: string; themeDescription: string | null } => {
@@ -779,7 +807,7 @@ export default function Home() {
                   focus:border-[var(--primary)] focus:shadow-[0_0_0_3px_var(--primary-pale)]
                   outline-none transition-all duration-200
                   disabled:opacity-50
-                  ${mode === 'ai' && value.trim().length > 3
+                  ${mode === 'ai'
                     ? 'border-[var(--primary-light)]'
                     : 'border-gray-200'
                   }
@@ -806,6 +834,7 @@ export default function Home() {
             </div>
             {/* Create button */}
             <button
+              ref={buttonRef}
               onClick={() => handleCreate(false)}
               disabled={isCreating}
               className="text-white font-medium transition-all duration-200 disabled:opacity-70"
@@ -819,7 +848,7 @@ export default function Home() {
             >
               {isCreating ? (
                 <span className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : mode === 'ai' && value.trim().length > 3 ? (
+              ) : mode === 'ai' ? (
                 <span className="flex items-center gap-1">
                   <SparklesIcon />
                   {t('buttons.generate')}
@@ -855,6 +884,37 @@ export default function Home() {
             </div>
           )}
         </div>
+
+        {/* AI mode sparkle burst */}
+        {sparkles.length > 0 && (
+          <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 100 }}>
+            {sparkles.map((s) => (
+              <div
+                key={s.id}
+                style={{
+                  position: 'absolute',
+                  left: s.x,
+                  top: s.y,
+                  ['--tx' as string]: `${s.tx}px`,
+                  ['--ty' as string]: `${s.ty}px`,
+                  animation: `sparkle-burst 800ms ease-out ${s.delay}ms forwards`,
+                  opacity: 0,
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--primary)" style={{ transform: `scale(${s.scale})`, filter: 'drop-shadow(0 0 3px var(--primary))' }}>
+                  <path d="M12 0L13.5 8.5L22 10L13.5 11.5L12 20L10.5 11.5L2 10L10.5 8.5L12 0Z" />
+                </svg>
+              </div>
+            ))}
+            <style>{`
+              @keyframes sparkle-burst {
+                0% { transform: translate(0, 0) scale(1.2); opacity: 1; }
+                40% { opacity: 1; }
+                100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+              }
+            `}</style>
+          </div>
+        )}
 
         {/* Dictate button */}
         <div style={{ marginTop: '16px' }}>
