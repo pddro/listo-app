@@ -14,7 +14,14 @@
       "aiPowered": "AI-powered"
     },
     "nav": {
-      "getApp": "Get the App"
+      "getApp": "Get the App",
+      "androidEarlyAccess": "Get early access",
+      "androidEmailPlaceholder": "your@email.com",
+      "androidSending": "Saving...",
+      "androidSuccess": "You're in!",
+      "androidAlready": "Already signed up!",
+      "androidError": "Try again",
+      "androidSocialProof": "Join {count} others testing on Android"
     },
     "buttons": {
       "create": "Create",
@@ -127,7 +134,14 @@
       "newList": "New List",
       "getApp": "Get the free app — no account needed",
       "appStore": "Download on the App Store",
-      "playStoreComingSoon": "Android coming soon"
+      "playStoreComingSoon": "Android coming soon",
+      "androidSignup": "Android early access",
+      "androidEmailPlaceholder": "your@email.com",
+      "androidSending": "Saving...",
+      "androidSuccess": "You're in! ✓",
+      "androidAlready": "Already signed up! ✓",
+      "androidError": "Something went wrong, try again",
+      "androidSocialProof": "Join {count} others testing on Android"
     },
     "backToList": "Back to list",
     "shareHint": "Share the list to collaborate in real-time",

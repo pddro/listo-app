@@ -118,9 +118,13 @@ export default function Home() {
   const [communityTemplateCount, setCommunityTemplateCount] = useState<number>(0);
   const [showBackupModal, setShowBackupModal] = useState(false);
   const [showAppDropdown, setShowAppDropdown] = useState(false);
+  const [androidEmail, setAndroidEmail] = useState('');
+  const [androidSignupState, setAndroidSignupState] = useState<'idle' | 'sending' | 'success' | 'already' | 'error'>('idle');
+  const [androidTesterCount, setAndroidTesterCount] = useState<number>(0);
   const [sparkles, setSparkles] = useState<{ id: number; x: number; y: number; tx: number; ty: number; scale: number; delay: number }[]>([]);
   const prevModeRef = useRef<InputMode>('single');
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const androidEmailRef = useRef<HTMLInputElement>(null);
 
   // Track page visit
   useEffect(() => {
@@ -162,6 +166,46 @@ export default function Home() {
     setShowOnboarding(false);
     setIsFirstVisit(false);
     localStorage.setItem('listo_has_seen_welcome', 'true');
+  };
+
+  // Fetch Android tester count for social proof
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const { count } = await supabase
+          .from('android_testers')
+          .select('*', { count: 'exact', head: true });
+        if (count !== null) setAndroidTesterCount(count);
+      } catch {}
+    };
+    fetchCount();
+  }, []);
+
+  // Handle Android tester email signup
+  const handleAndroidSignup = async (email: string, source: string) => {
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return;
+
+    setAndroidSignupState('sending');
+    try {
+      const { error } = await supabase
+        .from('android_testers')
+        .insert({ email: trimmed, source });
+
+      if (error) {
+        if (error.code === '23505') {
+          setAndroidSignupState('already');
+        } else {
+          setAndroidSignupState('error');
+        }
+      } else {
+        setAndroidSignupState('success');
+        setAndroidTesterCount(prev => prev + 1);
+        analytics.androidSignup(source as 'homepage_nav' | 'list_footer');
+      }
+    } catch {
+      setAndroidSignupState('error');
+    }
   };
 
   // Create tutorial list for new users
@@ -717,10 +761,10 @@ export default function Home() {
           <div className="relative">
             <button
               onClick={() => setShowAppDropdown(!showAppDropdown)}
-              className="text-sm font-medium flex items-center gap-1 transition-colors"
-              style={{ color: 'var(--text-muted)' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+              className="text-sm font-medium flex items-center gap-1 transition-all rounded-full"
+              style={{ color: 'var(--primary)', backgroundColor: 'var(--primary-pale)', padding: '6px 12px', border: '1px solid var(--primary-light)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary)'; e.currentTarget.style.color = 'white'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary-pale)'; e.currentTarget.style.color = 'var(--primary)'; }}
             >
               {t('nav.getApp')}
               <svg className={`w-3 h-3 transition-transform ${showAppDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -734,7 +778,7 @@ export default function Home() {
                   className="absolute right-0 z-50 rounded-xl shadow-lg"
                   style={{
                     marginTop: '8px',
-                    width: '200px',
+                    width: '260px',
                     backgroundColor: 'var(--bg-primary)',
                     border: '1px solid var(--border-light)',
                     padding: '8px',
@@ -746,27 +790,81 @@ export default function Home() {
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 rounded-lg transition-colors hover:bg-[var(--bg-hover)]"
                     style={{ padding: '10px 12px' }}
-                    onClick={() => setShowAppDropdown(false)}
+                    onClick={() => { analytics.appStoreClick('homepage_nav'); setShowAppDropdown(false); }}
                   >
                     <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--text-primary)' }}>
                       <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                     </svg>
-                    <div>
+                    <div className="flex-1">
                       <div className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>iOS</div>
                       <div className="text-xs" style={{ color: 'var(--text-muted)' }}>App Store</div>
                     </div>
-                  </a>
-                  <div
-                    className="flex items-center gap-3 rounded-lg"
-                    style={{ padding: '10px 12px', opacity: 0.5 }}
-                  >
-                    <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--text-primary)' }}>
-                      <path d="M17.523 2.047l-5.477 9.453h9.954l-5.477-9.453zm-11.046 0l-5.477 9.453h9.954l-4.477-9.453zm5.523 10.453l-5.477 9.453h10.954l-5.477-9.453z" opacity="0.8"/>
-                      <path d="M3.064 7.757L.907 11.5h4.313L3.064 7.757zm8.936-5.21L7.83 11.5h8.34L12 2.547zm8.936 5.21L18.78 11.5h4.313l-2.157-3.743zM7.83 12.5L12 21.453 16.17 12.5H7.83z"/>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--text-muted)' }}>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                    <div>
-                      <div className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Android</div>
-                      <div className="text-xs" style={{ color: 'var(--text-muted)' }}>Coming soon</div>
+                  </a>
+                  {/* Android early access signup */}
+                  <div
+                    className="rounded-lg cursor-pointer transition-colors hover:bg-[var(--bg-hover)]"
+                    style={{ padding: '10px 12px' }}
+                    onMouseEnter={() => androidEmailRef.current?.focus()}
+                  >
+                    <div className="flex items-center gap-3">
+                      <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#3DDC84' }}>
+                        <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48A5.84 5.84 0 0012 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31A5.983 5.983 0 006 7h12c0-2.21-1.24-4.15-3.47-5.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/>
+                      </svg>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Android</div>
+                        <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                          {androidSignupState === 'success'
+                            ? t('nav.androidSuccess')
+                            : androidSignupState === 'already'
+                            ? t('nav.androidAlready')
+                            : t('nav.androidEarlyAccess')
+                          }
+                        </div>
+                      </div>
+                    </div>
+                    {androidSignupState !== 'success' && androidSignupState !== 'already' && (
+                      <form
+                        className="flex gap-1.5"
+                        style={{ marginTop: '8px' }}
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          handleAndroidSignup(androidEmail, 'homepage_nav');
+                        }}
+                      >
+                        <input
+                          ref={androidEmailRef}
+                          type="email"
+                          value={androidEmail}
+                          onChange={(e) => {
+                            setAndroidEmail(e.target.value);
+                            if (androidSignupState === 'error') setAndroidSignupState('idle');
+                          }}
+                          placeholder={t('nav.androidEmailPlaceholder')}
+                          className="flex-1 text-xs rounded-md border outline-none transition-all focus:border-[var(--primary)] focus:shadow-[0_0_0_2px_var(--primary-pale)]"
+                          style={{
+                            padding: '6px 10px',
+                            borderColor: androidSignupState === 'error' ? 'var(--error)' : 'var(--border-medium)',
+                            backgroundColor: 'var(--bg-primary)',
+                            color: 'var(--text-primary)',
+                            minWidth: 0,
+                          }}
+                          disabled={androidSignupState === 'sending'}
+                        />
+                        <button
+                          type="submit"
+                          disabled={androidSignupState === 'sending' || !androidEmail.trim()}
+                          className="text-xs font-medium text-white rounded-md transition-opacity disabled:opacity-50"
+                          style={{ padding: '6px 10px', backgroundColor: 'var(--primary)', whiteSpace: 'nowrap' }}
+                        >
+                          {androidSignupState === 'sending' ? '...' : 'Go'}
+                        </button>
+                      </form>
+                    )}
+                    <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '6px', opacity: 0.8 }}>
+                      {t('nav.androidSocialProof', { count: 167 + androidTesterCount })}
                     </div>
                   </div>
                 </div>
