@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Capacitor } from '@capacitor/core';
+import { VoiceRecorder } from 'capacitor-voice-recorder';
 import { API, getSupabaseHeaders } from '@/lib/api';
 
 // Get Supabase anon key for auth header
@@ -73,82 +75,89 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
     animationFrameRef.current = requestAnimationFrame(analyzeAudio);
   }, []);
 
+  // Simulate audio levels on native (no raw stream available)
+  const simulateAudioLevels = useCallback(() => {
+    const t = Date.now() / 1000;
+    const level = 0.3 + 0.2 * Math.sin(t * 2.5) + 0.15 * Math.sin(t * 4.1) + 0.1 * Math.random();
+    setAudioLevel(Math.min(1, Math.max(0, level)));
+    animationFrameRef.current = requestAnimationFrame(simulateAudioLevels);
+  }, []);
+
+  const isNative = Capacitor.isNativePlatform();
+
   const startRecording = async () => {
     try {
-      console.log('[Dictation] Starting recording...');
+      console.log('[Dictation] Starting recording... native:', isNative);
       setError(null);
       audioChunksRef.current = [];
       cancelledRef.current = false;
 
-      console.log('[Dictation] Requesting microphone permission...');
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      console.log('[Dictation] Microphone permission granted, stream:', stream.id);
+      if (isNative) {
+        // Native recording using Capacitor VoiceRecorder plugin
+        console.log('[Dictation] Requesting native audio permission...');
+        const permissionResult = await VoiceRecorder.requestAudioRecordingPermission();
+        if (!permissionResult.value) {
+          throw new Error('Microphone permission denied');
+        }
 
-      // Set up audio analysis
-      const audioContext = new AudioContext();
-      const source = audioContext.createMediaStreamSource(stream);
-      const analyser = audioContext.createAnalyser();
-      analyser.fftSize = 256;
-      source.connect(analyser);
-      analyserRef.current = analyser;
+        console.log('[Dictation] Starting native recording...');
+        await VoiceRecorder.startRecording();
+        console.log('[Dictation] Native recording started');
+        simulateAudioLevels();
+      } else {
+        // Browser recording using MediaRecorder
+        console.log('[Dictation] Requesting microphone permission...');
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log('[Dictation] Microphone permission granted, stream:', stream.id);
 
-      // Start analyzing
-      analyzeAudio();
+        // Set up audio analysis
+        const audioContext = new AudioContext();
+        const source = audioContext.createMediaStreamSource(stream);
+        const analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+        analyserRef.current = analyser;
 
-      // Set up MediaRecorder with supported mimeType
-      // iOS doesn't support webm, so we need to detect what's available
-      let mimeType = 'audio/webm;codecs=opus';
-      console.log('[Dictation] Checking MIME type support...');
-      console.log('[Dictation] webm;opus supported:', MediaRecorder.isTypeSupported(mimeType));
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        // Try mp4 (iOS)
-        mimeType = 'audio/mp4';
-        console.log('[Dictation] audio/mp4 supported:', MediaRecorder.isTypeSupported(mimeType));
+        // Start analyzing
+        analyzeAudio();
+
+        // Set up MediaRecorder with supported mimeType
+        let mimeType = 'audio/webm;codecs=opus';
         if (!MediaRecorder.isTypeSupported(mimeType)) {
-          // Fallback to default (let browser choose)
-          mimeType = '';
-          console.log('[Dictation] Using default MIME type');
+          mimeType = 'audio/mp4';
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = '';
+          }
         }
+
+        const mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+        mimeTypeRef.current = mediaRecorder.mimeType || 'audio/webm';
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunksRef.current.push(event.data);
+          }
+        };
+
+        mediaRecorder.onerror = (event) => {
+          console.error('[Dictation] MediaRecorder error:', event);
+        };
+
+        mediaRecorder.onstop = async () => {
+          stream.getTracks().forEach((track) => track.stop());
+
+          if (animationFrameRef.current) {
+            cancelAnimationFrame(animationFrameRef.current);
+          }
+
+          if (!cancelledRef.current && audioChunksRef.current.length > 0) {
+            await processAudio();
+          }
+        };
+
+        mediaRecorderRef.current = mediaRecorder;
+        mediaRecorder.start(100);
       }
-
-      console.log('[Dictation] Creating MediaRecorder with mimeType:', mimeType || 'default');
-      const mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
-      mimeTypeRef.current = mediaRecorder.mimeType || 'audio/webm';
-      console.log('[Dictation] MediaRecorder created, actual mimeType:', mimeTypeRef.current);
-
-      mediaRecorder.ondataavailable = (event) => {
-        console.log('[Dictation] Data available, size:', event.data.size);
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorder.onerror = (event) => {
-        console.error('[Dictation] MediaRecorder error:', event);
-      };
-
-      mediaRecorder.onstop = async () => {
-        console.log('[Dictation] Recording stopped, chunks:', audioChunksRef.current.length);
-        // Stop all tracks
-        stream.getTracks().forEach((track) => track.stop());
-
-        // Stop animation
-        if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current);
-        }
-
-        // Process the recorded audio (skip if cancelled)
-        if (!cancelledRef.current && audioChunksRef.current.length > 0) {
-          console.log('[Dictation] Processing audio...');
-          await processAudio();
-        } else {
-          console.log('[Dictation] Skipping processing - cancelled:', cancelledRef.current, 'chunks:', audioChunksRef.current.length);
-        }
-      };
-
-      mediaRecorderRef.current = mediaRecorder;
-      mediaRecorder.start(100); // Collect data every 100ms
-      console.log('[Dictation] Recording started');
 
       setIsRecording(true);
       startTimeRef.current = Date.now();
@@ -158,7 +167,6 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
         const elapsed = Date.now() - startTimeRef.current;
         setRecordingTime(elapsed);
 
-        // Auto-stop at max time
         if (elapsed >= MAX_RECORDING_TIME) {
           stopRecording();
         }
@@ -169,37 +177,69 @@ export function DictateButton({ onTranscription, disabled = false, position = 'f
     }
   };
 
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
+  const stopRecording = async () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    if (isNative && isRecording) {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      try {
+        console.log('[Dictation] Stopping native recording...');
+        const result = await VoiceRecorder.stopRecording();
+        setIsRecording(false);
+        setAudioLevel(0);
+
+        if (!cancelledRef.current && result.value?.recordDataBase64) {
+          console.log('[Dictation] Native recording stopped, processing...');
+          // Convert base64 to Blob
+          const byteCharacters = atob(result.value.recordDataBase64);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const nativeMimeType = result.value.mimeType || 'audio/aac';
+          mimeTypeRef.current = nativeMimeType;
+          audioChunksRef.current = [new Blob([byteArray], { type: nativeMimeType })];
+          await processAudio();
+        }
+      } catch (err) {
+        console.error('[Dictation] Failed to stop native recording:', err);
+        setIsRecording(false);
+      }
+    } else if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       setAudioLevel(0);
-
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
     }
   };
 
-  const cancelRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      // Mark as cancelled so onstop handler skips processing
-      cancelledRef.current = true;
-      audioChunksRef.current = [];
+  const cancelRecording = async () => {
+    cancelledRef.current = true;
+    audioChunksRef.current = [];
 
-      // Stop the recorder (onstop will fire but with empty chunks)
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      setAudioLevel(0);
-
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-
-      setRecordingTime(0);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
+
+    if (isNative && isRecording) {
+      try {
+        await VoiceRecorder.stopRecording();
+      } catch {
+        // Ignore errors on cancel
+      }
+    } else if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+    }
+
+    setIsRecording(false);
+    setAudioLevel(0);
+    setRecordingTime(0);
   };
 
   const processAudio = async () => {
