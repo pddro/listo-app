@@ -13,22 +13,37 @@
       "realtime": "Tiempo real",
       "aiPowered": "Con IA"
     },
+    "nav": {
+      "getApp": "Obtener la App",
+      "androidEarlyAccess": "Acceso anticipado",
+      "androidEmailPlaceholder": "tu@email.com",
+      "androidSending": "Guardando...",
+      "androidSuccess": "¡Estás dentro!",
+      "androidAlready": "¡Ya estás registrado!",
+      "androidError": "Intenta de nuevo",
+      "androidSocialProof": "Únete a {count} probando en Android"
+    },
     "buttons": {
       "create": "Crear",
+      "go": "Ir",
+      "newList": "Nueva Lista",
+      "createList": "Crear Lista",
+      "addItems": "Agregar {count} items",
+      "generate": "Generar",
       "restore": "Restaurar",
       "archived": "Archivadas"
     },
     "placeholders": [
-      "compras para tacos",
-      "maleta para vacaciones en la playa",
-      "preguntas para el médico",
-      "películas para ver este fin de semana",
-      "cosas que hacer antes de mudarse",
-      "ideas de regalo para mamá",
-      "libros para leer este año",
-      "proyectos de mejoras del hogar",
-      "ideas de comidas semanales",
-      "lista de viajes soñados"
+      "leche, huevos, pan, mantequilla",
+      ".compras para noche de tacos",
+      "pasaporte, cargador, protector solar",
+      ".lista de equipaje para la playa",
+      "pollo, arroz, brócoli, salsa de soya",
+      ".planificación de fiesta de cumpleaños",
+      "dentista, cambio de aceite, renovar pasaporte",
+      ".ideas de comidas semanales",
+      "carpa, saco de dormir, linterna",
+      ".proyectos de mejoras del hogar"
     ],
     "templates": {
       "browse": "Explorar Plantillas",
@@ -37,6 +52,13 @@
       "browseDescription": "Comienza con una lista prediseñada",
       "myTemplates": "Mis Plantillas"
     },
+    "quickStart": {
+      "title": "Tu primera lista está a un tap",
+      "grocery": "Lista de Compras",
+      "packing": "Lista de Equipaje",
+      "todo": "Lista de Tareas"
+    },
+    "inputHint": "Escribe tus primeros items, o empieza con . para generar con IA",
     "recentLists": "Tus Listas",
     "noRecentLists": "No hay listas recientes",
     "untitledList": "Lista sin título",
@@ -99,7 +121,17 @@
     "footer": {
       "createdWith": "Creado con List Mango",
       "home": "Inicio",
-      "newList": "Nueva Lista"
+      "newList": "Nueva Lista",
+      "getApp": "Obtén la app gratis — sin cuenta necesaria",
+      "appStore": "Descargar en App Store",
+      "playStoreComingSoon": "Android próximamente",
+      "androidSignup": "Acceso anticipado a Android",
+      "androidEmailPlaceholder": "tu@email.com",
+      "androidSending": "Guardando...",
+      "androidSuccess": "¡Estás dentro! ✓",
+      "androidAlready": "¡Ya estás registrado! ✓",
+      "androidError": "Algo salió mal, intenta de nuevo",
+      "androidSocialProof": "Únete a {count} probando en Android"
     },
     "backToList": "Volver a la lista",
     "shareHint": "Comparte la lista para colaborar en tiempo real",
@@ -485,6 +517,7 @@
   "backup": {
     "deviceNotice": "Tus listas solo existen en este dispositivo",
     "backupAndTransfer": "Respaldar y Transferir",
+    "importFromDevice": "Traer listas de otro dispositivo",
     "exportTab": "Exportar",
     "importTab": "Importar",
     "exportHeroTitle": "Mover listas a otro dispositivo",

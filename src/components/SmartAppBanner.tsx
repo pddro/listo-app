@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 
+const APP_STORE_URL = 'https://apps.apple.com/app/list-mango/id6758048013';
+
 interface SmartAppBannerProps {
   listId: string;
   listTitle: string | null;
@@ -11,44 +13,49 @@ interface SmartAppBannerProps {
 export function SmartAppBanner({ listId, listTitle }: SmartAppBannerProps) {
   const t = useTranslations('appBanner');
   const [isVisible, setIsVisible] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [platform, setPlatform] = useState<'ios' | 'android' | null>(null);
 
   useEffect(() => {
-    // Detect iOS devices
     const userAgent = window.navigator.userAgent;
     const isIOSDevice = /iphone|ipad|ipod/i.test(userAgent);
+    const isAndroidDevice = /android/i.test(userAgent);
 
     // Check if in standalone/PWA mode
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
 
-    // Check if actually running inside Capacitor native app (not just having the library loaded)
+    // Check if actually running inside Capacitor native app
     const capacitor = (window as Window & { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
     const isCapacitorNative = capacitor?.isNativePlatform?.() === true;
 
     // Don't show if already in app or if user dismissed it
     const wasDismissed = sessionStorage.getItem('listo_app_banner_dismissed_v2');
 
-    if (isIOSDevice && !isStandalone && !isCapacitorNative && !wasDismissed) {
-      setIsMobile(true);
-      // Delay showing banner slightly
+    if ((isIOSDevice || isAndroidDevice) && !isStandalone && !isCapacitorNative && !wasDismissed) {
+      setPlatform(isIOSDevice ? 'ios' : 'android');
       const timeout = setTimeout(() => setIsVisible(true), 500);
       return () => clearTimeout(timeout);
     }
   }, []);
 
   const handleOpenInApp = () => {
-    // Use custom URL scheme to open the app with the specific list
-    // Format: listmango://listId (app strips prefix and navigates to /listId)
-    const appUrl = `listmango://${listId}`;
+    if (platform === 'ios') {
+      // Try custom URL scheme first, fall back to App Store
+      const appUrl = `listmango://${listId}`;
+      const start = Date.now();
+      window.location.href = appUrl;
 
-    // Create a temporary anchor and click it - more reliable on iOS Safari
-    const link = document.createElement('a');
-    link.href = appUrl;
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      // If still here after 1.5s, app isn't installed — go to App Store
+      setTimeout(() => {
+        if (Date.now() - start < 2000) {
+          window.location.href = APP_STORE_URL;
+        }
+      }, 1500);
+    } else {
+      // Android: link to App Store for now (Play Store coming soon)
+      // When Play Store is live, replace with Play Store URL + deep link fallback
+      window.location.href = APP_STORE_URL;
+    }
   };
 
   const handleDismiss = () => {
@@ -56,7 +63,7 @@ export function SmartAppBanner({ listId, listTitle }: SmartAppBannerProps) {
     sessionStorage.setItem('listo_app_banner_dismissed_v2', 'true');
   };
 
-  if (!isMobile || !isVisible) return null;
+  if (!platform || !isVisible) return null;
 
   return (
     <div
@@ -83,11 +90,11 @@ export function SmartAppBanner({ listId, listTitle }: SmartAppBannerProps) {
         <div className="flex-1 min-w-0">
           <div className="text-white font-semibold text-sm">{t('appName')}</div>
           <div className="text-gray-400 text-xs truncate">
-            {listTitle ? t('openWithTitle', { title: listTitle }) : t('openGeneric')}
+            {t('continueInApp')}
           </div>
         </div>
 
-        {/* Open button */}
+        {/* Action button */}
         <button
           onClick={handleOpenInApp}
           className="rounded-full text-sm font-semibold flex-shrink-0 active:opacity-70"
@@ -97,7 +104,7 @@ export function SmartAppBanner({ listId, listTitle }: SmartAppBannerProps) {
             padding: '6px 16px',
           }}
         >
-          {t('open')}
+          {platform === 'ios' ? t('open') : t('getApp')}
         </button>
 
         {/* Close button */}

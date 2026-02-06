@@ -13,22 +13,37 @@
       "realtime": "实时同步",
       "aiPowered": "AI 驱动"
     },
+    "nav": {
+      "getApp": "获取应用",
+      "androidEarlyAccess": "抢先体验",
+      "androidEmailPlaceholder": "邮箱@example.com",
+      "androidSending": "保存中...",
+      "androidSuccess": "注册成功！",
+      "androidAlready": "已经注册过了！",
+      "androidError": "请重试",
+      "androidSocialProof": "已有{count}人在Android上测试"
+    },
     "buttons": {
+      "go": "开始",
+      "newList": "新建清单",
+      "createList": "创建清单",
+      "addItems": "添加{count}项",
+      "generate": "生成",
       "create": "创建",
       "restore": "恢复",
       "archived": "已归档"
     },
     "placeholders": [
-      "墨西哥卷饼购物清单",
-      "海滩度假行李清单",
-      "看医生要问的问题",
-      "这周末要看的电影",
-      "搬家前要做的事",
-      "给妈妈的礼物创意",
-      "今年要读的书",
-      "家居改造项目",
-      "每周餐食计划",
-      "梦想旅行清单"
+      "牛奶、鸡蛋、面包、黄油",
+      ".墨西哥卷饼食材清单",
+      "护照、充电器、防晒霜",
+      ".海滩旅行行李清单",
+      "鸡肉、米饭、西兰花、酱油",
+      ".生日派对策划",
+      "看牙医、换机油、续签护照",
+      ".每周餐食计划",
+      "帐篷、睡袋、手电筒",
+      ".春季家装项目"
     ],
     "templates": {
       "browse": "浏览模板",
@@ -37,6 +52,13 @@
       "browseDescription": "从预制清单开始",
       "myTemplates": "我的模板"
     },
+    "quickStart": {
+      "title": "一键创建你的第一个清单",
+      "grocery": "购物清单",
+      "packing": "行李清单",
+      "todo": "待办清单"
+    },
+    "inputHint": "输入你的第一批项目，或以 . 开头用AI生成",
     "recentLists": "你的清单",
     "noRecentLists": "没有最近的清单",
     "untitledList": "无标题清单",
@@ -98,8 +120,18 @@
     },
     "footer": {
       "createdWith": "由 List Mango 创建",
-      "home": "主页",
-      "newList": "新建清单"
+      "home": "首页",
+      "newList": "新建清单",
+      "getApp": "免费下载应用 — 无需注册",
+      "appStore": "在 App Store 下载",
+      "playStoreComingSoon": "Android 即将推出",
+      "androidSignup": "Android 抢先体验",
+      "androidEmailPlaceholder": "邮箱@example.com",
+      "androidSending": "保存中...",
+      "androidSuccess": "注册成功！ ✓",
+      "androidAlready": "已经注册过了！ ✓",
+      "androidError": "出错了，请重试",
+      "androidSocialProof": "已有{count}人在Android上测试"
     },
     "backToList": "返回清单",
     "shareHint": "分享清单以实时协作",
@@ -484,6 +516,7 @@
   "backup": {
     "deviceNotice": "您的清单仅存储在此设备上",
     "backupAndTransfer": "备份与传输",
+    "importFromDevice": "从其他设备导入清单",
     "exportTab": "导出",
     "importTab": "导入",
     "exportHeroTitle": "将清单移至另一台设备",

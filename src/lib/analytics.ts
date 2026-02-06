@@ -158,6 +158,16 @@ export const analytics = {
     }
   },
 
+  // Track App Store click
+  appStoreClick: async (source: 'homepage_nav' | 'list_footer' | 'smart_banner') => {
+    trackEvent("app_store_click", "acquisition", source);
+  },
+
+  // Track Android tester signup
+  androidSignup: async (source: 'homepage_nav' | 'list_footer') => {
+    trackEvent("android_signup", "acquisition", source);
+  },
+
   pageVisit: (page: string) => {
     trackPageView(page);
   },

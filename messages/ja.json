@@ -13,22 +13,37 @@
       "realtime": "リアルタイム",
       "aiPowered": "AI搭載"
     },
+    "nav": {
+      "getApp": "アプリを入手",
+      "androidEarlyAccess": "早期アクセス",
+      "androidEmailPlaceholder": "メール@example.com",
+      "androidSending": "保存中...",
+      "androidSuccess": "登録完了！",
+      "androidAlready": "登録済みです！",
+      "androidError": "もう一度お試しください",
+      "androidSocialProof": "{count}人がAndroidでテスト中"
+    },
     "buttons": {
       "create": "作成",
+      "go": "作成",
+      "newList": "新しいリスト",
+      "createList": "リストを作成",
+      "addItems": "{count}件追加",
+      "generate": "生成",
       "restore": "復元",
       "archived": "アーカイブ"
     },
     "placeholders": [
-      "タコスの材料",
-      "ビーチ旅行の持ち物",
-      "医者への質問",
-      "今週末に見る映画",
-      "引っ越し前にやること",
-      "お母さんへのプレゼント案",
-      "今年読む本",
-      "DIYプロジェクト",
-      "週間献立アイデア",
-      "夢の旅行先リスト"
+      "牛乳、卵、パン、バター",
+      ".タコスの材料リスト",
+      "パスポート、充電器、日焼け止め",
+      ".ビーチ旅行の持ち物リスト",
+      "鶏肉、米、ブロッコリー、醤油",
+      ".誕生日パーティーの計画",
+      "歯医者、オイル交換、パスポート更新",
+      ".週間献立アイデア",
+      "テント、寝袋、懐中電灯",
+      ".春のDIYプロジェクト"
     ],
     "templates": {
       "browse": "テンプレートを見る",
@@ -37,6 +52,13 @@
       "browseDescription": "作成済みのリストから始める",
       "myTemplates": "マイテンプレート"
     },
+    "quickStart": {
+      "title": "最初のリストをワンタップで",
+      "grocery": "買い物リスト",
+      "packing": "持ち物リスト",
+      "todo": "やることリスト"
+    },
+    "inputHint": "アイテムを入力、または . で始めてAI生成",
     "recentLists": "あなたのリスト",
     "noRecentLists": "最近のリストはありません",
     "untitledList": "無題のリスト",
@@ -99,7 +121,17 @@
     "footer": {
       "createdWith": "List Mangoで作成",
       "home": "ホーム",
-      "newList": "新規リスト"
+      "newList": "新しいリスト",
+      "getApp": "無料アプリを入手 — アカウント不要",
+      "appStore": "App Storeでダウンロード",
+      "playStoreComingSoon": "Android 近日公開",
+      "androidSignup": "Android早期アクセス",
+      "androidEmailPlaceholder": "メール@example.com",
+      "androidSending": "保存中...",
+      "androidSuccess": "登録完了！ ✓",
+      "androidAlready": "登録済みです！ ✓",
+      "androidError": "エラーが発生しました。もう一度お試しください",
+      "androidSocialProof": "{count}人がAndroidでテスト中"
     },
     "backToList": "リストに戻る",
     "shareHint": "リストを共有してリアルタイムで共同作業",
@@ -484,6 +516,7 @@
   "backup": {
     "deviceNotice": "リストはこのデバイスにのみ保存されています",
     "backupAndTransfer": "バックアップと転送",
+    "importFromDevice": "他のデバイスからリストを取り込む",
     "exportTab": "エクスポート",
     "importTab": "インポート",
     "exportHeroTitle": "リストを別のデバイスに移動",

@@ -13,22 +13,37 @@
       "realtime": "Temps réel",
       "aiPowered": "Propulsé par IA"
     },
+    "nav": {
+      "getApp": "Télécharger l'App",
+      "androidEarlyAccess": "Accès anticipé",
+      "androidEmailPlaceholder": "votre@email.com",
+      "androidSending": "Enregistrement...",
+      "androidSuccess": "Vous êtes inscrit !",
+      "androidAlready": "Déjà inscrit !",
+      "androidError": "Réessayez",
+      "androidSocialProof": "Rejoignez {count} testeurs sur Android"
+    },
     "buttons": {
       "create": "Créer",
+      "go": "Go",
+      "newList": "Nouvelle Liste",
+      "createList": "Créer une Liste",
+      "addItems": "Ajouter {count} éléments",
+      "generate": "Générer",
       "restore": "Restaurer",
       "archived": "Archivées"
     },
     "placeholders": [
-      "ingrédients pour tacos",
-      "valise pour vacances à la plage",
-      "questions pour le médecin",
-      "films à voir ce week-end",
-      "choses à faire avant de déménager",
-      "idées cadeaux pour maman",
-      "livres à lire cette année",
-      "projets de bricolage",
-      "idées de repas de la semaine",
-      "liste de voyages de rêve"
+      "lait, œufs, pain, beurre",
+      ".courses pour soirée tacos",
+      "passeport, chargeur, crème solaire",
+      ".liste de bagages pour la plage",
+      "poulet, riz, brocoli, sauce soja",
+      ".planification fête d'anniversaire",
+      "dentiste, vidange, renouveler passeport",
+      ".idées de repas de la semaine",
+      "tente, sac de couchage, lampe torche",
+      ".projets de bricolage pour le printemps"
     ],
     "templates": {
       "browse": "Parcourir les modèles",
@@ -37,6 +52,13 @@
       "browseDescription": "Commencez avec une liste préfaite",
       "myTemplates": "Mes modèles"
     },
+    "quickStart": {
+      "title": "Votre première liste est à portée de clic",
+      "grocery": "Liste de Courses",
+      "packing": "Liste de Bagages",
+      "todo": "Liste de Tâches"
+    },
+    "inputHint": "Tapez vos premiers éléments, ou commencez par . pour générer avec l'IA",
     "recentLists": "Vos Listes",
     "noRecentLists": "Aucune liste récente",
     "untitledList": "Liste sans titre",
@@ -99,7 +121,17 @@
     "footer": {
       "createdWith": "Créé avec List Mango",
       "home": "Accueil",
-      "newList": "Nouvelle Liste"
+      "newList": "Nouvelle Liste",
+      "getApp": "Téléchargez l'app gratuite — sans compte",
+      "appStore": "Télécharger sur l'App Store",
+      "playStoreComingSoon": "Android bientôt",
+      "androidSignup": "Accès anticipé Android",
+      "androidEmailPlaceholder": "votre@email.com",
+      "androidSending": "Enregistrement...",
+      "androidSuccess": "Vous êtes inscrit ! ✓",
+      "androidAlready": "Déjà inscrit ! ✓",
+      "androidError": "Un problème est survenu, réessayez",
+      "androidSocialProof": "Rejoignez {count} testeurs sur Android"
     },
     "backToList": "Retour à la liste",
     "shareHint": "Partagez la liste pour collaborer en temps réel",
@@ -482,6 +514,7 @@
   "backup": {
     "deviceNotice": "Vos listes n'existent que sur cet appareil",
     "backupAndTransfer": "Sauvegarder et Transférer",
+    "importFromDevice": "Importer des listes depuis un autre appareil",
     "exportTab": "Exporter",
     "importTab": "Importer",
     "exportHeroTitle": "Transférer les listes vers un autre appareil",

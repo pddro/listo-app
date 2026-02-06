@@ -13,23 +13,26 @@
       "realtime": "Tempo real",
       "aiPowered": "Com IA"
     },
+    "nav": {
+      "getApp": "Baixar o App",
+      "androidEarlyAccess": "Acesso antecipado",
+      "androidEmailPlaceholder": "seu@email.com",
+      "androidSending": "Salvando...",
+      "androidSuccess": "Você está dentro!",
+      "androidAlready": "Já cadastrado!",
+      "androidError": "Tente novamente",
+      "androidSocialProof": "Junte-se a {count} testando no Android"
+    },
     "buttons": {
       "create": "Criar",
+      "go": "Ir",
+      "newList": "Nova Lista",
+      "createList": "Criar Lista",
+      "addItems": "Adicionar {count} itens",
+      "generate": "Gerar",
       "restore": "Restaurar",
       "archived": "Arquivadas"
     },
-    "placeholders": [
-      "ingredientes para tacos",
-      "mala para férias na praia",
-      "perguntas para o médico",
-      "filmes para ver neste fim de semana",
-      "coisas para fazer antes de mudar",
-      "ideias de presente para mamãe",
-      "livros para ler este ano",
-      "projetos de reforma",
-      "ideias de refeições da semana",
-      "lista de viagens dos sonhos"
-    ],
     "templates": {
       "browse": "Explorar Modelos",
       "browseCommunity": "Explorar Modelos da Comunidade",
@@ -37,6 +40,25 @@
       "browseDescription": "Comece com uma lista pronta",
       "myTemplates": "Meus Modelos"
     },
+    "quickStart": {
+      "title": "Sua primeira lista está a um toque",
+      "grocery": "Lista de Compras",
+      "packing": "Lista de Mala",
+      "todo": "Lista de Tarefas"
+    },
+    "inputHint": "Digite seus primeiros itens, ou comece com . para gerar com IA",
+    "placeholders": [
+      "leite, ovos, pão, manteiga",
+      ".compras para noite de tacos",
+      "passaporte, carregador, protetor solar",
+      ".lista de mala para a praia",
+      "frango, arroz, brócolis, molho de soja",
+      ".planejamento de festa de aniversário",
+      "dentista, troca de óleo, renovar passaporte",
+      ".ideias de refeições da semana",
+      "barraca, saco de dormir, lanterna",
+      ".projetos de reforma para a primavera"
+    ],
     "recentLists": "Suas Listas",
     "noRecentLists": "Nenhuma lista recente",
     "untitledList": "Lista sem título",
@@ -99,7 +121,17 @@
     "footer": {
       "createdWith": "Criado com List Mango",
       "home": "Início",
-      "newList": "Nova Lista"
+      "newList": "Nova Lista",
+      "getApp": "Baixe o app grátis — sem conta necessária",
+      "appStore": "Baixar na App Store",
+      "playStoreComingSoon": "Android em breve",
+      "androidSignup": "Acesso antecipado Android",
+      "androidEmailPlaceholder": "seu@email.com",
+      "androidSending": "Salvando...",
+      "androidSuccess": "Você está dentro! ✓",
+      "androidAlready": "Já cadastrado! ✓",
+      "androidError": "Algo deu errado, tente novamente",
+      "androidSocialProof": "Junte-se a {count} testando no Android"
     },
     "backToList": "Voltar para a lista",
     "shareHint": "Compartilhe a lista para colaborar em tempo real",
@@ -484,6 +516,7 @@
   "backup": {
     "deviceNotice": "Suas listas existem apenas neste dispositivo",
     "backupAndTransfer": "Backup e Transferência",
+    "importFromDevice": "Trazer listas de outro dispositivo",
     "exportTab": "Exportar",
     "importTab": "Importar",
     "exportHeroTitle": "Mover listas para outro dispositivo",

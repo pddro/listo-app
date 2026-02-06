@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { supabase } from '@/lib/supabase';
@@ -108,6 +108,7 @@ export default function Home() {
   const [showArchived, setShowArchived] = useState(false);
   const [copiedListId, setCopiedListId] = useState<string | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
   const router = useRouter();
   const { generateItems, processDictation } = useAI();
   const { lists: recentLists, archivedLists, isLoading: listsLoading, addList, updateList, archiveList, restoreList } = useRecentListsWeb();
@@ -116,6 +117,14 @@ export default function Home() {
   const [editingTemplate, setEditingTemplate] = useState<PersonalTemplate | null>(null);
   const [communityTemplateCount, setCommunityTemplateCount] = useState<number>(0);
   const [showBackupModal, setShowBackupModal] = useState(false);
+  const [showAppDropdown, setShowAppDropdown] = useState(false);
+  const [androidEmail, setAndroidEmail] = useState('');
+  const [androidSignupState, setAndroidSignupState] = useState<'idle' | 'sending' | 'success' | 'already' | 'error'>('idle');
+  const [androidTesterCount, setAndroidTesterCount] = useState<number>(0);
+  const [sparkles, setSparkles] = useState<{ id: number; x: number; y: number; tx: number; ty: number; scale: number; delay: number }[]>([]);
+  const prevModeRef = useRef<InputMode>('single');
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const androidEmailRef = useRef<HTMLInputElement>(null);
 
   // Track page visit
   useEffect(() => {
@@ -143,23 +152,60 @@ export default function Home() {
     fetchTemplateCount();
   }, [locale]);
 
-  // Show onboarding for first-time visitors
+  // Show inline differentiators for first-time visitors (instead of blocking modal)
   useEffect(() => {
-    // Skip onboarding for search engine bots (SEO)
     const isBot = /bot|crawl|spider|google|bing|yandex|baidu|duckduck/i.test(navigator.userAgent);
     const hasSeenOnboarding = localStorage.getItem('listo_has_seen_welcome');
 
     if (!hasSeenOnboarding && !isBot) {
-      // Small delay for smoother experience
-      setTimeout(() => {
-        setShowOnboarding(true);
-      }, 300);
+      setIsFirstVisit(true);
     }
   }, []);
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
+    setIsFirstVisit(false);
     localStorage.setItem('listo_has_seen_welcome', 'true');
+  };
+
+  // Fetch Android tester count for social proof
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const { count } = await supabase
+          .from('android_testers')
+          .select('*', { count: 'exact', head: true });
+        if (count !== null) setAndroidTesterCount(count);
+      } catch {}
+    };
+    fetchCount();
+  }, []);
+
+  // Handle Android tester email signup
+  const handleAndroidSignup = async (email: string, source: string) => {
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return;
+
+    setAndroidSignupState('sending');
+    try {
+      const { error } = await supabase
+        .from('android_testers')
+        .insert({ email: trimmed, source });
+
+      if (error) {
+        if (error.code === '23505') {
+          setAndroidSignupState('already');
+        } else {
+          setAndroidSignupState('error');
+        }
+      } else {
+        setAndroidSignupState('success');
+        setAndroidTesterCount(prev => prev + 1);
+        analytics.androidSignup(source as 'homepage_nav' | 'list_footer');
+      }
+    } catch {
+      setAndroidSignupState('error');
+    }
   };
 
   // Create tutorial list for new users
@@ -384,9 +430,9 @@ export default function Home() {
     const normalized = normalizeInput(value);
     const trimmed = normalized.trim();
 
-    // AI mode: starts with ...
-    if (trimmed.startsWith('...')) {
-      const prompt = trimmed.slice(3).trim();
+    // AI mode: starts with . or ... (single period is the new shorthand)
+    if (trimmed.startsWith('.') && !trimmed.startsWith('..') || trimmed.startsWith('...')) {
+      const prompt = trimmed.replace(/^\.+/, '').trim();
       return {
         mode: 'ai' as InputMode,
         itemCount: 0,
@@ -407,6 +453,31 @@ export default function Home() {
     // Single mode
     return { mode: 'single' as InputMode, itemCount: 0, displayText: '' };
   }, [value, tInput]);
+
+  // Sparkle burst when entering AI mode
+  useEffect(() => {
+    if (mode === 'ai' && prevModeRef.current !== 'ai' && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const newSparkles = Array.from({ length: 14 }, (_, i) => {
+        const angle = ((i * 26) + (Math.random() * 15 - 7)) * (Math.PI / 180);
+        const dist = 50 + Math.random() * 50;
+        return {
+          id: Date.now() + i,
+          x: cx + (Math.random() * 20 - 10),
+          y: cy + (Math.random() * 10 - 5),
+          tx: Math.cos(angle) * dist,
+          ty: Math.sin(angle) * dist,
+          scale: 0.8 + Math.random() * 1.2,
+          delay: Math.random() * 100,
+        };
+      });
+      setSparkles(newSparkles);
+      setTimeout(() => setSparkles([]), 1000);
+    }
+    prevModeRef.current = mode;
+  }, [mode]);
 
   // Parse theme from input (supports ~theme, theme:theme, style:theme)
   const parseThemeFromInput = (input: string): { content: string; themeDescription: string | null } => {
@@ -429,11 +500,11 @@ export default function Home() {
     return { content: input, themeDescription: null };
   };
 
-  const handleCreate = async (forceAI = false) => {
+  const handleCreate = async (forceAI = false, overrideValue?: string) => {
     if (isCreating) return;
 
     // Normalize iOS smart punctuation before processing
-    const normalized = normalizeInput(value);
+    const normalized = normalizeInput(overrideValue ?? value);
     const trimmed = normalized.trim();
     if (!trimmed) {
       // Create empty list
@@ -464,9 +535,10 @@ export default function Home() {
       let itemsToAdd: string[] = [];
       let categorizedItems: ManipulatedItem[] | null = null;
 
-      // AI mode: ... prefix or Ctrl+Enter
-      if (forceAI || inputWithoutTheme.startsWith('...')) {
-        const prompt = inputWithoutTheme.startsWith('...') ? inputWithoutTheme.slice(3).trim() : inputWithoutTheme;
+      // AI mode: . or ... prefix, or Ctrl+Enter
+      const isAIPrefix = inputWithoutTheme.startsWith('...') || (inputWithoutTheme.startsWith('.') && !inputWithoutTheme.startsWith('..'));
+      if (forceAI || isAIPrefix) {
+        const prompt = isAIPrefix ? inputWithoutTheme.replace(/^\.+/, '').trim() : inputWithoutTheme;
         if (prompt) {
           const result = await generateItems(prompt);
           if (isCategorizedResult(result)) {
@@ -556,6 +628,11 @@ export default function Home() {
           // Theme generation failed, but continue - list is still created
           console.error('Theme generation failed:', themeErr);
         }
+      }
+
+      // Mark onboarding as seen on first list creation
+      if (isFirstVisit) {
+        localStorage.setItem('listo_has_seen_welcome', 'true');
       }
 
       // Navigate to the new list
@@ -661,41 +738,147 @@ export default function Home() {
         backgroundColor: 'var(--bg-primary)',
         paddingLeft: 'max(16px, env(safe-area-inset-left))',
         paddingRight: 'max(16px, env(safe-area-inset-right))',
-        paddingTop: 'max(48px, env(safe-area-inset-top, 48px))',
+        paddingTop: 'env(safe-area-inset-top, 0px)',
         paddingBottom: 'max(24px, env(safe-area-inset-bottom))',
       }}
     >
-      <div className="w-full max-w-md md:max-w-[540px] text-center" style={{ marginTop: 'auto', marginBottom: 'auto' }}>
-        {/* Logo/Title */}
-        <div className="space-y-3" style={{ marginBottom: '24px' }}>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-[0.02em]">
-            {t('title')}
-          </h1>
-          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            {t('tagline')}
-          </p>
-          {/* Hero benefit strip */}
-          <div className="flex items-center justify-center gap-4 text-xs" style={{ color: 'var(--text-muted)', marginTop: '12px' }}>
-            <span className="flex items-center gap-1">
-              <svg className="w-3 h-3" style={{ color: 'var(--primary)' }} fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+      {/* Nav bar */}
+      <nav className="w-full max-w-md md:max-w-[540px] mx-auto flex items-center justify-between" style={{ padding: '16px 0' }}>
+        <a href="/" className="text-lg font-bold tracking-[0.02em]" style={{ color: 'var(--text-primary)' }}>
+          {t('title')}
+        </a>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.push('/templates')}
+            className="text-sm font-medium transition-colors"
+            style={{ color: 'var(--text-muted)' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+          >
+            {t('templates.browse')}
+          </button>
+          {/* Get the App dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowAppDropdown(!showAppDropdown)}
+              className="text-sm font-medium flex items-center gap-1 transition-all rounded-full"
+              style={{ color: 'var(--primary)', backgroundColor: 'var(--primary-pale)', padding: '6px 12px', border: '1px solid var(--primary-light)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary)'; e.currentTarget.style.color = 'white'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary-pale)'; e.currentTarget.style.color = 'var(--primary)'; }}
+            >
+              {t('nav.getApp')}
+              <svg className={`w-3 h-3 transition-transform ${showAppDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
-              {t('benefits.noSignup')}
-            </span>
-            <span className="flex items-center gap-1">
-              <svg className="w-3 h-3" style={{ color: 'var(--primary)' }} fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              {t('benefits.realtime')}
-            </span>
-            <span className="flex items-center gap-1">
-              <svg className="w-3 h-3" style={{ color: 'var(--primary)' }} fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              {t('benefits.aiPowered')}
-            </span>
+            </button>
+            {showAppDropdown && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setShowAppDropdown(false)} />
+                <div
+                  className="absolute right-0 z-50 rounded-xl shadow-lg"
+                  style={{
+                    marginTop: '8px',
+                    width: '260px',
+                    backgroundColor: 'var(--bg-primary)',
+                    border: '1px solid var(--border-light)',
+                    padding: '8px',
+                  }}
+                >
+                  <a
+                    href="https://apps.apple.com/app/list-mango/id6758048013"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 rounded-lg transition-colors hover:bg-[var(--bg-hover)]"
+                    style={{ padding: '10px 12px' }}
+                    onClick={() => { analytics.appStoreClick('homepage_nav'); setShowAppDropdown(false); }}
+                  >
+                    <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--text-primary)' }}>
+                      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                    </svg>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>iOS</div>
+                      <div className="text-xs" style={{ color: 'var(--text-muted)' }}>App Store</div>
+                    </div>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--text-muted)' }}>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                  {/* Android early access signup */}
+                  <div
+                    className="rounded-lg cursor-pointer transition-colors hover:bg-[var(--bg-hover)]"
+                    style={{ padding: '10px 12px' }}
+                    onMouseEnter={() => androidEmailRef.current?.focus()}
+                  >
+                    <div className="flex items-center gap-3">
+                      <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#3DDC84' }}>
+                        <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48A5.84 5.84 0 0012 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31A5.983 5.983 0 006 7h12c0-2.21-1.24-4.15-3.47-5.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/>
+                      </svg>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Android</div>
+                        <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                          {androidSignupState === 'success'
+                            ? t('nav.androidSuccess')
+                            : androidSignupState === 'already'
+                            ? t('nav.androidAlready')
+                            : t('nav.androidEarlyAccess')
+                          }
+                        </div>
+                      </div>
+                    </div>
+                    {androidSignupState !== 'success' && androidSignupState !== 'already' && (
+                      <form
+                        className="flex gap-1.5"
+                        style={{ marginTop: '8px' }}
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          handleAndroidSignup(androidEmail, 'homepage_nav');
+                        }}
+                      >
+                        <input
+                          ref={androidEmailRef}
+                          type="email"
+                          value={androidEmail}
+                          onChange={(e) => {
+                            setAndroidEmail(e.target.value);
+                            if (androidSignupState === 'error') setAndroidSignupState('idle');
+                          }}
+                          placeholder={t('nav.androidEmailPlaceholder')}
+                          className="flex-1 text-xs rounded-md border outline-none transition-all focus:border-[var(--primary)] focus:shadow-[0_0_0_2px_var(--primary-pale)]"
+                          style={{
+                            padding: '6px 10px',
+                            borderColor: androidSignupState === 'error' ? 'var(--error)' : 'var(--border-medium)',
+                            backgroundColor: 'var(--bg-primary)',
+                            color: 'var(--text-primary)',
+                            minWidth: 0,
+                          }}
+                          disabled={androidSignupState === 'sending'}
+                        />
+                        <button
+                          type="submit"
+                          disabled={androidSignupState === 'sending' || !androidEmail.trim()}
+                          className="text-xs font-medium text-white rounded-md transition-opacity disabled:opacity-50"
+                          style={{ padding: '6px 10px', backgroundColor: 'var(--primary)', whiteSpace: 'nowrap' }}
+                        >
+                          {androidSignupState === 'sending' ? '...' : 'Go'}
+                        </button>
+                      </form>
+                    )}
+                    <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '6px', opacity: 0.8 }}>
+                      {t('nav.androidSocialProof', { count: 167 + androidTesterCount })}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
+      </nav>
+
+      <div className="w-full max-w-md md:max-w-[540px] mx-auto text-center" style={{ marginTop: 'auto', marginBottom: 'auto' }}>
+        {/* Input hint */}
+        <p className="text-xs text-left" style={{ color: 'var(--text-muted)', marginTop: '8px', marginBottom: '8px' }}>
+          {t('inputHint')}
+        </p>
 
         {/* Input */}
         <div className="relative">
@@ -722,21 +905,21 @@ export default function Home() {
                   focus:border-[var(--primary)] focus:shadow-[0_0_0_3px_var(--primary-pale)]
                   outline-none transition-all duration-200
                   disabled:opacity-50
-                  ${mode === 'ai' && value.trim().length > 3
+                  ${mode === 'ai'
                     ? 'border-[var(--primary-light)]'
                     : 'border-gray-200'
                   }
                 `}
                 style={{
-                  padding: '8px 12px',
-                  borderRadius: '4px 0 0 4px'
+                  padding: '14px 16px',
+                  borderRadius: '8px 0 0 8px'
                 }}
               />
               {/* Animated placeholder or loading state */}
               {!value && (
                 <div
                   className={`
-                    absolute left-3 top-1/2 -translate-y-1/2
+                    absolute left-4 top-1/2 -translate-y-1/2
                     text-base pointer-events-none
                     transition-opacity duration-200
                     ${isPlaceholderFading && !isCreating ? 'opacity-0' : 'opacity-100'}
@@ -749,44 +932,53 @@ export default function Home() {
             </div>
             {/* Create button */}
             <button
+              ref={buttonRef}
               onClick={() => handleCreate(false)}
               disabled={isCreating}
               className="text-white font-medium transition-all duration-200 disabled:opacity-70"
               style={{
                 backgroundColor: 'var(--primary)',
-                borderRadius: '0 4px 4px 0',
-                padding: '8px 16px',
+                borderRadius: '0 8px 8px 0',
+                padding: '14px 20px',
               }}
               onMouseEnter={(e) => !isCreating && (e.currentTarget.style.backgroundColor = 'var(--primary-dark)')}
               onMouseLeave={(e) => !isCreating && (e.currentTarget.style.backgroundColor = 'var(--primary)')}
             >
               {isCreating ? (
                 <span className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : mode === 'ai' ? (
+                <span className="flex items-center gap-1">
+                  <SparklesIcon />
+                  {t('buttons.generate')}
+                </span>
+              ) : mode === 'multiple' ? (
+                t('buttons.addItems', { count: itemCount })
               ) : (
-                t('buttons.create')
+                t('buttons.go')
               )}
             </button>
           </div>
 
-          {/* Mode indicator badge */}
-          {displayText && !isCreating && (
-            <div
-              className="absolute left-0 flex items-center gap-1 text-xs text-white bg-[var(--primary)] px-2 py-0.5 rounded-sm"
-              style={{ top: 'calc(100% + 4px)' }}
-            >
-              <SparklesIcon />
-              {displayText}
-            </div>
-          )}
-
-          {/* Processing indicator */}
+          {/* Shimmer bar while AI is working */}
           {isCreating && mode === 'ai' && (
             <div
-              className="absolute left-0 flex items-center gap-1.5 text-xs text-white bg-[var(--primary)] px-2 py-0.5 rounded-sm"
-              style={{ top: 'calc(100% + 4px)' }}
+              className="absolute left-0 right-0 overflow-hidden"
+              style={{ bottom: 0, height: '3px', borderRadius: '0 0 8px 8px' }}
             >
-              <span className="inline-block w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              {tInput('processing.thinking')}
+              <div
+                style={{
+                  width: '200%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, transparent 0%, var(--primary) 25%, var(--primary-light) 50%, var(--primary) 75%, transparent 100%)',
+                  animation: 'shimmer 1.5s ease-in-out infinite',
+                }}
+              />
+              <style>{`
+                @keyframes shimmer {
+                  0% { transform: translateX(-50%); }
+                  100% { transform: translateX(0%); }
+                }
+              `}</style>
             </div>
           )}
 
@@ -801,6 +993,37 @@ export default function Home() {
           )}
         </div>
 
+        {/* AI mode sparkle burst */}
+        {sparkles.length > 0 && (
+          <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 100 }}>
+            {sparkles.map((s) => (
+              <div
+                key={s.id}
+                style={{
+                  position: 'absolute',
+                  left: s.x,
+                  top: s.y,
+                  ['--tx' as string]: `${s.tx}px`,
+                  ['--ty' as string]: `${s.ty}px`,
+                  animation: `sparkle-burst 800ms ease-out ${s.delay}ms forwards`,
+                  opacity: 0,
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--primary)" style={{ transform: `scale(${s.scale})`, filter: 'drop-shadow(0 0 3px var(--primary))' }}>
+                  <path d="M12 0L13.5 8.5L22 10L13.5 11.5L12 20L10.5 11.5L2 10L10.5 8.5L12 0Z" />
+                </svg>
+              </div>
+            ))}
+            <style>{`
+              @keyframes sparkle-burst {
+                0% { transform: translate(0, 0) scale(1.2); opacity: 1; }
+                40% { opacity: 1; }
+                100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+              }
+            `}</style>
+          </div>
+        )}
+
         {/* Dictate button */}
         <div style={{ marginTop: '16px' }}>
           <DictateButton
@@ -810,36 +1033,102 @@ export default function Home() {
           />
         </div>
 
+        {/* Inline differentiators for first-time visitors */}
+        {isFirstVisit && (
+          <div
+            className="grid grid-cols-2 gap-3 text-left"
+            style={{ marginTop: '24px' }}
+          >
+            <div
+              className="rounded-xl"
+              style={{ padding: '12px 14px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-light)' }}
+            >
+              <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                {t('differentiators.noAccount')}
+              </div>
+              <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
+                {t('differentiators.noAccountDesc')}
+              </div>
+            </div>
+            <div
+              className="rounded-xl"
+              style={{ padding: '12px 14px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-light)' }}
+            >
+              <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                {t('differentiators.shareLink')}
+              </div>
+              <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
+                {t('differentiators.shareLinkDesc')}
+              </div>
+            </div>
+            <div
+              className="rounded-xl"
+              style={{ padding: '12px 14px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-light)' }}
+            >
+              <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                {t('differentiators.everywhere')}
+              </div>
+              <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
+                {t('differentiators.everywhereDesc')}
+              </div>
+            </div>
+            <div
+              className="rounded-xl"
+              style={{ padding: '12px 14px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-light)' }}
+            >
+              <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                {t('differentiators.ai')}
+              </div>
+              <div className="text-xs" style={{ color: 'var(--text-muted)', marginTop: '2px' }}>
+                {t('differentiators.aiDesc')}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Your Lists */}
         <div style={{ marginTop: '32px' }}>
-          <div className="font-bold uppercase tracking-wide text-xs mb-3 text-left" style={{ color: 'var(--text-muted)' }}>
+          <div className="font-bold uppercase tracking-wide text-xs text-left" style={{ color: 'var(--text-muted)', paddingLeft: '4px', marginBottom: '4px' }}>
             {t('recentLists')}
           </div>
 
-          {/* Tutorial List for New Users - styled exactly like a regular list */}
+          {/* Quick-start chips for new users */}
           {!listsLoading && recentLists.length === 0 && !isCreating && (
-            <div className="space-y-2">
-              <div
-                className="flex items-center gap-4 py-4 px-4 rounded-xl cursor-pointer active:bg-gray-100 hover:bg-gray-50 transition-colors"
-                style={{ border: '1px solid var(--border-light)', paddingRight: '16px' }}
-                onClick={createTutorialList}
-              >
-                {/* Progress badge */}
-                <div
-                  className="flex-shrink-0 rounded-lg font-semibold text-sm flex items-center justify-center"
-                  style={{
-                    width: '56px',
-                    height: '56px',
-                    backgroundColor: tutorialList.theme.primary,
-                    color: 'white',
-                  }}
-                >
-                  0/{tutorialList.items.filter(i => !i.content.startsWith('#')).length}
-                </div>
-                <span className="flex-1 text-base text-left truncate font-medium" style={{ color: 'var(--text-primary)' }}>
-                  {tutorialList.title}
-                </span>
+            <div>
+              <p className="text-sm text-left" style={{ color: 'var(--text-muted)', paddingLeft: '4px' }}>
+                {t('quickStart.title')}
+              </p>
+              <div className="flex gap-2 flex-wrap" style={{ marginTop: '16px' }}>
+                {[
+                  { label: t('quickStart.grocery'), prompt: '.weekly grocery essentials', icon: '🛒' },
+                  { label: t('quickStart.packing'), prompt: '.packing list for a weekend trip', icon: '🧳' },
+                  { label: t('quickStart.todo'), prompt: '.things to do this week', icon: '✅' },
+                ].map((chip) => (
+                  <button
+                    key={chip.label}
+                    onClick={() => {
+                      setValue(chip.prompt);
+                      handleCreate(true, chip.prompt);
+                    }}
+                    className="text-sm font-medium rounded-full transition-all duration-200 active:scale-95 cursor-pointer"
+                    style={{
+                      padding: '8px 16px',
+                      backgroundColor: 'var(--primary-pale)',
+                      color: 'var(--primary)',
+                      border: '1px solid var(--primary-light)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--primary)';
+                      e.currentTarget.style.color = 'white';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--primary-pale)';
+                      e.currentTarget.style.color = 'var(--primary)';
+                    }}
+                  >
+                    {chip.icon} {chip.label}
+                  </button>
+                ))}
               </div>
             </div>
           )}
@@ -1060,13 +1349,19 @@ export default function Home() {
             }}
           >
             <svg className="w-5 h-5" style={{ color: 'var(--primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+              {recentLists.length === 0 ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+              )}
             </svg>
-            {tBackup('backupAndTransfer')}
+            {recentLists.length === 0 ? tBackup('importFromDevice') : tBackup('backupAndTransfer')}
           </button>
-          <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '8px', textAlign: 'center' }}>
-            {tBackup('deviceNotice')}
-          </p>
+          {recentLists.length > 0 && (
+            <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '8px', textAlign: 'center' }}>
+              {tBackup('deviceNotice')}
+            </p>
+          )}
         </div>
 
         {/* Browse Community Templates - prominent button */}
@@ -1116,7 +1411,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Onboarding Walkthrough */}
+      {/* Onboarding Walkthrough - stashed, can be triggered manually or post-first-list-creation */}
       {showOnboarding && (
         <OnboardingWalkthrough
           onComplete={handleOnboardingComplete}
