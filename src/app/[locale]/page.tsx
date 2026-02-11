@@ -755,7 +755,8 @@ export default function Home() {
             onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
             onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
           >
-            {t('templates.browse')}
+            <span className="sm:hidden">Templates</span>
+            <span className="hidden sm:inline">{t('templates.browse')}</span>
           </button>
           {/* Get the App dropdown */}
           <div className="relative">
@@ -874,7 +875,7 @@ export default function Home() {
         </div>
       </nav>
 
-      <div className="w-full max-w-md md:max-w-[540px] mx-auto text-center" style={{ marginTop: 'auto', marginBottom: 'auto' }}>
+      <div className="w-full max-w-md md:max-w-[540px] mx-auto text-center" style={{ marginTop: '24px', marginBottom: 'auto' }}>
         {/* Input hint */}
         <p className="text-xs text-left" style={{ color: 'var(--text-muted)', marginTop: '8px', marginBottom: '8px' }}>
           {t('inputHint')}
