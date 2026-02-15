@@ -683,13 +683,11 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
               gap: '8px',
             }}
           >
-            {sourceSite.favicon_url && (
-              <img
-                src={sourceSite.favicon_url}
-                alt=""
-                style={{ width: '16px', height: '16px', borderRadius: '3px' }}
-              />
-            )}
+            <img
+              src={sourceSite.favicon_url || `https://www.google.com/s2/favicons?domain=${new URL(sourceSite.source_url).hostname}&sz=32`}
+              alt=""
+              style={{ width: '16px', height: '16px', borderRadius: '3px', flexShrink: 0 }}
+            />
             <span
               style={{
                 fontSize: '12px',
@@ -700,7 +698,7 @@ export default function ListPageClient({ listId }: ListPageClientProps) {
                 whiteSpace: 'nowrap',
               }}
             >
-              from {sourceSite.name}
+              {sourceSite.name}
             </span>
             <a
               href={sourceSite.source_url}
