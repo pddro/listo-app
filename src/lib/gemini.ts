@@ -188,6 +188,65 @@ function wantsCategorization(prompt: string): boolean {
   return CATEGORY_KEYWORDS.some(keyword => lower.includes(keyword));
 }
 
+export async function generateItemsFromUrl(
+  url: string
+): Promise<ManipulatedItem[]> {
+  const config = {
+    thinkingConfig: {
+      thinkingLevel: ThinkingLevel.LOW,
+    },
+  };
+
+  const systemInstruction = `You will scan the url, then return a json list to create a to do list. Divide each group of tasks with a # Category header.
+
+This url might be an article, a recipe, a recommendation list, etc. If it's an article, return main ideas, one sentence or less per item. If it's a recipe, return both ingredients then the instructions.
+
+Use numeric digits for numbers (e.g. "6 eggs" not "six eggs"). Respond in the same language as the page content.
+
+Return ONLY a JSON array using this format (no markdown, no explanation):
+[
+  {"id": "new_1", "content": "#Ingredients", "completed": false, "parent_id": null, "position": 0},
+  {"id": "new_2", "content": "2 cups flour", "completed": false, "parent_id": "new_1", "position": 0},
+  {"id": "new_3", "content": "#Instructions", "completed": false, "parent_id": null, "position": 1},
+  {"id": "new_4", "content": "Preheat oven to 350F", "completed": false, "parent_id": "new_3", "position": 0}
+]
+
+Headers start with # and have parent_id: null. Items under a header have parent_id set to that header's id.`;
+
+  const contents = [
+    {
+      role: 'user' as const,
+      parts: [{ text: url }],
+    },
+  ];
+
+  const response = await ai.models.generateContent({
+    model: MODEL,
+    config: {
+      ...config,
+      systemInstruction,
+      tools: [{ urlContext: {} }],
+    },
+    contents,
+  });
+
+  const text = response.text?.trim() || '[]';
+  console.log('[generateItemsFromUrl] model:', MODEL);
+  console.log('[generateItemsFromUrl] url:', url);
+  console.log('[generateItemsFromUrl] response length:', text.length);
+
+  try {
+    const parsed = JSON.parse(text);
+    return parsed as ManipulatedItem[];
+  } catch {
+    const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[1].trim());
+    }
+    throw new Error('Failed to parse AI response as JSON');
+  }
+}
+
 export async function generateItemsFromPrompt(
   prompt: string
 ): Promise<string[] | ManipulatedItem[]> {

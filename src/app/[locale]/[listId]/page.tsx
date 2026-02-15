@@ -10,10 +10,10 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { listId } = await params;
 
-  // Fetch list data
+  // Fetch list data including source info
   const { data: list } = await supabase
     .from('lists')
-    .select('title')
+    .select('title, source_site_id, source_url')
     .eq('id', listId)
     .single();
 
@@ -26,21 +26,39 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = list?.title || 'Untitled List';
   const itemCount = count || 0;
 
+  // Check if this is a branded list
+  let siteName: string | null = null;
+  if (list?.source_site_id) {
+    const { data: site } = await supabase
+      .from('embed_sites')
+      .select('name')
+      .eq('id', list.source_site_id)
+      .single();
+    siteName = site?.name || null;
+  }
+
+  const isBranded = !!siteName;
+  const displayTitle = isBranded
+    ? `${title} - from ${siteName} | List Mango`
+    : `${title} - List Mango`;
+  const description = isBranded
+    ? `${itemCount} item${itemCount !== 1 ? 's' : ''} — ${title} from ${siteName}. Create and share lists instantly.`
+    : `${itemCount} item${itemCount !== 1 ? 's' : ''} in this list. List Mango: Create and share lists instantly with real-time collaboration. No signup required.`;
+
   return {
-    title: `${title} - List Mango`,
-    description: `${itemCount} item${itemCount !== 1 ? 's' : ''} in this list. List Mango: Create and share lists instantly with real-time collaboration. No signup required.`,
+    title: displayTitle,
+    description,
     openGraph: {
-      title: `${title} - List Mango`,
-      description: `${itemCount} item${itemCount !== 1 ? 's' : ''} in this list. Create and share lists instantly.`,
+      title: displayTitle,
+      description,
     },
-    robots: {
-      index: false,
-      follow: false,
-      googleBot: {
-        index: false,
-        follow: false,
-      },
-    },
+    robots: isBranded
+      ? { index: true, follow: true, googleBot: { index: true, follow: true } }
+      : {
+          index: false,
+          follow: false,
+          googleBot: { index: false, follow: false },
+        },
   };
 }
 

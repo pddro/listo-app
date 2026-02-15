@@ -9,6 +9,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- **Branded Mangos - Embeddable List Generator**
+  - Website owners can embed a "Make a Mango" button to let readers convert page content into branded, shareable lists
+  - `/embed` setup page: Enter site URL, Firecrawl extracts branding (colors, favicon, name), generates embed code
+  - `embed.js` script: Lightweight, self-contained (~2KB) with configurable position, color, and label
+  - `/mango` generation page: Shows branded loading state, creates list via AI content extraction, redirects to list
+  - Template caching: First URL hit generates content via Gemini + creates template; subsequent hits clone instantly
+  - Branded source bar on lists: Shows source site favicon, name, and "View original" link
+  - SEO-indexable branded lists with rich OpenGraph metadata ("Title - from Site Name | List Mango")
+  - New `embed_sites` table for site registration and branding storage
+  - `source_url` and `source_site_id` columns on lists for source tracking
+  - Firecrawl-to-ThemeColors algorithmic color conversion (no AI needed)
+  - API routes: `/api/embed/setup` (site registration), `/api/embed/create` (branded list creation)
+
 - **Unified Onboarding Walkthrough**
   - Rich 5-page onboarding experience now shared between web and mobile
   - Pages: Shareable links, Works everywhere, Dictation, AI-powered, Themes

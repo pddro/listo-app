@@ -17,6 +17,29 @@ export const TEMPLATE_CATEGORIES = [
 export type TemplateCategory = (typeof TEMPLATE_CATEGORIES)[number];
 export type TemplateStatus = 'draft' | 'pending' | 'approved' | 'rejected';
 
+export interface FirecrawlColors {
+  primary: string;
+  secondary: string;
+  accent: string;
+  background: string;
+  textPrimary: string;
+  textSecondary: string;
+}
+
+export interface EmbedSite {
+  id: string;
+  domain: string;
+  name: string;
+  favicon_url: string | null;
+  logo_url: string | null;
+  og_image_url: string | null;
+  colors: FirecrawlColors | null;
+  theme: ThemeColors | null;
+  button_color: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface List {
   id: string;
   title: string | null;
@@ -34,6 +57,9 @@ export interface List {
   use_count?: number;
   is_official?: boolean;
   status?: TemplateStatus;
+  // Branded Mango source tracking
+  source_url?: string | null;
+  source_site_id?: string | null;
 }
 
 export interface Item {
