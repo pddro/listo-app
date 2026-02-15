@@ -39,13 +39,36 @@ export async function POST(request: NextRequest) {
       .eq('domain', domain)
       .single();
 
-    if (existing) {
-      return NextResponse.json({ site: existing });
-    }
-
-    // Scrape branding from the site
+    // Scrape branding from the site (always fetch fresh)
     const normalizedUrl = url.startsWith('http') ? url : `https://${url}`;
     const branding = await scrapeWebsiteBranding(normalizedUrl);
+
+    if (existing) {
+      // Re-scan: update existing site with fresh branding
+      const theme = branding.colors ? firecrawlToTheme(branding.colors) : existing.theme;
+
+      const { data: updated, error: updateError } = await supabaseServer
+        .from('embed_sites')
+        .update({
+          name: branding.name,
+          favicon_url: branding.favicon_url ?? existing.favicon_url,
+          logo_url: branding.logo_url ?? existing.logo_url,
+          og_image_url: branding.og_image_url ?? existing.og_image_url,
+          colors: branding.colors ?? existing.colors,
+          theme,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', existing.id)
+        .select()
+        .single();
+
+      if (updateError) {
+        console.error('[embed/setup] Update error:', updateError);
+        return NextResponse.json({ site: existing });
+      }
+
+      return NextResponse.json({ site: updated });
+    }
 
     // Convert colors to theme
     const theme = branding.colors ? firecrawlToTheme(branding.colors) : null;
