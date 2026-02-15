@@ -19,6 +19,7 @@ function isLightColor(hex: string): boolean {
 export default function EmbedClient() {
   const [url, setUrl] = useState('');
   const [buttonColor, setButtonColor] = useState('#FF6B35');
+  const [borderRadius, setBorderRadius] = useState(8);
   const [state, setState] = useState<SetupState>('idle');
   const [site, setSite] = useState<EmbedSite | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
@@ -59,7 +60,9 @@ export default function EmbedClient() {
   };
 
   const embedCode = site
-    ? `<script src="https://listmango.com/embed.js" data-site="${site.id}" data-color="${buttonColor}"></script>`
+    ? `<script src="https://listmango.com/embed.js" data-site="${site.id}" data-color="${buttonColor}"${
+        borderRadius !== 8 ? ` data-radius="${borderRadius}"` : ''
+      }></script>`
     : '';
 
   const handleCopy = async () => {
@@ -244,6 +247,31 @@ export default function EmbedClient() {
                     }}
                   />
                 </label>
+                <label style={{ flexShrink: 0 }}>
+                  <span
+                    style={{
+                      display: 'block',
+                      fontSize: '12px',
+                      color: '#6B7280',
+                      marginBottom: '6px',
+                    }}
+                  >
+                    Corners
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <input
+                      type="range"
+                      min="0"
+                      max="24"
+                      value={borderRadius}
+                      onChange={(e) => setBorderRadius(Number(e.target.value))}
+                      style={{ width: '80px', cursor: 'pointer' }}
+                    />
+                    <span style={{ fontSize: '12px', color: '#6B7280', minWidth: '28px' }}>
+                      {borderRadius}px
+                    </span>
+                  </div>
+                </label>
                 <div style={{ flex: 1, textAlign: 'center' }}>
                   <span
                     style={{
@@ -257,15 +285,14 @@ export default function EmbedClient() {
                   </span>
                   <button
                     style={{
-                      padding: '10px 18px',
+                      padding: '8px 16px',
                       backgroundColor: buttonColor,
                       color: isLightColor(buttonColor) ? '#1A1A1A' : '#fff',
                       border: 'none',
-                      borderRadius: '24px',
+                      borderRadius: `${borderRadius}px`,
                       fontSize: '14px',
                       fontWeight: 600,
                       cursor: 'default',
-                      boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
                     }}
                   >
                     🥭 Make it a List

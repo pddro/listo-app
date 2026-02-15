@@ -9,7 +9,7 @@
   }
 
   var color = s.getAttribute('data-color') || '#FF6B35';
-  var position = s.getAttribute('data-position') || 'bottom-right';
+  var radius = s.getAttribute('data-radius') || '8';
   var label = '\uD83E\uDD6D Make it a List';
   var host = s.getAttribute('data-host') || 'https://listmango.com';
 
@@ -31,39 +31,22 @@
   btn.textContent = label;
   btn.setAttribute('aria-label', label);
 
-  // Shared styles
-  var baseStyles =
+  btn.style.cssText =
     'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;' +
     'font-size:14px;font-weight:600;border:none;cursor:pointer;' +
     'color:' + textColor + ';background:' + color + ';' +
-    'padding:10px 18px;border-radius:24px;' +
-    'box-shadow:0 2px 12px rgba(0,0,0,0.15);' +
-    'transition:transform 0.15s ease,box-shadow 0.15s ease;' +
-    'z-index:9999;';
+    'padding:8px 16px;border-radius:' + radius + 'px;' +
+    'transition:opacity 0.15s ease;' +
+    'display:inline-block;';
 
-  if (position === 'inline') {
-    btn.style.cssText = baseStyles + 'position:relative;';
-  } else {
-    var posStyles =
-      position === 'bottom-left'
-        ? 'bottom:20px;left:20px;'
-        : 'bottom:20px;right:20px;';
-    btn.style.cssText = baseStyles + 'position:fixed;' + posStyles;
-  }
-
-  btn.onmouseenter = function () {
-    btn.style.transform = 'scale(1.05)';
-    btn.style.boxShadow = '0 4px 20px rgba(0,0,0,0.2)';
-  };
-  btn.onmouseleave = function () {
-    btn.style.transform = 'scale(1)';
-    btn.style.boxShadow = '0 2px 12px rgba(0,0,0,0.15)';
-  };
+  btn.onmouseenter = function () { btn.style.opacity = '0.85'; };
+  btn.onmouseleave = function () { btn.style.opacity = '1'; };
 
   btn.onclick = function () {
     var url = encodeURIComponent(window.location.href);
     window.open(host + '/mango?url=' + url + '&site=' + siteId, '_blank');
   };
 
-  document.body.appendChild(btn);
+  // Insert right where the script tag is (inline by default)
+  s.parentNode.insertBefore(btn, s);
 })();
