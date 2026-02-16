@@ -12,6 +12,8 @@
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       listmango
  * Domain Path:       /languages
+ *
+ * @package ListMango
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -78,6 +80,7 @@ function listmango_shortcode( $atts ) {
 	$color  = ! empty( $atts['color'] ) ? sanitize_hex_color( $atts['color'] ) : get_option( 'listmango_button_color', '#FF6B35' );
 	$radius = $atts['radius'] !== '' ? absint( $atts['radius'] ) : absint( get_option( 'listmango_button_radius', 8 ) );
 
+	// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedScript -- SaaS embed requires per-instance data attributes.
 	return sprintf(
 		'<script src="%s" data-site="%s" data-color="%s" data-radius="%s"></script>',
 		esc_url( LISTMANGO_API_URL . '/embed.js' ),
@@ -85,6 +88,7 @@ function listmango_shortcode( $atts ) {
 		esc_attr( $color ),
 		esc_attr( $radius )
 	);
+	// phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedScript
 }
 add_shortcode( 'listmango', 'listmango_shortcode' );
 
@@ -114,6 +118,7 @@ function listmango_auto_insert_button( $content ) {
 	$color  = get_option( 'listmango_button_color', '#FF6B35' );
 	$radius = absint( get_option( 'listmango_button_radius', 8 ) );
 
+	// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedScript -- SaaS embed requires per-instance data attributes.
 	$button = sprintf(
 		'<div class="listmango-auto-insert" style="margin-top:24px;"><script src="%s" data-site="%s" data-color="%s" data-radius="%s"></script></div>',
 		esc_url( LISTMANGO_API_URL . '/embed.js' ),
@@ -121,6 +126,7 @@ function listmango_auto_insert_button( $content ) {
 		esc_attr( $color ),
 		esc_attr( $radius )
 	);
+	// phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedScript
 
 	return $content . $button;
 }
