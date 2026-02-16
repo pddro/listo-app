@@ -1433,6 +1433,14 @@ export default function Home() {
           >
             {t('privacy.readPolicy')}
           </button>
+          {' '}&middot;{' '}
+          <a
+            href="/about"
+            className="underline hover:no-underline"
+            style={{ color: 'var(--primary)' }}
+          >
+            About
+          </a>
         </div>
 
         {/* Language Switcher */}
