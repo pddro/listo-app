@@ -1394,6 +1394,35 @@ export default function Home() {
           }
         </button>
 
+        {/* Make it a List — for website owners */}
+        <a
+          href="/make-a-list"
+          className="block w-full rounded-2xl overflow-hidden transition-all duration-200 active:scale-[0.98] cursor-pointer group"
+          style={{
+            marginTop: '24px',
+            textDecoration: 'none',
+            background: 'linear-gradient(135deg, #FF6B35 0%, #FF8F65 100%)',
+            border: '1px solid rgba(255, 107, 53, 0.3)',
+          }}
+        >
+          <div style={{ padding: '20px 24px' }}>
+            <div className="flex items-center gap-3">
+              <span style={{ fontSize: '28px' }}>{'\u{1F96D}'}</span>
+              <div className="flex-1 text-left">
+                <div className="text-sm font-bold text-white" style={{ letterSpacing: '-0.01em' }}>
+                  Have a website?
+                </div>
+                <div className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.85)', marginTop: '2px' }}>
+                  Add a &quot;Make it a List&quot; button — readers share your content as checklists
+                </div>
+              </div>
+              <svg className="w-5 h-5 flex-shrink-0 transition-transform group-hover:translate-x-0.5" fill="none" stroke="white" viewBox="0 0 24 24" style={{ opacity: 0.8 }}>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
+        </a>
+
         {/* Privacy note */}
         <div className="text-xs text-center" style={{ marginTop: '48px', color: 'var(--text-muted)' }}>
           {t('privacy.note')}{' '}
