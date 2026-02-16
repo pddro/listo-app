@@ -36,6 +36,13 @@ function listmango_admin_enqueue( $hook ) {
 		array(),
 		LISTMANGO_VERSION
 	);
+	wp_enqueue_script(
+		'listmango-admin',
+		plugins_url( 'settings.js', __FILE__ ),
+		array( 'jquery', 'wp-color-picker' ),
+		LISTMANGO_VERSION,
+		true
+	);
 }
 add_action( 'admin_enqueue_scripts', 'listmango_admin_enqueue' );
 
@@ -43,11 +50,11 @@ add_action( 'admin_enqueue_scripts', 'listmango_admin_enqueue' );
  * Handle the site registration form submission.
  */
 function listmango_handle_registration() {
-	if ( ! isset( $_POST['listmango_register_nonce'] ) ) {
+	if ( ! isset( $_POST['listmango_register_nonce'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 		return;
 	}
 
-	if ( ! wp_verify_nonce( $_POST['listmango_register_nonce'], 'listmango_register' ) ) {
+	if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['listmango_register_nonce'] ) ), 'listmango_register' ) ) {
 		add_settings_error( 'listmango', 'nonce_failed', __( 'Security check failed. Please try again.', 'listmango' ) );
 		return;
 	}
@@ -133,11 +140,11 @@ add_action( 'admin_init', 'listmango_handle_registration' );
  * Handle the auto-insert settings form submission.
  */
 function listmango_handle_auto_insert() {
-	if ( ! isset( $_POST['listmango_auto_insert_nonce'] ) ) {
+	if ( ! isset( $_POST['listmango_auto_insert_nonce'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 		return;
 	}
 
-	if ( ! wp_verify_nonce( $_POST['listmango_auto_insert_nonce'], 'listmango_auto_insert' ) ) {
+	if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['listmango_auto_insert_nonce'] ) ), 'listmango_auto_insert' ) ) {
 		add_settings_error( 'listmango', 'nonce_failed', __( 'Security check failed.', 'listmango' ) );
 		return;
 	}
@@ -160,11 +167,11 @@ add_action( 'admin_init', 'listmango_handle_auto_insert' );
  * Handle the appearance settings form submission.
  */
 function listmango_handle_appearance() {
-	if ( ! isset( $_POST['listmango_appearance_nonce'] ) ) {
+	if ( ! isset( $_POST['listmango_appearance_nonce'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 		return;
 	}
 
-	if ( ! wp_verify_nonce( $_POST['listmango_appearance_nonce'], 'listmango_appearance' ) ) {
+	if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['listmango_appearance_nonce'] ) ), 'listmango_appearance' ) ) {
 		add_settings_error( 'listmango', 'nonce_failed', __( 'Security check failed.', 'listmango' ) );
 		return;
 	}
@@ -364,20 +371,5 @@ function listmango_render_settings_page() {
 		<?php endif; ?>
 	</div>
 
-	<script>
-	jQuery(document).ready(function($) {
-		$('.listmango-color-picker').wpColorPicker({
-			change: function(event, ui) {
-				$('#listmango-preview-btn').css('background-color', ui.color.toString());
-			}
-		});
-
-		$('#listmango_button_radius').on('input', function() {
-			var val = $(this).val();
-			$('#listmango-radius-value').text(val + 'px');
-			$('#listmango-preview-btn').css('border-radius', val + 'px');
-		});
-	});
-	</script>
 	<?php
 }

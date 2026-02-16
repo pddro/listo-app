@@ -107,12 +107,20 @@ Anything with actionable items: recipes, step-by-step guides, packing lists, sho
 * Automatic branding detection from your site
 * Customizable button color and border radius
 
-== Privacy ==
+== Third-Party Service ==
 
-This plugin connects to the ListMango service (listmango.com) in two ways:
+This plugin relies on the [ListMango](https://listmango.com) service to function. ListMango is the external service that converts page content into interactive checklists.
 
-1. **During setup:** Your site URL is sent to `listmango.com/api/embed/setup` to register your site and detect branding (name, favicon, colors). This happens only when you click "Register Site" in the settings.
+**What connects to ListMango and when:**
 
-2. **When readers click the button:** A small script (`listmango.com/embed.js`) loads and, on click, opens ListMango with the current page URL so the content can be converted into a checklist.
+1. **Site registration (admin only, user-initiated):** When you click "Register Site" in Settings → ListMango, your site URL is sent to `https://listmango.com/api/embed/setup` to detect your site's branding (name, favicon, colors). This only happens when you explicitly click the button.
 
-No personal data, cookies, or tracking information is collected. See the [ListMango Privacy Policy](https://listmango.com/privacy) for details.
+2. **Frontend button script:** On pages where the button is displayed, a small JavaScript file (`https://listmango.com/embed.js`) is loaded. This script renders the "Make it a List" button. No data is sent until a reader clicks the button.
+
+3. **Reader clicks the button:** When a reader clicks the button, they are directed to `https://listmango.com/mango?url=PAGE_URL` in a new tab, where the page content is converted into a checklist.
+
+* Service URL: [https://listmango.com](https://listmango.com)
+* Terms of Service: [https://listmango.com/privacy](https://listmango.com/privacy)
+* Privacy Policy: [https://listmango.com/privacy](https://listmango.com/privacy)
+
+No personal data, cookies, or tracking information is collected by the plugin or the service.

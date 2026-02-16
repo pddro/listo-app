@@ -33,7 +33,7 @@ function listmango_register_block() {
 	wp_register_script(
 		'listmango-button-editor',
 		plugins_url( 'blocks/listo-button/edit.js', __FILE__ ),
-		array( 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n' ),
+		array( 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n', 'wp-hooks' ),
 		LISTMANGO_VERSION,
 		true
 	);
