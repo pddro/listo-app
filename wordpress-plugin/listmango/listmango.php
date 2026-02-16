@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       ListMango – Make it a List
- * Plugin URI:        https://listmango.com/embed
+ * Plugin URI:        https://listmango.com/wordpress
  * Description:       Add a "Make it a List" button to your posts and pages. Readers click it to turn your content into a shareable, interactive checklist on ListMango.
  * Version:           1.0.0
  * Requires at least: 6.0
