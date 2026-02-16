@@ -1,6 +1,6 @@
 'use client';
 
-const MANGO = '🥭';
+const MANGO = '\u{1F96D}';
 
 function Section({
   children,
@@ -21,7 +21,7 @@ function Section({
   );
 }
 
-export default function WordPressClient() {
+export default function MakeAListClient() {
   return (
     <div
       style={{
@@ -63,7 +63,7 @@ export default function WordPressClient() {
               margin: '0 auto 40px',
             }}
           >
-            Add a button to your WordPress site. Readers turn your content into
+            One line of code. Any website. Readers turn your content into
             shareable checklists — and every list links back to you.
           </p>
           <div
@@ -75,7 +75,7 @@ export default function WordPressClient() {
             }}
           >
             <a
-              href="#install"
+              href="#get-started"
               style={{
                 display: 'inline-block',
                 padding: '14px 32px',
@@ -87,7 +87,7 @@ export default function WordPressClient() {
                 textDecoration: 'none',
               }}
             >
-              Install Free Plugin
+              Get the Embed Code
             </a>
             <a
               href="#how-it-works"
@@ -208,8 +208,85 @@ export default function WordPressClient() {
         </div>
       </Section>
 
-      {/* SEO Value Prop */}
+      {/* The Code */}
       <Section bg="#FAFAFA">
+        <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto' }}>
+          <h2
+            style={{
+              fontSize: '28px',
+              fontWeight: 700,
+              marginBottom: '24px',
+              lineHeight: 1.3,
+            }}
+          >
+            One{' '}
+            <code
+              style={{
+                backgroundColor: '#1A1A1A',
+                color: '#E5E7EB',
+                padding: '4px 12px',
+                borderRadius: '8px',
+                fontSize: '24px',
+              }}
+            >
+              &lt;script&gt;
+            </code>{' '}
+            tag. That&apos;s it.
+          </h2>
+          <p
+            style={{
+              fontSize: '17px',
+              lineHeight: 1.7,
+              color: '#4B5563',
+              marginBottom: '32px',
+            }}
+          >
+            No npm install. No build step. No framework dependency.
+            Paste one line of HTML and the button appears. Works with
+            React, Vue, Svelte, plain HTML — or whatever your AI just generated.
+          </p>
+
+          {/* Code preview */}
+          <div
+            style={{
+              backgroundColor: '#1A1A1A',
+              borderRadius: '12px',
+              padding: '24px',
+              textAlign: 'left',
+              marginBottom: '16px',
+            }}
+          >
+            <code
+              style={{
+                color: '#E5E7EB',
+                fontSize: '14px',
+                lineHeight: 1.6,
+                wordBreak: 'break-all',
+              }}
+            >
+              <span style={{ color: '#9CA3AF' }}>&lt;</span>
+              <span style={{ color: '#FF6B35' }}>script</span>
+              {' '}
+              <span style={{ color: '#93C5FD' }}>src</span>
+              <span style={{ color: '#9CA3AF' }}>=</span>
+              <span style={{ color: '#86EFAC' }}>&quot;https://listmango.com/embed.js&quot;</span>
+              {' '}
+              <span style={{ color: '#93C5FD' }}>data-site</span>
+              <span style={{ color: '#9CA3AF' }}>=</span>
+              <span style={{ color: '#86EFAC' }}>&quot;your-site-id&quot;</span>
+              <span style={{ color: '#9CA3AF' }}>&gt;&lt;/</span>
+              <span style={{ color: '#FF6B35' }}>script</span>
+              <span style={{ color: '#9CA3AF' }}>&gt;</span>
+            </code>
+          </div>
+          <p style={{ fontSize: '13px', color: '#9CA3AF' }}>
+            We auto-detect your branding — colors, favicon, site name
+          </p>
+        </div>
+      </Section>
+
+      {/* SEO Value Prop */}
+      <Section>
         <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto' }}>
           <h2
             style={{
@@ -314,7 +391,7 @@ export default function WordPressClient() {
       </Section>
 
       {/* How It Works */}
-      <Section>
+      <Section bg="#FAFAFA">
         <div id="how-it-works">
           <h2
             style={{
@@ -324,7 +401,7 @@ export default function WordPressClient() {
               textAlign: 'center',
             }}
           >
-            Three minutes to set up. Zero maintenance.
+            Two minutes. No dependencies. Zero maintenance.
           </h2>
 
           <div
@@ -339,18 +416,18 @@ export default function WordPressClient() {
             {[
               {
                 num: '1',
-                title: 'Install the plugin',
-                desc: 'Search "ListMango" in your WordPress plugin directory and activate. Free, no account needed.',
+                title: 'Enter your website URL',
+                desc: 'ListMango auto-detects your branding — colors, favicon, site name. No account needed.',
               },
               {
                 num: '2',
-                title: 'Enter your website URL',
-                desc: "ListMango auto-detects your branding — colors, favicon, site name. Your button matches your site out of the box.",
+                title: 'Copy one line of code',
+                desc: 'A single <script> tag. Paste it anywhere on your page — before </body>, in a component, wherever you want the button.',
               },
               {
                 num: '3',
-                title: 'Choose where the button appears',
-                desc: 'Auto-insert on all posts, add it to specific pages with the Gutenberg block, or use the [listmango] shortcode. Your call.',
+                title: 'Readers click and share',
+                desc: 'Your content becomes a branded checklist they can save, share, and use. Every list links back to your site.',
               },
             ].map((step) => (
               <div
@@ -405,7 +482,7 @@ export default function WordPressClient() {
       </Section>
 
       {/* Use Cases */}
-      <Section bg="#FAFAFA">
+      <Section>
         <h2
           style={{
             fontSize: '28px',
@@ -426,18 +503,18 @@ export default function WordPressClient() {
           }}
         >
           {[
-            { emoji: '🍳', title: 'Recipe blogs', desc: 'Ingredients become a grocery list' },
-            { emoji: '✈️', title: 'Travel guides', desc: 'Packing lists and itineraries' },
-            { emoji: '🔧', title: 'How-to articles', desc: 'Steps become a checklist' },
-            { emoji: '🎁', title: 'Gift guides', desc: 'Recommendations become a shopping list' },
-            { emoji: '📚', title: 'Resource roundups', desc: 'Links and tools to check off' },
-            { emoji: '🏋️', title: 'Fitness & health', desc: 'Workout plans and meal prep' },
+            { emoji: '\u{1F373}', title: 'Recipe blogs', desc: 'Ingredients become a grocery list' },
+            { emoji: '\u2708\uFE0F', title: 'Travel guides', desc: 'Packing lists and itineraries' },
+            { emoji: '\u{1F527}', title: 'How-to articles', desc: 'Steps become a checklist' },
+            { emoji: '\u{1F381}', title: 'Gift guides', desc: 'Recommendations become a shopping list' },
+            { emoji: '\u{1F4DA}', title: 'Resource roundups', desc: 'Links and tools to check off' },
+            { emoji: '\u{1F3CB}\uFE0F', title: 'Fitness & health', desc: 'Workout plans and meal prep' },
           ].map((uc) => (
             <div
               key={uc.title}
               style={{
                 padding: '20px',
-                backgroundColor: '#fff',
+                backgroundColor: '#F9FAFB',
                 borderRadius: '12px',
                 border: '1px solid #E5E7EB',
               }}
@@ -452,10 +529,86 @@ export default function WordPressClient() {
         </div>
       </Section>
 
-      {/* Install CTA */}
+      {/* Works Everywhere */}
+      <Section bg="#FAFAFA">
+        <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto' }}>
+          <h2
+            style={{
+              fontSize: '28px',
+              fontWeight: 700,
+              marginBottom: '24px',
+              lineHeight: 1.3,
+            }}
+          >
+            Works with every stack
+          </h2>
+          <p
+            style={{
+              fontSize: '17px',
+              lineHeight: 1.7,
+              color: '#4B5563',
+              marginBottom: '32px',
+            }}
+          >
+            It&apos;s a script tag. If your site renders HTML, it works.
+          </p>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '12px',
+              justifyContent: 'center',
+            }}
+          >
+            {[
+              'HTML',
+              'React',
+              'Next.js',
+              'Vue',
+              'Nuxt',
+              'Svelte',
+              'Astro',
+              'Hugo',
+              'Jekyll',
+              'Squarespace',
+              'Wix',
+              'Webflow',
+              'Shopify',
+              'Ghost',
+              'Framer',
+            ].map((tech) => (
+              <span
+                key={tech}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#fff',
+                  borderRadius: '8px',
+                  border: '1px solid #E5E7EB',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: '#374151',
+                }}
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+          <p
+            style={{
+              fontSize: '14px',
+              color: '#9CA3AF',
+              marginTop: '16px',
+            }}
+          >
+            Vibe-coded your site with AI? That works too.
+          </p>
+        </div>
+      </Section>
+
+      {/* CTA */}
       <Section>
         <div
-          id="install"
+          id="get-started"
           style={{
             textAlign: 'center',
             maxWidth: '560px',
@@ -484,73 +637,32 @@ export default function WordPressClient() {
             content more shareable.
           </p>
 
-          <div
+          <a
+            href="/embed"
             style={{
-              backgroundColor: '#F9FAFB',
-              borderRadius: '16px',
-              border: '1px solid #E5E7EB',
-              padding: '32px',
+              display: 'inline-block',
+              padding: '16px 40px',
+              backgroundColor: '#FF6B35',
+              color: '#fff',
+              borderRadius: '12px',
+              fontSize: '18px',
+              fontWeight: 600,
+              textDecoration: 'none',
               marginBottom: '24px',
-              textAlign: 'left',
             }}
           >
-            <h3
-              style={{
-                fontSize: '16px',
-                fontWeight: 700,
-                marginBottom: '20px',
-              }}
-            >
-              Install from WordPress
-            </h3>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-              }}
-            >
-              {[
-                <>Go to <strong>Plugins &rarr; Add New</strong> in your WordPress admin</>,
-                <>Search for <strong>&quot;ListMango&quot;</strong></>,
-                <>Click <strong>Install Now</strong>, then <strong>Activate</strong></>,
-                <>Go to <strong>Settings &rarr; ListMango</strong> and enter your URL</>,
-              ].map((step, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: 'flex',
-                    gap: '12px',
-                    alignItems: 'baseline',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: '13px',
-                      fontWeight: 700,
-                      color: '#FF6B35',
-                      flexShrink: 0,
-                    }}
-                  >
-                    {i + 1}.
-                  </span>
-                  <p style={{ fontSize: '15px', color: '#374151', lineHeight: 1.5 }}>
-                    {step}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
+            Get Your Embed Code
+          </a>
 
           <p style={{ fontSize: '14px', color: '#9CA3AF' }}>
-            Not on WordPress?{' '}
+            On WordPress?{' '}
             <a
-              href="/make-a-list"
+              href="/wordpress"
               style={{ color: '#FF6B35', textDecoration: 'underline' }}
             >
-              Get the embed code
+              Get the free plugin
             </a>{' '}
-            for any website.
+            instead — even easier.
           </p>
         </div>
       </Section>
