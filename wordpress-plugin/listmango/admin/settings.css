@@ -1,0 +1,62 @@
+.listmango-settings {
+	max-width: 720px;
+}
+
+.listmango-card {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 20px 24px;
+	margin-bottom: 20px;
+}
+
+.listmango-card h2 {
+	margin-top: 0;
+	padding-top: 0;
+	font-size: 1.2em;
+}
+
+.listmango-status {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 12px;
+	border-radius: 4px;
+	margin-bottom: 16px;
+}
+
+.listmango-status--connected {
+	background: #edf7ed;
+	color: #1e4620;
+}
+
+.listmango-status .dashicons {
+	color: #46b450;
+}
+
+.listmango-shortcode {
+	display: inline-block;
+	padding: 6px 12px;
+	background: #f0f0f1;
+	border-radius: 4px;
+	font-size: 14px;
+}
+
+#listmango-preview {
+	padding: 16px;
+	background: #f9f9f9;
+	border-radius: 4px;
+	display: inline-block;
+}
+
+#listmango_button_radius {
+	vertical-align: middle;
+	width: 200px;
+}
+
+#listmango-radius-value {
+	display: inline-block;
+	min-width: 36px;
+	margin-left: 8px;
+	color: #666;
+}

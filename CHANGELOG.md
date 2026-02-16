@@ -9,6 +9,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- **WordPress Plugin** (`wordpress-plugin/listmango/`)
+  - Official WordPress plugin for the ListMango embed button, ready for WordPress.org submission
+  - One-click site registration via Settings > ListMango (calls `/api/embed/setup` to auto-detect branding)
+  - Gutenberg block: "ListMango Button" with live editor preview, color picker, and radius control in sidebar
+  - Shortcode support: `[listmango]` with optional `color` and `radius` overrides for classic editor
+  - Customizable button appearance (color, border radius) with live preview on settings page
+  - Proper WordPress standards: nonces, capability checks, sanitization, escaping, i18n-ready
+  - Clean uninstall removes all plugin options
 - **Branded Mangos - Embeddable List Generator**
   - Website owners can embed a "Make a Mango" button to let readers convert page content into branded, shareable lists
   - `/embed` setup page: Enter site URL, Firecrawl extracts branding (colors, favicon, name), generates embed code
