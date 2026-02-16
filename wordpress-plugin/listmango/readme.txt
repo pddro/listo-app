@@ -1,6 +1,6 @@
 === ListMango – Make it a List ===
 Contributors: listmango
-Tags: checklist, list, recipe, grocery, embed
+Tags: checklist, list, recipe, grocery, share
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
@@ -8,56 +8,70 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Add a "Make it a List" button to your posts. Readers turn your content into shareable, interactive checklists.
+Readers don't share articles — they share lists. Add a button that turns your content into shareable checklists that link back to your site.
 
 == Description ==
 
-ListMango lets your readers turn any page on your site into a tappable, shareable checklist — with one click.
+**Your readers won't share your 2,000 word article. But they'll text the grocery list from it in a heartbeat.**
 
-Add the **"Make it a List"** button to your recipes, travel guides, how-to articles, gift guides, or any content with actionable items. When a reader clicks it, ListMango's AI reads your page and creates a clean, interactive checklist they can take to the grocery store, share with friends, or check off as they go.
+ListMango adds a "Make it a List" button to your posts. When a reader clicks it, your content is instantly turned into a clean, tappable checklist they can save, share, and use. Every list is branded with your site name, favicon, and a link back to the original page.
+
+That means every shared list is an organic backlink to **your** site. You do nothing — your readers do the sharing for you.
+
+**Why it works:**
+
+Your article gets read once and forgotten. The list from your article gets texted to a partner, checked off at the store, forwarded to a friend. Lists are actionable and portable in a way articles never will be.
 
 **How it works:**
 
 1. Install the plugin and enter your website URL
-2. ListMango extracts your site's branding (colors, favicon) automatically
-3. Add the ListMango Button block or `[listmango]` shortcode to your posts
-4. Readers click the button and get an instant checklist from your content
+2. ListMango auto-detects your branding (colors, favicon, site name)
+3. Choose where the button appears — auto-insert on all posts, add to specific pages with the Gutenberg block, or use the `[listmango]` shortcode
+4. Readers click and get an instant checklist from your content
 
 **Features:**
 
-* **One-click setup** — just enter your URL, branding is detected automatically
-* **Gutenberg block** — drag and drop the button anywhere in the block editor
-* **Shortcode support** — works with the classic editor too: `[listmango]`
-* **Customizable** — pick your button color and border radius to match your site
-* **Branded experience** — your site name and favicon appear on every list created from your content
-* **AI-powered** — content is intelligently parsed into organized, categorized checklist items
+* **Auto-insert** — add the button to every post automatically, no editing needed
+* **Gutenberg block** — drag and drop for precise placement
+* **Shortcode** — `[listmango]` for classic editor users
+* **Branded lists** — your site name, favicon, and colors on every list
+* **Backlinks built-in** — every list links back to the original page on your site
+* **One-click setup** — enter your URL, branding is detected automatically
+* **Customizable** — match your button color and style to your site
+* **AI-powered** — content is intelligently parsed into organized, categorized items
 
 **Perfect for:**
 
-* Recipe blogs (ingredients become a grocery list)
-* Travel blogs (packing lists, itineraries)
-* How-to guides (step-by-step checklists)
-* Gift guides (shopping lists)
-* Event planning (to-do lists)
+* Recipe blogs — ingredients become a grocery list
+* Travel blogs — packing lists and itineraries
+* How-to guides — steps become a checklist
+* Gift guides — recommendations become a shopping list
+* Resource roundups — links and tools to check off
+* Fitness & health — workout plans and meal prep
+
+[See it in action →](https://listmango.com/wordpress)
 
 == Installation ==
 
-1. Upload the `listmango` folder to `/wp-content/plugins/`
-2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Go to **Settings → ListMango**
-4. Enter your website URL and click **Register Site**
-5. Customize the button color and border radius
-6. Add the **ListMango Button** block or `[listmango]` shortcode to your posts
+1. Go to **Plugins → Add New** in your WordPress admin
+2. Search for **"ListMango"**
+3. Click **Install Now**, then **Activate**
+4. Go to **Settings → ListMango** and enter your website URL
+5. Choose to auto-insert on posts, or use the block/shortcode for manual placement
 
 == Frequently Asked Questions ==
 
 = Do I need a ListMango account? =
 
-No. The plugin registers your site automatically when you enter your URL in the settings. No account creation required.
+No. The plugin registers your site automatically when you enter your URL in the settings. No account, no sign-up.
 
 = Is it free? =
 
-Yes, completely free. There are no premium tiers or locked features.
+Yes, completely free. No premium tiers, no locked features, no limits.
+
+= How does this help my SEO? =
+
+Every list created from your content shows your site name, favicon, and a direct link back to the original page. When readers share those lists — and they will — your site gets organic backlinks you didn't have to build.
 
 = What data is sent to ListMango? =
 
@@ -65,30 +79,32 @@ When a reader clicks the button, the current page URL is sent to ListMango so th
 
 = Does it work with the classic editor? =
 
-Yes. Use the `[listmango]` shortcode in any post or page. You can customize individual buttons: `[listmango color="#1A73E8" radius="12"]`.
+Yes. Use the `[listmango]` shortcode in any post or page. You can customize per-button: `[listmango color="#1A73E8" radius="12"]`.
 
-= Can I place multiple buttons on the same page? =
+= Can I auto-insert the button on all posts? =
 
-Yes. Each button sends the current page URL, so multiple buttons on the same page will create the same checklist.
+Yes. In **Settings → ListMango**, check "Posts" under Auto-Insert and the button appears at the end of every post automatically. No editing required.
 
 = What content formats work best? =
 
-Any content with list-like items: recipes with ingredients, step-by-step guides, packing lists, shopping guides, etc. The AI is good at identifying actionable items in any format.
+Anything with actionable items: recipes, step-by-step guides, packing lists, shopping guides, workout routines, resource lists. The AI handles any format.
 
 == Screenshots ==
 
 1. Settings page — register your site and customize the button
-2. The ListMango Button block in the Gutenberg editor
-3. The button as it appears on your site
-4. A checklist created from your content
+2. Auto-insert settings — choose which post types get the button automatically
+3. The ListMango Button block in the Gutenberg editor
+4. The button as it appears on your site
+5. A branded checklist created from your content
 
 == Changelog ==
 
 = 1.0.0 =
 * Initial release
-* Gutenberg block support
-* Shortcode support
-* Automatic branding detection
+* Auto-insert button on selected post types
+* Gutenberg block with custom mango icon
+* Shortcode support with color and radius overrides
+* Automatic branding detection from your site
 * Customizable button color and border radius
 
 == Privacy ==
