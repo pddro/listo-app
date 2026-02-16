@@ -3,7 +3,7 @@
  * Plugin Name:       ListMango – Make it a List
  * Plugin URI:        https://listmango.com/wordpress
  * Description:       Readers don't share articles — they share lists. Add a "Make it a List" button and let readers turn your content into shareable checklists that link back to your site.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            ListMango
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'LISTMANGO_VERSION', '1.0.0' );
+define( 'LISTMANGO_VERSION', '1.0.1' );
 define( 'LISTMANGO_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'LISTMANGO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'LISTMANGO_API_URL', 'https://listmango.com' );
