@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Item } from '@/types';
-import { API } from '@/lib/api';
+import { API, getSupabaseHeaders } from '@/lib/api';
 
 export interface ManipulatedItem {
   id: string;
@@ -38,7 +38,7 @@ export function useAI() {
     try {
       const response = await fetch(API.ai, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getSupabaseHeaders() },
         body: JSON.stringify({
           action: 'generate',
           prompt,
@@ -74,7 +74,7 @@ export function useAI() {
     try {
       const response = await fetch(API.ai, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getSupabaseHeaders() },
         body: JSON.stringify({
           action: 'manipulate',
           items: items.map((item) => ({
@@ -114,7 +114,7 @@ export function useAI() {
     try {
       const response = await fetch(API.ai, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getSupabaseHeaders() },
         body: JSON.stringify({
           action: 'suggest',
           items: items.map((item) => ({
@@ -149,7 +149,7 @@ export function useAI() {
     try {
       const response = await fetch(API.ai, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getSupabaseHeaders() },
         body: JSON.stringify({
           action: 'dictation',
           prompt: transcription,
