@@ -4,7 +4,7 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY!,
 });
 
-const MODEL = 'gemini-3-flash-preview';
+const MODEL = 'gemini-3.1-flash-lite-preview';
 
 export interface ListItem {
   id: string;
